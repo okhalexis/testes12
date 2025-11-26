@@ -1172,47 +1172,24 @@ local function createHub()
 
     -- Atualizações Formatadas (NOVO CONTEÚDO APLICADO AQUI)
     local updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = " --- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novas Categorias Adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Murder Mystery Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Weak Legacy 2", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Planta Vs Brainrot Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Dead Rails Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Teste De Qi Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Pass Or Die Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Math Murder Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Brainrot Training Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Dump Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Eat Brainrot for fight Scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Sem limites simulador de soco mais forte", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Brainrot Evolução", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novas Categorias adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Anime Eternal", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novos Scripts Adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Blox Fruits: +2 scripts (NOVO: Gravity Hub, W-Azure)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "99 Nights In The Forest: +2 scripts (NOVO: Farm Diamante, Imortalidade)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Anime Eternal: +1 script (NOVO: Yowai Hub)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Planta Vs Brainrot: +4 scripts (Atualizados)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Murder Mystery: +2 scripts (Atualizados)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Brainrot Evolução: +2 scripts (Atualizados)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Dead Rails: +2 scripts (Atualizados)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Math Murder: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Teste de Qi: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Weak Legacy 2: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Pass Or Die: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Brainrot Training: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Dump: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Eat Brainrot forfight: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Sem limites simulador de soco mais forte: +1 script (Atualizado)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novos Scripts adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "+2 Blox Fruits", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 99 Noites na Floresta", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Anime Eternal", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria na ScrollingFrame.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria no deslizamento de tela.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "No Discord!", Color = Color3.fromRGB(220, 220, 220)}, -- Adicionado conforme solicitado
+        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "(Algum script parou de funcionar? Nos avise no discord!)", Color = Color3.fromRGB(170, 170, 170), Font = Enum.Font.Gotham} -- Pequeno
     }
 
     local function displayUpdates()
@@ -1237,17 +1214,17 @@ local function createHub()
 
     local noiteScripts = {
 
+        {Name = "( NOVO ) Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
+
+        {Name = "( NOVO ) Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end},
+
         {Name = "Iliankytb", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Iliankytb/Iliankytb/main/Best99NightsInTheForest"))() end},
 
         {Name = "Nazuro.xyz", Func = function() loadstring(game:HttpGet("https://nazuro.xyz/99nights"))() end},
 
         {Name = "Hutao-Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/SLK-gaming/Hutao-Hub/refs/heads/main/99-Nights-In-The-Forest.txt"))() end},
 
-        {Name = "Kasumi-Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kasumichwan/scripts/refs/heads/main/kasumi-hub.lua"))() end},
-
-        {Name = "( NOVO ) Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
-
-        {Name = "( NOVO ) Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end}
+        {Name = "Kasumi-Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kasumichwan/scripts/refs/heads/main/kasumi-hub.lua"))() end}
 
     }
 
@@ -1257,11 +1234,11 @@ local function createHub()
 
     local bloxFruitsScripts = {
 
-        {Name = "Xero Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua"))() end},
-
         {Name = "( NOVO ) Gravity Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
 
-        {Name = "( NOVO ) W-Azure", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))() end}
+        {Name = "( NOVO ) W-Azure", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))() end},
+
+        {Name = "Xero Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua"))() end}
 
     }
 
@@ -1405,7 +1382,7 @@ local function createHub()
 
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
 
-    createCategoryButton("Anime Eternal", animeEternalScripts, 28)
+    createCategoryButton("( NOVO ) Anime Eternal", animeEternalScripts, 28) -- Adicionado ( NOVO ) mas mantendo a posição
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
 
