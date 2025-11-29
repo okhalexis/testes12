@@ -96,9 +96,9 @@ local validKeys = {
 
     khalexispremium100 = true,
 
-    godistheway = true, -- Chave atualizada
+    jesuseocaminhosempre = true, -- Chave atualizada
 
-    -- Chaves "khalexisgeneroso" e "khalexisteste" foram removidas
+    -- Chaves removidas (mantidas apenas as válidas solicitadas)
 
 }
 
@@ -718,7 +718,7 @@ local function createHub()
 
     footerText.Size=UDim2.new(1, 0, 1, 0)
 
-    footerText.Position=UDim2.new(0, 0, 0, 5)
+    footerText.Position=UDim2.new(0, 5, 0, 5)
 
     footerText.TextYAlignment = Enum.TextYAlignment.Top
 
@@ -1191,7 +1191,7 @@ local function createHub()
         {Text = "Trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
+        {Text = "Nos Envie no Discord!"}
     }
 
     local function displayUpdates()
