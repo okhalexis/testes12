@@ -652,7 +652,7 @@ local function createHub()
 
     scriptFooter.TextSize = 12
 
-    scriptFooter.Text = "Algum Script parou de funcionar? NOS COMUNIQUE!"
+    scriptFooter.Text = "Feedback e Sugestões" -- Removido o texto original
 
     scriptFooter.TextWrapped = true
 
@@ -1170,27 +1170,27 @@ local function createHub()
 
     end
 
-    -- Atualizações Formatadas (NOVO TEXTO SOLICITADO)
+    -- Conteúdo atualizado para a aba de atualizações
     local updatesTextFormatted = {
-        {Text = "Khalexis Hub V1.4", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "--- Atualizaçao ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- Atualização ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "novas categorias", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Novas categorias:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Anime Weapons", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Cars vs Trucks", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Deadly Delivery", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "novo script", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Novos scripts:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "+1 Steal a Brainrot", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 Pegue o Peixe", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+1 Cars Vs Trucks", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+1 Anime Weapons", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+1 Deadly Delivery", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "melhoria", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Melhoria:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Feedback e Sugestões:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
     }
 
@@ -1387,7 +1387,7 @@ local function createHub()
     createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
     createCategoryButton("Anime Eternal", animeEternalScripts, 28)
-    -- NOVAS CATEGORIAS NO FINAL
+    -- NOVAS CATEGORIAS NO FINAL (Com ( NOVO ) no nome)
     createCategoryButton("( NOVO ) Anime Weapons", animeWeaponsScripts, 29)
     createCategoryButton("( NOVO ) Cars vs Trucks", carsVsTrucksScripts, 30)
     createCategoryButton("( NOVO ) Deadly Delivery", deadlyDeliveryScripts, 31)
