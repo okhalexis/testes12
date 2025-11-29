@@ -2,7 +2,7 @@
 
     -- Khalexis Hub - Script Hub para Roblox com sistema de key, barra de pesquisa e configurações de tema
 
-    -- Chaves válidas: "khalexispremium100", "jesuseocaminhosempre"
+    -- Chaves válidas: "khalexispremium100", "jesuseocaminho"
 
     -- Mensagem de erro: "Key incorreta"
 
@@ -96,7 +96,7 @@ local validKeys = {
 
     khalexispremium100 = true,
 
-    jesuseocaminhosempre = true, -- Chave atualizada
+    jesuseocaminho = true, -- Chave atualizada
 
     -- Chaves "khalexisgeneroso" e "khalexisteste" foram removidas
 
@@ -202,8 +202,6 @@ local function showLoadingScreen()
 
     local spinner = Instance.new("Frame")
 
-    spinner.Name = "Spinner"
-
     spinner.Size = UDim2.new(0, 50, 0, 50)
 
     spinner.Position = UDim2.new(0.5, -25, 0, 60)
@@ -218,8 +216,6 @@ local function showLoadingScreen()
 
     local orangeBall = Instance.new("Frame")
 
-    orangeBall.Name = "OrangeBall"
-
     orangeBall.Size = UDim2.new(0, 50, 0, 50)
 
     orangeBall.Position = UDim2.new(0, 0, 0, 0)
@@ -231,8 +227,6 @@ local function showLoadingScreen()
     orangeBall.Parent = spinner
 
     local whiteBall = Instance.new("Frame")
-
-    whiteBall.Name = "WhiteBall"
 
     whiteBall.Size = UDim2.new(0, 20, 0, 20)
 
@@ -315,8 +309,6 @@ local function createHub()
     animationContainer.Parent = ScreenGui
 
     local uiScaler = Instance.new("UIScale")
-
-    uiScaler.Scale = 1 -- Começa visível, o tween de fechar irá para 0
 
     uiScaler.Parent = animationContainer
 
@@ -732,96 +724,6 @@ local function createHub()
 
     footerText.Parent=footerBackground
 
-    local footerLeftContainer = Instance.new("Frame")
-
-    footerLeftContainer.Name = "FooterLeftContainer"
-
-    footerLeftContainer.Size = UDim2.new(0.5, 0, 1, 0)
-
-    footerLeftContainer.Position = UDim2.new(0, 0, 0, 0)
-
-    footerLeftContainer.BackgroundTransparency = 1
-
-    footerLeftContainer.Parent=footerBackground
-
-    local footerLeftPadding = Instance.new("UIPadding")
-
-    footerLeftPadding.PaddingLeft = UDim.new(0, 8)
-
-    footerLeftPadding.Parent = footerLeftContainer
-
-    local footerLeftLayout = Instance.new("UIListLayout")
-
-    footerLeftLayout.FillDirection = Enum.FillDirection.Vertical
-
-    footerLeftLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-
-    footerLeftLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-
-    footerLeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-    footerLeftLayout.Padding = UDim.new(0, 1)
-
-    footerLeftLayout.Parent = footerLeftContainer
-
-    local playerInfo=Instance.new("Frame")
-
-    playerInfo.Name="PlayerInfoFrame"
-
-    playerInfo.Size=UDim2.new(0,90,0,25)
-
-    playerInfo.Position=UDim2.new(0,8,0.5,-12)
-
-    playerInfo.BackgroundTransparency=1
-
-    playerInfo.Parent=footerLeftContainer
-
-    local avatar=Instance.new("ImageLabel")
-
-    avatar.Name="AvatarImage"
-
-    avatar.Size=UDim2.new(0,24,0,24)
-
-    avatar.Position=UDim2.new(0,0,0,0)
-
-    avatar.BackgroundColor3=COLOR_SCRIPT_BTN
-
-    avatar.BorderSizePixel=0
-
-    avatar.Parent=playerInfo
-
-    avatar.ScaleType=Enum.ScaleType.Fit
-
-    applyRoundedCorners(avatar,12)
-
-    local thumbType,thumbSize=Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48
-
-    local thumbContent,_=Players:GetUserThumbnailAsync(userId,thumbType,thumbSize)
-
-    avatar.Image=thumbContent
-
-    local playerNameLabel=Instance.new("TextLabel")
-
-    playerNameLabel.Name="PlayerNameLabel"
-
-    playerNameLabel.Size=UDim2.new(1,-28,1,0)
-
-    playerNameLabel.Position=UDim2.new(0,28,0,0)
-
-    playerNameLabel.BackgroundTransparency=1
-
-    playerNameLabel.Text=userName
-
-    playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-    playerNameLabel.Font=Enum.Font.Gotham
-
-    playerNameLabel.TextSize=10
-
-    playerNameLabel.TextXAlignment=Enum.TextXAlignment.Left
-
-    playerNameLabel.Parent=playerInfo
-
     local footerRightContainer = Instance.new("Frame")
 
     footerRightContainer.Name = "FooterRightContainer"
@@ -919,6 +821,64 @@ local function createHub()
     hintLabel.LayoutOrder = 3
 
     hintLabel.Parent=footerRightContainer
+
+    local playerInfo=Instance.new("Frame")
+
+    playerInfo.Name="PlayerInfoFrame"
+
+    playerInfo.Size=UDim2.new(0,90,0,25)
+
+    playerInfo.Position=UDim2.new(0,8,0.5,-12)
+
+    playerInfo.BackgroundTransparency=1
+
+    playerInfo.Parent=footerBackground
+
+    local avatar=Instance.new("ImageLabel")
+
+    avatar.Name="AvatarImage"
+
+    avatar.Size=UDim2.new(0,24,0,24)
+
+    avatar.Position=UDim2.new(0,0,0,0)
+
+    avatar.BackgroundColor3=COLOR_SCRIPT_BTN
+
+    avatar.BorderSizePixel=0
+
+    avatar.Parent=playerInfo
+
+    avatar.ScaleType=Enum.ScaleType.Fit
+
+    applyRoundedCorners(avatar,12)
+
+    local thumbType,thumbSize=Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48
+
+    local thumbContent,_=Players:GetUserThumbnailAsync(userId,thumbType,thumbSize)
+
+    avatar.Image=thumbContent
+
+    local playerNameLabel=Instance.new("TextLabel")
+
+    playerNameLabel.Name="PlayerNameLabel"
+
+    playerNameLabel.Size=UDim2.new(1,-28,1,0)
+
+    playerNameLabel.Position=UDim2.new(0,28,0,0)
+
+    playerNameLabel.BackgroundTransparency=1
+
+    playerNameLabel.Text=userName
+
+    playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    playerNameLabel.Font=Enum.Font.Gotham
+
+    playerNameLabel.TextSize=10
+
+    playerNameLabel.TextXAlignment=Enum.TextXAlignment.Left
+
+    playerNameLabel.Parent=playerInfo
 
     local dragging=false
 
@@ -1092,7 +1052,7 @@ local function createHub()
 
                     wait(1) -- Pequeno atraso para "Executando..." ser visível
 
-                    closeHubWithAnimation(animationContainer)
+                    closeHubWithAnimation(MainFrameContainer)
 
                 end
 
@@ -1370,12 +1330,6 @@ local function createHub()
         {Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BrainrotEvolution"))() end},
 
         {Name = "H4xScripts", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader2.lua"))() end}
-
-    }
-
-    local animeEternalScripts = {
-
-        {Name = "Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
 
     }
 
