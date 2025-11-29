@@ -2,7 +2,7 @@
 
     -- Khalexis Hub - Script Hub para Roblox com sistema de key, barra de pesquisa e configurações de tema
 
-    -- Chaves válidas: "khalexispremium100", "jesuseocaminho"
+    -- Chaves válidas: "khalexispremium100", "jesuseocaminhosempre"
 
     -- Mensagem de erro: "Key incorreta"
 
@@ -96,7 +96,7 @@ local validKeys = {
 
     khalexispremium100 = true,
 
-    jesuseocaminho = true, -- Chave atualizada
+    godistheway = true, -- Chave atualizada
 
     -- Chaves "khalexisgeneroso" e "khalexisteste" foram removidas
 
@@ -718,7 +718,7 @@ local function createHub()
 
     footerText.Size=UDim2.new(1, 0, 1, 0)
 
-    footerText.Position=UDim2.new(0, 5, 0, 5)
+    footerText.Position=UDim2.new(0, 0, 0, 5)
 
     footerText.TextYAlignment = Enum.TextYAlignment.Top
 
@@ -1330,6 +1330,12 @@ local function createHub()
         {Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BrainrotEvolution"))() end},
 
         {Name = "H4xScripts", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader2.lua"))() end}
+
+    }
+
+    local animeEternalScripts = {
+
+        {Name = "Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
 
     }
 
