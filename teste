@@ -92,14 +92,10 @@ local HasShownWelcome = false
 
 local StorageKeyFileName = "KhalexisHubKey.txt"
 
+-- CONFIGURAÇÃO DE KEYS
 local validKeys = {
-
-    khalexispremium100 = true,
-
-    jesuseocaminhosempre = true, -- Chave atualizada
-
-    -- Chaves removidas (mantidas apenas as válidas solicitadas)
-
+    ["jesuseocaminhosempre"] = true,
+    ["khalexispremium100"] = true
 }
 
 local function saveKeyLocally(key) pcall(function() if writefile then writefile(StorageKeyFileName, key)elseif write_file then write_file(StorageKeyFileName, key) end end) end
