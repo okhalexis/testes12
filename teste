@@ -2,7 +2,7 @@
 
     -- Khalexis Hub - Script Hub para Roblox com sistema de key, barra de pesquisa e configurações de tema
 
-    -- Chaves válidas: "khalexispremium100", "jesuseocaminhosempre"
+    -- Chaves válidas: "khalexispremium100", "jesuseocaminhosempre1"
 
     -- Mensagem de erro: "Key incorreta"
 
@@ -94,7 +94,7 @@ local StorageKeyFileName = "KhalexisHubKey.txt"
 
 -- CONFIGURAÇÃO DE KEYS
 local validKeys = {
-    ["jesuseocaminhosempre"] = true,
+    ["jesuseocaminhosempre1"] = true,
     ["khalexispremium100"] = true
 }
 
