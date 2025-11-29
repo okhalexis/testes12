@@ -1170,7 +1170,7 @@ local function createHub()
 
     end
 
-    -- Atualizações Formatadas (NOVO TEXTO SOLICITADO)
+    -- Atualizações Formatadas (NOVO TEXTO SOLICITADO E AJUSTES)
     local updatesTextFormatted = {
         {Text = "Khalexis Hub V1.4", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- Atualizaçao ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
@@ -1335,7 +1335,7 @@ local function createHub()
 
     local animeEternalScripts = {
 
-        {Name = "Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
+        {Name = "( NOVO ) Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
 
     }
 
@@ -1386,7 +1386,7 @@ local function createHub()
     createCategoryButton("Eat Brainrot for fight Scripts", eatBrainrotForFightScripts, 25)
     createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
-    createCategoryButton("Anime Eternal", animeEternalScripts, 28)
+    createCategoryButton("( NOVO ) Anime Eternal", animeEternalScripts, 28)
     -- NOVAS CATEGORIAS NO FINAL
     createCategoryButton("( NOVO ) Anime Weapons", animeWeaponsScripts, 29)
     createCategoryButton("( NOVO ) Cars vs Trucks", carsVsTrucksScripts, 30)
