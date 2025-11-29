@@ -652,7 +652,7 @@ local function createHub()
 
     scriptFooter.TextSize = 12
 
-    scriptFooter.Text = "Khalexis Hub V1.4" -- Alterado conforme solicitado
+    scriptFooter.Text = "Algum Script parou de funcionar? NOS COMUNIQUE!"
 
     scriptFooter.TextWrapped = true
 
@@ -1170,7 +1170,7 @@ local function createHub()
 
     end
 
-    -- TEXTO DA ABA DE ATUALIZAÇÕES MODIFICADO
+    -- Atualizações Formatadas (NOVO TEXTO SOLICITADO)
     local updatesTextFormatted = {
         {Text = "Khalexis Hub V1.4", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- Atualizaçao ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
@@ -1267,11 +1267,11 @@ local function createHub()
 
     local pegueOPeixeScripts = {
 
-        {Name = "Seraphin Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nniellx/SeraphinHub/main/SeraphinMain.lua"))() end},
+        {Name = "Seraphin Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nniellx/SeraphinHub/main/SeraphinMain.lua"))() end}, -- Adicionado ( NOVO ) e primeiro
 
-        {Name = "Tsuo Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/Tsuoscripts"))() end},
+        {Name = "Tsuo Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/Tsuoscripts"))() end}, -- Adicionado ( NOVO ) e segundo
 
-        {Name = "VinzHub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Vinzyy13/VinzHub/refs/heads/main/Fish-It"))() end}
+        {Name = "VinzHub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Vinzyy13/VinzHub/refs/heads/main/Fish-It"))() end} -- Original
 
     }
 
