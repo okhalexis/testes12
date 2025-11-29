@@ -424,7 +424,7 @@ local function createHub()
 
     closeButton.Parent = titleBar
 
-    applyRoundedCorners(closeButton, 12)
+    applyRoundedCorners(closeButton,12)
 
     local closeTweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
 
@@ -734,7 +734,7 @@ local function createHub()
 
     footerRightContainer.BackgroundTransparency = 1
 
-    footerRightContainer.Parent = footerBackground
+    footerRightContainer.Parent=footerBackground
 
     local footerContainerPadding = Instance.new("UIPadding")
 
@@ -1179,9 +1179,9 @@ local function createHub()
         {Text = "Anime Eternal", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+2 Blox Fruits", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 99 Noites na Floresta", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Anime Eternal", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "2 Blox Fruits", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "2 99 Noites na Floresta", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "1 Anime Eternal", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
@@ -1214,9 +1214,9 @@ local function createHub()
 
     local noiteScripts = {
 
-        {Name = "( NOVO ) Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
+        {Name = "Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
 
-        {Name = "( NOVO ) Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end},
+        {Name = "Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end},
 
         {Name = "Iliankytb", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Iliankytb/Iliankytb/main/Best99NightsInTheForest"))() end},
 
@@ -1234,9 +1234,9 @@ local function createHub()
 
     local bloxFruitsScripts = {
 
-        {Name = "( NOVO ) Gravity Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
+        {Name = "Gravity Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
 
-        {Name = "( NOVO ) W-Azure", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))() end},
+        {Name = "W-Azure", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))() end},
 
         {Name = "Xero Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua"))() end}
 
@@ -1320,7 +1320,7 @@ local function createHub()
 
     local animeEternalScripts = {
 
-        {Name = "( NOVO ) Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
+        {Name = "Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
 
     }
 
@@ -1382,7 +1382,7 @@ local function createHub()
 
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
 
-    createCategoryButton("( NOVO ) Anime Eternal", animeEternalScripts, 28) -- Adicionado ( NOVO ) mas mantendo a posição
+    createCategoryButton("Anime Eternal", animeEternalScripts, 28) -- Removido ( NOVO )
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
 
