@@ -1209,7 +1209,7 @@ local function createHub()
     -- Scripts existentes (Mantém ( NOVO ) nos scripts especificados)
     local stealScripts = {
 
-        {Name = "Zen Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
+        {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
 
         {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
 
@@ -1263,9 +1263,9 @@ local function createHub()
 
     local pegueOPeixeScripts = {
 
-        {Name = "Seraphin Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nniellx/SeraphinHub/main/SeraphinMain.lua"))() end}, -- Adicionado ( NOVO ) e primeiro
+        {Name = "Seraphin Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nniellx/SeraphinHub/main/SeraphinMain.lua"))() end}, -- Adicionado ( NOVO ) e primeiro
 
-        {Name = "Tsuo Hub ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/Tsuoscripts"))() end}, -- Adicionado ( NOVO ) e segundo
+        {Name = "Tsuo Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/Tsuoscripts"))() end}, -- Adicionado ( NOVO ) e segundo
 
         {Name = "VinzHub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Vinzyy13/VinzHub/refs/heads/main/Fish-It"))() end} -- Original
 
@@ -1338,19 +1338,19 @@ local function createHub()
     -- NOVOS CONTEÚDOS (Com ( NOVO ) no nome da Categoria e dos Scripts)
     local animeWeaponsScripts = {
 
-        {Name = "ScriptsRBX ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsRBXdotCom/scripts/refs/heads/main/animeweapons"))() end}
+        {Name = "ScriptsRBX", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsRBXdotCom/scripts/refs/heads/main/animeweapons"))() end}
 
     }
 
     local carsVsTrucksScripts = {
 
-        {Name = "Tora IsMe ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/CarsvsTrucks"))() end}
+        {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/CarsvsTrucks"))() end}
 
     }
 
     local deadlyDeliveryScripts = {
 
-        {Name = "Tora IsMe ( NOVO )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
+        {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
 
     }
 
@@ -1382,11 +1382,11 @@ local function createHub()
     createCategoryButton("Eat Brainrot for fight Scripts", eatBrainrotForFightScripts, 25)
     createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
-    createCategoryButton("( NOVO ) Anime Eternal", animeEternalScripts, 28)
+    createCategoryButton("Anime Eternal", animeEternalScripts, 28)
     -- NOVAS CATEGORIAS NO FINAL
-    createCategoryButton("( NOVO ) Anime Weapons", animeWeaponsScripts, 29)
-    createCategoryButton("( NOVO ) Cars vs Trucks", carsVsTrucksScripts, 30)
-    createCategoryButton("( NOVO ) Deadly Delivery", deadlyDeliveryScripts, 31)
+    createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
+    createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
+    createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
 
