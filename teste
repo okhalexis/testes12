@@ -2,7 +2,7 @@
 
     -- Khalexis Hub - Script Hub para Roblox com sistema de key, barra de pesquisa e configurações de tema
 
-    -- Chaves válidas: "khalexispremium100", "jesuseocaminhosempre1"
+    -- Chaves válidas: "khalexispremium100", "khalexisrumo15k"
 
     -- Mensagem de erro: "Key incorreta"
 
@@ -92,10 +92,10 @@ local HasShownWelcome = false
 
 local StorageKeyFileName = "KhalexisHubKey.txt"
 
--- CONFIGURAÇÃO DE KEYS
+-- CONFIGURAÇÃO DE KEYS ATUALIZADA
 local validKeys = {
-    ["jesuseocaminhosempre1"] = true,
-    ["khalexispremium100"] = true
+    ["khalexisrumo15k"] = true,     -- Nova Key Grátis
+    ["khalexispremium100"] = true   -- Key Premium (Mantida)
 }
 
 local function saveKeyLocally(key) pcall(function() if writefile then writefile(StorageKeyFileName, key)elseif write_file then write_file(StorageKeyFileName, key) end end) end
