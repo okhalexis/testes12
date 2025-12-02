@@ -94,8 +94,8 @@ local StorageKeyFileName = "KhalexisHubKey.txt"
 
 -- CONFIGURAÇÃO DE KEYS ATUALIZADA
 local validKeys = {
-    ["khalexisrumo15k"] = true,     -- Nova Key Grátis
-    ["khalexispremium100"] = true   -- Key Premium (Mantida)
+    ["khalexisrumo15k"] = true,     -- Key Grátis
+    ["khalexispremium100"] = true   -- Key Premium
 }
 
 local function saveKeyLocally(key) pcall(function() if writefile then writefile(StorageKeyFileName, key)elseif write_file then write_file(StorageKeyFileName, key) end end) end
@@ -639,33 +639,7 @@ local function createHub()
 
     end)
 
-    local scriptFooter = Instance.new("TextLabel")
-
-    scriptFooter.Name = "ScriptFooter"
-
-    scriptFooter.Size = UDim2.new(1, 0, 0, 18)
-
-    scriptFooter.BackgroundTransparency = 1
-
-    scriptFooter.TextColor3 = Color3.fromRGB(150, 150, 150)
-
-    scriptFooter.Font = Enum.Font.Gotham
-
-    scriptFooter.TextSize = 12
-
-    scriptFooter.Text = "Algum Script parou de funcionar? NOS COMUNIQUE!"
-
-    scriptFooter.TextWrapped = true
-
-    scriptFooter.TextXAlignment = Enum.TextXAlignment.Center
-
-    scriptFooter.TextYAlignment = Enum.TextYAlignment.Bottom
-
-    scriptFooter.LayoutOrder = 999
-
-    scriptFooter.Parent = scriptContainer
-
-    scriptFooter.Visible = false
+    -- MODIFICAÇÃO: Removido scriptFooter ("Algum script parou de funcionar?...")
 
     local footerBackground=Instance.new("Frame")
 
@@ -935,7 +909,7 @@ local function createHub()
 
         for _,c in pairs(scriptContainer:GetChildren()) do
 
-            if c:IsA("GuiObject") and c.Name ~= "ScriptFooter" then c:Destroy() end
+            if c:IsA("GuiObject") then c:Destroy() end
 
         end
 
@@ -1145,8 +1119,6 @@ local function createHub()
 
             clearScripts()
 
-            scriptFooter.Visible = false
-
             if typeof(contents)=="table" then
 
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
@@ -1159,8 +1131,6 @@ local function createHub()
 
                 contents()
 
-                if contents == displayUpdates then scriptFooter.Visible = true end
-
             end
 
             if layoutScript then layoutScript:SetAttribute("Refresh", true) end
@@ -1171,24 +1141,18 @@ local function createHub()
 
     end
 
-    -- Atualizações Formatadas (NOVO TEXTO SOLICITADO E AJUSTES)
+    -- Atualizações Formatadas (NOVO TEXTO SOLICITADO V1.5)
     local updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novas Categorias Adicionadas", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Anime Weapons", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Cars vs Trucks", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Deadly Delivery", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+2 Pegue o Peixe", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Steal a Brainrot", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Anime Weapons", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Cars vs Trucks", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Deadly Delivery", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhorias", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
@@ -1204,8 +1168,6 @@ local function createHub()
             createUpdateLabel(lineData.Text, lineData.Color, lineData.Font)
 
         end
-
-        scriptFooter.Visible = true
 
         if layoutScript then layoutScript:SetAttribute("Refresh", true) end
 
