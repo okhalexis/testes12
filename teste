@@ -1363,9 +1363,7 @@ local function createHub()
 
         {Name = "( NOVO ) LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
 
-        {Name = "( NOVO ) PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end},
-
-        {Name = "( NOVO ) SIMCA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/notmydaisy/simca/main/games/the-forge"))() end}
+        {Name = "( NOVO ) PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
 
     }
 
