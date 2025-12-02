@@ -528,7 +528,7 @@ local function createHub()
 
     categoryContainer.Parent=categoryFrame
 
-    categoryContainer.ClipsDescendants=true
+    categoryContainer.ClipsDescendants=false -- CORREÇÃO IMPORTANTE: Alterado para false para evitar sumiço dos botões
 
     local layoutCategory=Instance.new("UIListLayout")
 
@@ -554,7 +554,16 @@ local function createHub()
 
     end)
 
-    searchBox:GetPropertyChangedSignal("Text"):Connect(function() local s=searchBox.Text:lower(); for _,b in ipairs(categoryContainer:GetChildren()) do if b:IsA("TextButton") then local n=b.Text:lower(); b.Visible=string.find(n,s,1,true) end end end)
+    searchBox:GetPropertyChangedSignal("Text"):Connect(function() 
+        local s=searchBox.Text:lower(); 
+        for _,b in ipairs(categoryContainer:GetChildren()) do 
+            if b:IsA("TextButton") then 
+                local n=b.Text:lower(); 
+                -- CORREÇÃO: Garantindo retorno booleano para a propriedade Visible
+                b.Visible = (string.find(n,s,1,true) ~= nil)
+            end 
+        end 
+    end)
 
     local scriptFrame=Instance.new("ScrollingFrame")
 
@@ -606,7 +615,7 @@ local function createHub()
 
     scriptContainer.Parent=scriptFrame
 
-    scriptContainer.ClipsDescendants=true
+    scriptContainer.ClipsDescendants=false -- CORREÇÃO IMPORTANTE: Alterado para false
 
     local layoutScript=Instance.new("UIListLayout")
 
@@ -620,15 +629,11 @@ local function createHub()
 
     layoutScript.Parent=scriptContainer
 
-    -- MODIFICAÇÃO: Ajuste do CanvasSize do ScriptFrame para dar mais folga na rolagem
-
     layoutScript:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 
         scriptContainer.Size=UDim2.new(1,-20,0,layoutScript.AbsoluteContentSize.Y)
 
-        -- Aumentando o CanvasSize para garantir rolagem folgada
-
-        local requiredHeight = layoutScript.AbsoluteContentSize.Y + 50 -- Adicionado 50 pixels de folga extra
+        local requiredHeight = layoutScript.AbsoluteContentSize.Y + 50 
 
         scriptFrame.CanvasSize = UDim2.new(0, 0, 0, requiredHeight)
 
