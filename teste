@@ -1084,8 +1084,15 @@ local function createHub()
         btn.TextColor3=Color3.fromRGB(230,230,230)
 
         btn.Font=Enum.Font.Gotham
-
-        btn.TextSize=9
+        
+        -- AJUSTE DE TAMANHO AUTOMÁTICO SOLICITADO
+        btn.TextScaled = true -- Ativa o dimensionamento automático
+        btn.TextWrapped = true -- Garante que o texto quebre se necessário (embora TextScaled cuide do tamanho)
+        
+        local sizeConstraint = Instance.new("UITextSizeConstraint")
+        sizeConstraint.MaxTextSize = 10 -- Mantém a proporção visual dos outros (não deixa ficar gigante)
+        sizeConstraint.MinTextSize = 5  -- Permite diminuir até tamanho 5 se o nome for muito grande
+        sizeConstraint.Parent = btn
 
         btn.Text=name
 
@@ -1331,30 +1338,30 @@ local function createHub()
 
     -- Chamadas para as categorias (Ordem: Existentes + Novas no final)
     createCategoryButton("📣 Atualizações 📣", displayUpdates, 1)
-    createCategoryButton("Steal A Brainrot Scripts", stealScripts, 2)
-    createCategoryButton("99 Noites Na Floresta Scripts", noiteScripts, 3)
-    createCategoryButton("Grow A Garden Scripts", growScripts, 4)
-    createCategoryButton("Vox Seas Scripts", voxSeasScripts, 5)
-    createCategoryButton("Blox Fruits Scripts", bloxFruitsScripts, 6)
-    createCategoryButton("King Legacy Scripts", kingLegacyScripts, 7)
-    createCategoryButton("Rivals Scripts", rivalsScripts, 8)
-    createCategoryButton("Doors Scripts", doorsScripts, 9)
-    createCategoryButton("Brookhaven Scripts", brookhavenScripts, 10)
-    createCategoryButton("Build A Plane Scripts", buildAPlaneScripts, 11)
-    createCategoryButton("Ink Game Scripts", inkGameScripts, 12)
-    createCategoryButton("Natural Disaster Scripts", naturalDisasterScripts, 13)
-    createCategoryButton("Forsaken Scripts", forsakenScripts, 14)
-    createCategoryButton("Pegue O Peixe Scripts", pegueOPeixeScripts, 15)
-    createCategoryButton("Murder Mystery Scripts", murderMysteryScripts, 16)
+    createCategoryButton("Steal A Brainrot", stealScripts, 2)
+    createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
+    createCategoryButton("Grow A Garden", growScripts, 4)
+    createCategoryButton("Vox Seas", voxSeasScripts, 5)
+    createCategoryButton("Blox Fruits", bloxFruitsScripts, 6)
+    createCategoryButton("King Legacy", kingLegacyScripts, 7)
+    createCategoryButton("Rivals", rivalsScripts, 8)
+    createCategoryButton("Doors", doorsScripts, 9)
+    createCategoryButton("Brookhaven", brookhavenScripts, 10)
+    createCategoryButton("Build A Plane", buildAPlaneScripts, 11)
+    createCategoryButton("Ink Game", inkGameScripts, 12)
+    createCategoryButton("Natural Disaster", naturalDisasterScripts, 13)
+    createCategoryButton("Forsaken", forsakenScripts, 14)
+    createCategoryButton("Pegue O Peixe", pegueOPeixeScripts, 15)
+    createCategoryButton("Murder Mystery", murderMysteryScripts, 16)
     createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 17)
-    createCategoryButton("Planta Vs Brainrot Scripts", plantaVSBrainrotScripts, 18)
-    createCategoryButton("Dead Rails Scripts", deadRailsScripts, 19)
-    createCategoryButton("Teste De Qi Scripts", testeDeQiScripts, 20)
-    createCategoryButton("Pass Or Die Scripts", passOrDieScripts, 21)
-    createCategoryButton("Math Murder Scripts", mathMurderScripts, 22)
-    createCategoryButton("Brainrot Training Scripts", brainrotTrainingScripts, 23)
-    createCategoryButton("Dump Scripts", dumpScripts, 24)
-    createCategoryButton("Eat Brainrot for fight Scripts", eatBrainrotForFightScripts, 25)
+    createCategoryButton("Planta Vs Brainrot", plantaVSBrainrotScripts, 18)
+    createCategoryButton("Dead Rails", deadRailsScripts, 19)
+    createCategoryButton("Teste De Qi", testeDeQiScripts, 20)
+    createCategoryButton("Pass Or Die", passOrDieScripts, 21)
+    createCategoryButton("Math Murder", mathMurderScripts, 22)
+    createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
+    createCategoryButton("Dump", dumpScripts, 24)
+    createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 25)
     createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
     createCategoryButton("Anime Eternal", animeEternalScripts, 28)
@@ -1362,7 +1369,7 @@ local function createHub()
     createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
     createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
-    createCategoryButton("( NOVO ) The Forge Scripts", theForgeScripts, 32)
+    createCategoryButton("( NOVO ) The Forge", theForgeScripts, 32)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
 
