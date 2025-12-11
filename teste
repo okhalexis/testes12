@@ -1,10 +1,13 @@
 --[[
 
-    -- Khalexis Hub - Script Hub para Roblox
+    -- Khalexis Hub - Script Hub Completo
 
-    -- Toggle "K" só aparece APÓS validar a key.
-
-    -- Invalidação automática de keys antigas.
+    -- Funcionalidades:
+    -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
+    -- 2. Toggle "K" Oculto até validação da key.
+    -- 3. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
+    -- 4. Nomes dos Scripts em MAIÚSCULO (Categorias normais).
+    -- 5. Auto-ajuste de tamanho de fonte.
 
 --]]
 
@@ -56,11 +59,9 @@ local HasShownWelcome = false
 local StorageKeyFileName = "KhalexisHubKey.txt"
 
 -- CONFIGURAÇÃO DE KEYS
--- Para invalidar uma key antiga, basta mudar o nome dela aqui ou removê-la.
--- Usuários com a key antiga salva terão o arquivo deletado e voltarão para o sistema de key.
 local validKeys = {
-    ["khalexisrumo15kkk"] = true,     -- Key Grátis (Mude esta string para atualizar a key)
-    ["khalexispremium100"] = true   -- Key Premium (Mantenha esta para usuários vips não perderem acesso)
+    ["khalexisrumo15k1"] = true,     -- Key Grátis
+    ["khalexispremium100"] = true   -- Key Premium
 }
 
 local function saveKeyLocally(key) pcall(function() if writefile then writefile(StorageKeyFileName, key)elseif write_file then write_file(StorageKeyFileName, key) end end) end
@@ -214,6 +215,37 @@ local function createHub()
     titleBar.BorderSizePixel=0
     titleBar.Parent=frame
     applyRoundedCorners(titleBar,10)
+
+    -- LOGICA DE ARRASTAR O HUB (PC + MOBILE)
+    local draggingHub = false
+    local dragStartHub, startPosHub
+    local currentInputHub = nil
+
+    titleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            draggingHub = true
+            dragStartHub = input.Position
+            startPosHub = animationContainer.Position
+            currentInputHub = input
+            
+            local connection
+            connection = input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.Ended then
+                    draggingHub = false
+                    currentInputHub = nil
+                    connection:Disconnect()
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if draggingHub and currentInputHub == input and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStartHub
+            animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
+        end
+    end)
+    -- FIM DA LOGICA DE ARRASTAR
 
     local titleBarBorder=Instance.new("UIStroke")
     titleBarBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
@@ -501,34 +533,6 @@ local function createHub()
     playerNameLabel.TextXAlignment=Enum.TextXAlignment.Left
     playerNameLabel.Parent=playerInfo
 
-    local dragging=false
-    local dragInput,dragStart,startPos
-    local currentInputObject = nil
-
-    titleBar.InputBegan:Connect(function(input)
-        if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
-            dragging=true
-            dragStart=input.Position
-            startPos=animationContainer.Position
-            currentInputObject = input
-            local connection
-            connection = input.Changed:Connect(function()
-                if input.UserInputState==Enum.UserInputState.Ended then
-                    dragging=false
-                    currentInputObject = nil
-                    connection:Disconnect()
-                end
-            end)
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and currentInputObject == input and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
-            local delta=input.Position-dragStart
-            animationContainer.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+delta.X,startPos.Y.Scale,startPos.Y.Offset+delta.Y)
-        end
-    end)
-
     local function clearScripts()
         for _,c in pairs(scriptContainer:GetChildren()) do
             if c:IsA("GuiObject") then c:Destroy() end
@@ -544,7 +548,10 @@ local function createHub()
         btn.TextColor3=COLOR_TEXT
         btn.Font=Enum.Font.Gotham
         btn.TextSize=12
-        btn.Text=name
+        
+        -- AQUI ESTÁ A MUDANÇA: Converter para MAIÚSCULO
+        btn.Text=name:upper()
+        
         btn.TextXAlignment=Enum.TextXAlignment.Center
         btn.Parent=scriptContainer
         applyRoundedCorners(btn,10)
@@ -561,7 +568,7 @@ local function createHub()
         gradient.Parent=border
 
         btn.MouseButton1Click:Connect(function()
-            btn.Text = "Executando..."
+            btn.Text = "EXECUTANDO..." -- Também em maiúsculo para manter padrão
             btn.Active = false
             btn.AutoButtonColor = false
             spawn(function()
@@ -584,7 +591,7 @@ local function createHub()
                         spawn(function() wait(4); if m and m.Parent then m:Destroy() end end)
                     end
                     wait(3)
-                    btn.Text = name
+                    btn.Text = name:upper()
                     btn.Active = true
                     btn.AutoButtonColor = true
                 else
@@ -628,7 +635,9 @@ local function createHub()
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
 
+        -- NOME DA CATEGORIA PERMANECE NORMAL (SEM UPPER)
         btn.Text=name
+        
         btn.TextXAlignment=Enum.TextXAlignment.Center
         btn.Parent=categoryContainer
         applyRoundedCorners(btn,8)
