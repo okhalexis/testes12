@@ -1,13 +1,14 @@
 --[[
 
-    -- Khalexis Hub - Script Hub Completo
+    -- Khalexis Hub - Script Hub Completo e Atualizado
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
     -- 2. Toggle "K" Oculto até validação da key.
     -- 3. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
-    -- 4. Nomes dos Scripts em MAIÚSCULO (Categorias normais).
+    -- 4. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE (Categorias normais).
     -- 5. Auto-ajuste de tamanho de fonte.
+    -- 6. Novo script TOASTY HUB adicionado em The Forge.
 
 --]]
 
@@ -60,7 +61,7 @@ local StorageKeyFileName = "KhalexisHubKey.txt"
 
 -- CONFIGURAÇÃO DE KEYS
 local validKeys = {
-    ["khalexislindo"] = true,     -- Key Grátis
+    ["khalexisto15kk"] = true,     -- Key Grátis
     ["khalexispremium100"] = true   -- Key Premium
 }
 
@@ -770,6 +771,7 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
+        {Name = "TOASTY HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nouralddin-abdullah/Airlines/refs/heads/main/Forge.lua"))() end},
         {Name = "( NOVO ) LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
         {Name = "( NOVO ) PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
