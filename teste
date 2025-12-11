@@ -60,7 +60,7 @@ local StorageKeyFileName = "KhalexisHubKey.txt"
 
 -- CONFIGURAÇÃO DE KEYS
 local validKeys = {
-    ["khalexisrumo15k1"] = true,     -- Key Grátis
+    ["khalexisrumo15k"] = true,     -- Key Grátis
     ["khalexispremium100"] = true   -- Key Premium
 }
 
