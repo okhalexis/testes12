@@ -59,7 +59,7 @@ local StorageKeyFileName = "KhalexisHubKey.txt"
 -- Para invalidar uma key antiga, basta mudar o nome dela aqui ou removê-la.
 -- Usuários com a key antiga salva terão o arquivo deletado e voltarão para o sistema de key.
 local validKeys = {
-    ["khalexisrumo15k"] = true,     -- Key Grátis (Mude esta string para atualizar a key)
+    ["khalexisrumo15kk"] = true,     -- Key Grátis (Mude esta string para atualizar a key)
     ["khalexispremium100"] = true   -- Key Premium (Mantenha esta para usuários vips não perderem acesso)
 }
 
