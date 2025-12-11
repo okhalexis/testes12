@@ -1,14 +1,14 @@
 --[[
 
-    -- Khalexis Hub - Script Hub Completo e Atualizado
+    -- Khalexis Hub - Versão Final v1.5
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
     -- 2. Toggle "K" Oculto até validação da key.
     -- 3. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
     -- 4. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE (Categorias normais).
-    -- 5. Auto-ajuste de tamanho de fonte.
-    -- 6. Novo script TOASTY HUB adicionado em The Forge.
+    -- 5. Auto-ajuste de tamanho de fonte para caber no quadrado.
+    -- 6. Atualização de status (NOVO) e textos da aba Atualizações.
 
 --]]
 
@@ -676,13 +676,16 @@ local function createHub()
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novas Categorias Adicionadas", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "The Forge", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Nenhuma", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+2 The Forge", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria no Sistema de Key", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria no Toogle K", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!"}
@@ -771,9 +774,9 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
-        {Name = "TOASTY HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nouralddin-abdullah/Airlines/refs/heads/main/Forge.lua"))() end},
-        {Name = "( NOVO ) LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
-        {Name = "( NOVO ) PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
+        {Name = "( NOVO ) TOASTY HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nouralddin-abdullah/Airlines/refs/heads/main/Forge.lua"))() end},
+        {Name = "LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
+        {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
 
     createCategoryButton("📣 Atualizações 📣", displayUpdates, 1)
@@ -807,7 +810,7 @@ local function createHub()
     createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
     createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
-    createCategoryButton("( NOVO ) The Forge", theForgeScripts, 32)
+    createCategoryButton("The Forge", theForgeScripts, 32)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
     if firstCategoryButton then firstCategoryButton:MouseButton1Click() end
