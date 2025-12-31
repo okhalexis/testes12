@@ -78,7 +78,7 @@ local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
         Background = Color3.fromRGB(30, 30, 35),
-        Title = Color3.fromRGB(255, 140, 0),
+        Title = Color3.fromRGB(255, 140, 0), -- Laranja Padronizado
         InputField = Color3.fromRGB(25, 25, 30),
         InputFieldBorder = Color3.fromRGB(180, 0, 0),
         Button = Color3.fromRGB(25, 25, 30),
@@ -903,257 +903,277 @@ end
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
-local KeyGui = CreateObject("ScreenGui", {
-    Name = "KhalexisKeySystem", 
-    Parent = CoreGui, 
-    ResetOnSpawn = false,
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    DisplayOrder = 999
-})
+-- FUNÇÃO PARA CRIAR A INTERFACE DE KEY SOMENTE SE NECESSÁRIO
+local function CreateKeyUI()
+    local KeyGui = CreateObject("ScreenGui", {
+        Name = "KhalexisKeySystem", 
+        Parent = CoreGui, 
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        DisplayOrder = 999
+    })
 
-local MainKeyFrame = CreateObject("Frame", {
-    Name = "MainFrame",
-    Parent = KeyGui,
-    BackgroundColor3 = KeySystemData.Colors.Background,
-    BorderColor3 = KeySystemData.Colors.InputFieldBorder,
-    BorderSizePixel = 2,
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    AnchorPoint = Vector2.new(0.5, 0.5),
-    Size = UDim2.new(0, 350, 0, 250),
-    ClipsDescendants = true
-})
-CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
+    local MainKeyFrame = CreateObject("Frame", {
+        Name = "MainFrame",
+        Parent = KeyGui,
+        BackgroundColor3 = KeySystemData.Colors.Background,
+        BorderColor3 = KeySystemData.Colors.InputFieldBorder,
+        BorderSizePixel = 2,
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Size = UDim2.new(0, 350, 0, 270), -- Aumentado para o novo texto
+        ClipsDescendants = true
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
 
-local TitleBar = CreateObject("Frame", {
-    Name = "TitleBar",
-    Parent = MainKeyFrame,
-    BackgroundColor3 = KeySystemData.Colors.Background,
-    Size = UDim2.new(1, 0, 0, 30),
-    BorderSizePixel = 0,
-    Position = UDim2.new(0, 0, 0, 0)
-})
-CreateObject("UICorner", {CornerRadius = UDim.new(0, 8, 0, 0), Parent = TitleBar})
+    local TitleBar = CreateObject("Frame", {
+        Name = "TitleBar",
+        Parent = MainKeyFrame,
+        BackgroundColor3 = KeySystemData.Colors.Background,
+        Size = UDim2.new(1, 0, 0, 30),
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 0, 0, 0)
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 8, 0, 0), Parent = TitleBar})
 
-local Title = CreateObject("TextLabel", {
-    Name = "Title",
-    Parent = TitleBar,
-    BackgroundTransparency = 1,
-    Text = KeySystemData.Name .. " - Sistema de Key",
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    Size = UDim2.new(0, 200, 0, 20),
-    Font = Enum.Font.GothamBold,
-    TextColor3 = KeySystemData.Colors.Title,
-    TextSize = 14,
-    TextXAlignment = Enum.TextXAlignment.Center,
-    AnchorPoint = Vector2.new(0.5, 0.5)
-})
+    local Title = CreateObject("TextLabel", {
+        Name = "Title",
+        Parent = MainKeyFrame,
+        BackgroundTransparency = 1,
+        Text = KeySystemData.Name .. " – Sistema de Key",
+        Position = UDim2.new(0.5, 0, 0, 45), -- Movido para baixo
+        Size = UDim2.new(0, 250, 0, 20),
+        Font = Enum.Font.GothamBold,
+        TextColor3 = KeySystemData.Colors.Title,
+        TextSize = 15,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        AnchorPoint = Vector2.new(0.5, 0.5)
+    })
 
-local KeyInput = CreateObject("TextBox", {
-    Name = "KeyInput",
-    Parent = MainKeyFrame,
-    BackgroundColor3 = KeySystemData.Colors.InputField,
-    Text = "",
-    PlaceholderText = "Cole sua key aqui...",
-    Position = UDim2.new(0.5, 0, 0.3, 0),
-    Size = UDim2.new(0, 280, 0, 35),
-    Font = Enum.Font.Gotham,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    PlaceholderColor3 = Color3.fromRGB(140, 140, 140),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    AnchorPoint = Vector2.new(0.5, 0),
-    ClipsDescendants = true,
-    ClearTextOnFocus = false
-})
-CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = KeyInput})
-local inputStroke = CreateObject("UIStroke", {
-    Parent = KeyInput,
-    Color = KeySystemData.Colors.InputFieldBorder,
-    Thickness = 1,
-    Transparency = 0.8
-})
-CreateObject("UIPadding", {
-    Parent = KeyInput,
-    PaddingLeft = UDim.new(0, 10)
-})
+    local InstructionText = CreateObject("TextLabel", {
+        Name = "InstructionText",
+        Parent = MainKeyFrame,
+        BackgroundTransparency = 1,
+        Text = "Clique em Pegar Key, logo em seguida cole o link no seu navegador!",
+        Position = UDim2.new(0.5, 0, 0, 65), -- Abaixo do título
+        Size = UDim2.new(0, 280, 0, 15),
+        Font = Enum.Font.Gotham,
+        TextColor3 = Color3.fromRGB(160, 160, 160), -- Cor cinza
+        TextSize = 10, -- Menor que o título
+        TextXAlignment = Enum.TextXAlignment.Center,
+        AnchorPoint = Vector2.new(0.5, 0.5)
+    })
 
-local SubmitButton = CreateObject("TextButton", {
-    Name = "ValidateButton",
-    Parent = MainKeyFrame,
-    BackgroundColor3 = KeySystemData.Colors.Button,
-    BorderColor3 = KeySystemData.Colors.InputFieldBorder,
-    BorderSizePixel = 1,
-    Position = UDim2.new(0.3, 0, 0.55, 0),
-    Size = UDim2.new(0, 110, 0, 32),
-    Text = "Verificar Key",
-    Font = Enum.Font.GothamBold,
-    TextSize = 14,
-    TextColor3 = KeySystemData.Colors.Title,
-    AutoButtonColor = false,
-    AnchorPoint = Vector2.new(0.5, 0)
-})
-CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = SubmitButton})
+    local KeyInput = CreateObject("TextBox", {
+        Name = "KeyInput",
+        Parent = MainKeyFrame,
+        BackgroundColor3 = KeySystemData.Colors.InputField,
+        Text = "",
+        PlaceholderText = "Cole sua key aqui...",
+        Position = UDim2.new(0.5, 0, 0.35, 0), -- Ajustado para baixo
+        Size = UDim2.new(0, 280, 0, 35),
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        TextColor3 = Color3.fromRGB(220, 220, 220),
+        PlaceholderColor3 = Color3.fromRGB(140, 140, 140),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        AnchorPoint = Vector2.new(0.5, 0),
+        ClipsDescendants = true,
+        ClearTextOnFocus = false
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = KeyInput})
+    local inputStroke = CreateObject("UIStroke", {
+        Parent = KeyInput,
+        Color = KeySystemData.Colors.InputFieldBorder,
+        Thickness = 1,
+        Transparency = 0.8
+    })
+    CreateObject("UIPadding", {
+        Parent = KeyInput,
+        PaddingLeft = UDim.new(0, 10)
+    })
 
-local GetKeyButton = CreateObject("TextButton", {
-    Name = "GetKeyButton",
-    Parent = MainKeyFrame,
-    BackgroundColor3 = KeySystemData.Colors.Button,
-    BorderColor3 = KeySystemData.Colors.InputFieldBorder,
-    BorderSizePixel = 1,
-    Position = UDim2.new(0.7, 0, 0.55, 0),
-    Size = UDim2.new(0, 110, 0, 32),
-    Text = "Pegar Key",
-    Font = Enum.Font.Gotham,
-    TextSize = 14,
-    TextColor3 = KeySystemData.Colors.Title,
-    AutoButtonColor = false,
-    AnchorPoint = Vector2.new(0.5, 0)
-})
-CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = GetKeyButton})
+    local SubmitButton = CreateObject("TextButton", {
+        Name = "ValidateButton",
+        Parent = MainKeyFrame,
+        BackgroundColor3 = KeySystemData.Colors.Button,
+        BorderColor3 = KeySystemData.Colors.InputFieldBorder,
+        BorderSizePixel = 1,
+        Position = UDim2.new(0.3, 0, 0.58, 0),
+        Size = UDim2.new(0, 110, 0, 32),
+        Text = "Verificar Key",
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
+        AutoButtonColor = false,
+        AnchorPoint = Vector2.new(0.5, 0)
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = SubmitButton})
 
-local DiscordButton = CreateObject("TextButton", {
-    Name = "DiscordButton",
-    Parent = MainKeyFrame,
-    BackgroundColor3 = KeySystemData.Colors.Discord,
-    Position = UDim2.new(0.5, 0, 0.75, 0),
-    Size = UDim2.new(0, 220, 0, 32),
-    Text = "Entrar no Discord",
-    Font = Enum.Font.GothamBold,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(255, 255, 255),
-    AutoButtonColor = false,
-    AnchorPoint = Vector2.new(0.5, 0)
-})
-CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = DiscordButton})
+    local GetKeyButton = CreateObject("TextButton", {
+        Name = "GetKeyButton",
+        Parent = MainKeyFrame,
+        BackgroundColor3 = KeySystemData.Colors.Button,
+        BorderColor3 = KeySystemData.Colors.InputFieldBorder,
+        BorderSizePixel = 1,
+        Position = UDim2.new(0.7, 0, 0.58, 0),
+        Size = UDim2.new(0, 110, 0, 32),
+        Text = "Pegar Key",
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
+        AutoButtonColor = false,
+        AnchorPoint = Vector2.new(0.5, 0)
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = GetKeyButton})
 
-local StatusLabel = CreateObject("TextLabel", {
-    Name = "StatusLabel",
-    Parent = MainKeyFrame,
-    BackgroundTransparency = 1,
-    Position = UDim2.new(0.5, 0, 0.9, 0),
-    Size = UDim2.new(0, 280, 0, 20),
-    Font = Enum.Font.Gotham,
-    Text = "",
-    TextColor3 = KeySystemData.Colors.Error,
-    TextSize = 12,
-    TextXAlignment = Enum.TextXAlignment.Center,
-    AnchorPoint = Vector2.new(0.5, 0),
-    TextTransparency = 1
-})
+    local DiscordButton = CreateObject("TextButton", {
+        Name = "DiscordButton",
+        Parent = MainKeyFrame,
+        BackgroundColor3 = KeySystemData.Colors.Discord,
+        Position = UDim2.new(0.5, 0, 0.77, 0),
+        Size = UDim2.new(0, 220, 0, 32),
+        Text = "Entrar no Discord",
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        AutoButtonColor = false,
+        AnchorPoint = Vector2.new(0.5, 0)
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = DiscordButton})
 
-local function ShowStatusMessage(text, color)
-    StatusLabel.Text = text
-    StatusLabel.TextColor3 = color
-    StatusLabel.TextTransparency = 0
-    SmoothTween(StatusLabel, 0.3, {TextTransparency = 0})
-    task.spawn(function()
-        task.wait(3)
-        if StatusLabel.Text == text then
-            SmoothTween(StatusLabel, 0.5, {TextTransparency = 1})
-        end
-    end)
-end
+    local StatusLabel = CreateObject("TextLabel", {
+        Name = "StatusLabel",
+        Parent = MainKeyFrame,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0.5, 0, 0.92, 0),
+        Size = UDim2.new(0, 280, 0, 20),
+        Font = Enum.Font.Gotham,
+        Text = "",
+        TextColor3 = KeySystemData.Colors.Error,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        AnchorPoint = Vector2.new(0.5, 0),
+        TextTransparency = 1
+    })
 
-local function AddHoverEffect(button)
-    button.MouseEnter:Connect(function()
-        SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.ButtonHover})
-    end)
-    button.MouseLeave:Connect(function()
-        SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.Button})
-    end)
-end
-
-AddHoverEffect(SubmitButton)
-AddHoverEffect(GetKeyButton)
-
-KeyInput.Focused:Connect(function()
-    SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.Title, Transparency = 0.3})
-end)
-
-KeyInput.FocusLost:Connect(function()
-    SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
-end)
-
-local function openGetKey()
-    local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
-    local link = JunkieKeySystem.getLink(Config.api, Config.provider, Config.service)
-    if link then
-        if setclipboard then
-            setclipboard(link)
-            ShowStatusMessage("Link de verificação copiado!", KeySystemData.Colors.Success)
-        else
-            ShowStatusMessage("Link: " .. link, KeySystemData.Colors.Success)
-        end
-    else
-        ShowStatusMessage("Erro ao gerar link", KeySystemData.Colors.Error)
-    end
-end
-
-local function validateKey()
-    local userKey = KeyInput.Text:gsub("%s+", "")
-    if not userKey or userKey == "" then
-        ShowStatusMessage("Por favor, insira uma key.", KeySystemData.Colors.Error)
-        return
-    end
-
-    ShowStatusMessage("Validando key...", Color3.fromRGB(255, 165, 0))
-    local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
-    local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
-    
-    if isValid then
-        -- Salvar a key no arquivo local
-        if writefile then
-            pcall(function()
-                writefile(KEY_FILE_NAME, userKey)
-            end)
-        end
-
-        ShowStatusMessage("Key válida! Carregando Hub...", KeySystemData.Colors.Success)
-        SmoothTween(MainKeyFrame, 0.5, {
-            Position = UDim2.new(0.5, 0, -0.5, 0),
-            BackgroundTransparency = 1
-        })
-        task.wait(0.5)
-        KeyGui:Destroy()
-        main()
-    else
-        ShowStatusMessage("Key inválida. Tente novamente!", KeySystemData.Colors.Error)
-    end
-end
-
-SubmitButton.MouseButton1Click:Connect(validateKey)
-GetKeyButton.MouseButton1Click:Connect(openGetKey)
-
-local dragging, dragInput, dragStart, startPos
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainKeyFrame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+    local function ShowStatusMessage(text, color)
+        StatusLabel.Text = text
+        StatusLabel.TextColor3 = color
+        StatusLabel.TextTransparency = 0
+        SmoothTween(StatusLabel, 0.3, {TextTransparency = 0})
+        task.spawn(function()
+            task.wait(3)
+            if StatusLabel.Text == text then
+                SmoothTween(StatusLabel, 0.5, {TextTransparency = 1})
+            end
         end)
     end
-end)
 
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        MainKeyFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    local function AddHoverEffect(button)
+        button.MouseEnter:Connect(function()
+            SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.ButtonHover})
+        end)
+        button.MouseLeave:Connect(function()
+            SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.Button})
+        end)
     end
-end)
 
-DiscordButton.MouseButton1Click:Connect(function()
-    local discordUrl = "https://discord.gg/" .. KeySystemData.DiscordInvite
-    if setclipboard then
-        setclipboard(discordUrl)
-        ShowStatusMessage("Link do Discord copiado!", Color3.fromRGB(123, 48, 220))
-    else
-        ShowStatusMessage("Convite: " .. discordUrl, Color3.fromRGB(123, 48, 220))
+    AddHoverEffect(SubmitButton)
+    AddHoverEffect(GetKeyButton)
+
+    KeyInput.Focused:Connect(function()
+        SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.Title, Transparency = 0.3})
+    end)
+
+    KeyInput.FocusLost:Connect(function()
+        SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
+    end)
+
+    local function openGetKey()
+        local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+        local link = JunkieKeySystem.getLink(Config.api, Config.provider, Config.service)
+        if link then
+            if setclipboard then
+                setclipboard(link)
+                ShowStatusMessage("Link de verificação copiado!", KeySystemData.Colors.Success)
+            else
+                ShowStatusMessage("Link: " .. link, KeySystemData.Colors.Success)
+            end
+        else
+            ShowStatusMessage("Erro ao gerar link", KeySystemData.Colors.Error)
+        end
     end
-end)
 
--- CRIAÇÃO DO TOGGLE BUTTON
+    local function validateKey()
+        local userKey = KeyInput.Text:gsub("%s+", "")
+        if not userKey or userKey == "" then
+            ShowStatusMessage("Por favor, insira uma key.", KeySystemData.Colors.Error)
+            return
+        end
+
+        ShowStatusMessage("Validando key...", Color3.fromRGB(255, 165, 0))
+        local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+        local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
+        
+        if isValid then
+            if writefile then
+                pcall(function() writefile(KEY_FILE_NAME, userKey) end)
+            end
+            ShowStatusMessage("Key válida! Carregando Hub...", KeySystemData.Colors.Success)
+            SmoothTween(MainKeyFrame, 0.5, {Position = UDim2.new(0.5, 0, -0.5, 0), BackgroundTransparency = 1})
+            task.wait(0.5)
+            KeyGui:Destroy()
+            main()
+        else
+            ShowStatusMessage("Key inválida. Tente novamente!", KeySystemData.Colors.Error)
+        end
+    end
+
+    SubmitButton.MouseButton1Click:Connect(validateKey)
+    GetKeyButton.MouseButton1Click:Connect(openGetKey)
+
+    local dragging, dragInput, dragStart, startPos
+    TitleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainKeyFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            MainKeyFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    DiscordButton.MouseButton1Click:Connect(function()
+        local discordUrl = "https://discord.gg/" .. KeySystemData.DiscordInvite
+        if setclipboard then
+            setclipboard(discordUrl)
+            ShowStatusMessage("Link do Discord copiado!", Color3.fromRGB(123, 48, 220))
+        else
+            ShowStatusMessage("Convite: " .. discordUrl, Color3.fromRGB(123, 48, 220))
+        end
+    end)
+    
+    -- Animação de Entrada
+    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+    MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
+    MainKeyFrame.BackgroundTransparency = 1
+    SmoothTween(MainKeyFrame, 0.5, {
+        Size = UDim2.new(0, 350, 0, 270), 
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        BackgroundTransparency = 0
+    })
+end
+
+-- CRIAÇÃO DO TOGGLE BUTTON (INICIALMENTE OCULTO)
 ToggleButton=Instance.new("TextButton")
 ToggleButton.Name="ToggleButton"
 ToggleButton.Size=UDim2.new(0,35,0,35)
@@ -1209,7 +1229,7 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Inicialização com Check de Key Salva
+-- Inicialização com Check de Key Salva (Correção de Bug)
 local function startKeySystem()
     local alreadyValid = false
     
@@ -1225,17 +1245,9 @@ local function startKeySystem()
     end
 
     if alreadyValid then
-        KeyGui:Destroy()
-        main()
+        main() -- Entra direto no Hub
     else
-        MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
-        MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
-        MainKeyFrame.BackgroundTransparency = 1
-        SmoothTween(MainKeyFrame, 0.5, {
-            Size = UDim2.new(0, 350, 0, 250), 
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            BackgroundTransparency = 0
-        })
+        CreateKeyUI() -- Exibe a tela de Key somente se não for válida
     end
 end
 
