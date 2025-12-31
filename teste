@@ -1,14 +1,15 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.7
+    -- Khalexis Hub - Versão Final v1.7 (Com Auto-Save Key)
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
-    -- 2. Toggle "K" Oculto até validação da key.
-    -- 3. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
-    -- 4. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE (Categorias normais).
-    -- 5. Auto-ajuste de tamanho de fonte para caber no quadrado.
-    -- 6. Atualização de status (NOVO) e textos da aba Atualizações.
+    -- 2. Sistema de Salvamento de Key (Entra direto se a key for válida).
+    -- 3. Toggle "K" Oculto até validação da key.
+    -- 4. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
+    -- 5. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE.
+    -- 6. Auto-ajuste de tamanho de fonte.
+    -- 7. Atualização de status (NOVO) e aba Atualizações.
 
 --]]
 
@@ -56,16 +57,19 @@ local userName = player.Name
 local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
 local HubOpen = false
-local ToggleButton -- Declarado mas criado depois
+local ToggleButton 
 local ErrorLabel
 local HasShownWelcome = false
+
+-- Configurações de Salvamento
+local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 
 -- ==========================================
 -- NOVO SISTEMA DE KEY (IMPLEMENTAÇÃO)
 -- ==========================================
 
 Config = {
-    api = "ec8d4c19-6f0f-4bf9-8b91-983843d1d60c", 
+    api = "e696e91d-0ba0-4693-a6a5-91145ead6ed1", 
     service = "Khalexis Hub - Key",
     provider = "Khalexis Hub - Key"
 }
@@ -74,7 +78,7 @@ local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
         Background = Color3.fromRGB(30, 30, 35),
-        Title = Color3.fromRGB(255, 140, 0), -- Alterado para o padrão Laranja do Hub
+        Title = Color3.fromRGB(255, 140, 0),
         InputField = Color3.fromRGB(25, 25, 30),
         InputFieldBorder = Color3.fromRGB(180, 0, 0),
         Button = Color3.fromRGB(25, 25, 30),
@@ -260,7 +264,6 @@ local function createHub()
     titleBar.Parent=frame
     applyRoundedCorners(titleBar,10)
 
-    -- LOGICA DE ARRASTAR O HUB (PC + MOBILE)
     local draggingHub = false
     local dragStartHub, startPosHub
     local currentInputHub = nil
@@ -271,7 +274,6 @@ local function createHub()
             dragStartHub = input.Position
             startPosHub = animationContainer.Position
             currentInputHub = input
-            
             local connection
             connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.Ended then
@@ -580,7 +582,6 @@ local function createHub()
         for _,c in pairs(scriptContainer:GetChildren()) do
             if c:IsA("GuiObject") then c:Destroy() end
         end
-        if layoutScript then layoutScript:SetAttribute("Refresh", true) end
     end
 
     local function createScriptButton(name, func)
@@ -610,22 +611,17 @@ local function createHub()
         btn.MouseButton1Click:Connect(function()
             btn.Text = "EXECUTANDO..."
             btn.Active = false
-            btn.AutoButtonColor = false
             spawn(function()
                 local success, errorMessage = pcall(func)
                 if not success then
-                    print("ERRO AO EXECUTAR SCRIPT NO HUB:", errorMessage)
-                    if _G.showAutoMessage then 
-                        _G.showAutoMessage("Erro ao executar script: " .. tostring(errorMessage))
-                    end
+                    if _G.showAutoMessage then _G.showAutoMessage("Erro: " .. tostring(errorMessage)) end
                     wait(3)
-                    btn.Text = name:upper()
-                    btn.Active = true
-                    btn.AutoButtonColor = true
                 else
                     wait(1)
-                    closeHubWithAnimation(MainFrameContainer)
+                    closeHubWithAnimation(animationContainer)
                 end
+                btn.Text = name:upper()
+                btn.Active = true
             end)
         end)
         return btn
@@ -692,12 +688,10 @@ local function createHub()
             elseif typeof(contents)=="table" then
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
-            if layoutScript then layoutScript:SetAttribute("Refresh", true) end
         end)
         return btn
     end
 
-    -- DADOS DO HUB (SCRIPTS E ATUALIZAÇÕES)
     updatesTextFormatted = {
         {Text = "📣 Khalexis Hub V1.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
@@ -903,11 +897,9 @@ end
 -- ==========================================
 
 local function main()
-    -- Função chamada quando a Key é validada com sucesso
     showLoadingAndOpenHub()
 end
 
--- Impedir múltiplas execuções do sistema de key
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
@@ -1109,6 +1101,13 @@ local function validateKey()
     local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
     
     if isValid then
+        -- Salvar a key no arquivo local
+        if writefile then
+            pcall(function()
+                writefile(KEY_FILE_NAME, userKey)
+            end)
+        end
+
         ShowStatusMessage("Key válida! Carregando Hub...", KeySystemData.Colors.Success)
         SmoothTween(MainKeyFrame, 0.5, {
             Position = UDim2.new(0.5, 0, -0.5, 0),
@@ -1125,7 +1124,6 @@ end
 SubmitButton.MouseButton1Click:Connect(validateKey)
 GetKeyButton.MouseButton1Click:Connect(openGetKey)
 
--- Arrastar Key Frame
 local dragging, dragInput, dragStart, startPos
 TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -1155,7 +1153,7 @@ DiscordButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- CRIAÇÃO DO TOGGLE BUTTON (MANTIDO DO ORIGINAL)
+-- CRIAÇÃO DO TOGGLE BUTTON
 ToggleButton=Instance.new("TextButton")
 ToggleButton.Name="ToggleButton"
 ToggleButton.Size=UDim2.new(0,35,0,35)
@@ -1211,13 +1209,34 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Inicialização Visual da Key
-MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
-MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
-MainKeyFrame.BackgroundTransparency = 1
+-- Inicialização com Check de Key Salva
+local function startKeySystem()
+    local alreadyValid = false
+    
+    if isfile and readfile and isfile(KEY_FILE_NAME) then
+        local savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
+        if savedKey ~= "" then
+            local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+            local isValid = JunkieKeySystem.verifyKey(Config.api, savedKey, Config.service)
+            if isValid then
+                alreadyValid = true
+            end
+        end
+    end
 
-SmoothTween(MainKeyFrame, 0.5, {
-    Size = UDim2.new(0, 350, 0, 250), 
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    BackgroundTransparency = 0
-})
+    if alreadyValid then
+        KeyGui:Destroy()
+        main()
+    else
+        MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+        MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
+        MainKeyFrame.BackgroundTransparency = 1
+        SmoothTween(MainKeyFrame, 0.5, {
+            Size = UDim2.new(0, 350, 0, 250), 
+            Position = UDim2.new(0.5, 0, 0.5, 0),
+            BackgroundTransparency = 0
+        })
+    end
+end
+
+startKeySystem()
