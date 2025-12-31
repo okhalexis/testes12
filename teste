@@ -23,6 +23,8 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
@@ -57,17 +59,59 @@ local HubOpen = false
 local ToggleButton -- Declarado mas criado depois
 local ErrorLabel
 local HasShownWelcome = false
-local StorageKeyFileName = "KhalexisHubKey.txt"
 
--- CONFIGURAÇÃO DE KEYS
-local validKeys = {
-    ["khalexisrumoao20kk"] = true,     -- Key Grátis
-    ["khalexispremium100"] = true   -- Key Premium
+-- ==========================================
+-- NOVO SISTEMA DE KEY (IMPLEMENTAÇÃO)
+-- ==========================================
+
+Config = {
+    api = "ec8d4c19-6f0f-4bf9-8b91-983843d1d60c", 
+    service = "Khalexis Hub - Key",
+    provider = "Khalexis Hub - Key"
 }
 
-local function saveKeyLocally(key) pcall(function() if writefile then writefile(StorageKeyFileName, key)elseif write_file then write_file(StorageKeyFileName, key) end end) end
-local function loadKeyLocally() local s,c = pcall(function() if readfile then return readfile(StorageKeyFileName)elseif read_file then return read_file(StorageKeyFileName) end end); if s and c then return c:lower() end; return nil end
-local function removeLocalKey() pcall(function() if delfile then delfile(StorageKeyFileName)elseif deletefile then deletefile(StorageKeyFileName) end end) end
+local KeySystemData = {
+    Name = "Khalexis Hub",
+    Colors = {
+        Background = Color3.fromRGB(30, 30, 35),
+        Title = Color3.fromRGB(255, 140, 0), -- Alterado para o padrão Laranja do Hub
+        InputField = Color3.fromRGB(25, 25, 30),
+        InputFieldBorder = Color3.fromRGB(180, 0, 0),
+        Button = Color3.fromRGB(25, 25, 30),
+        ButtonHover = Color3.fromRGB(35, 35, 40),
+        Error = Color3.fromRGB(220, 50, 50),
+        Success = Color3.fromRGB(80, 200, 80),
+        Discord = Color3.fromRGB(88, 101, 242)
+    },
+    Service = "redexecutor",
+    SilentMode = false,
+    DiscordInvite = "aNaFpb2Qsb",
+    WebsiteURL = "https://yourwebsite.com/",
+    FileName = "redexecutor/key.txt"
+}
+
+local function CreateObject(class, props)
+    local obj = Instance.new(class)
+    for prop, value in pairs(props) do 
+        if prop ~= "Parent" then
+            obj[prop] = value
+        end
+    end
+    if props.Parent then
+        obj.Parent = props.Parent
+    end
+    return obj
+end
+
+local function SmoothTween(obj, time, properties)
+    local tween = TweenService:Create(obj, TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), properties)
+    tween:Play()
+    return tween
+end
+
+-- ==========================================
+-- FUNÇÕES DO HUB ORIGINAL
+-- ==========================================
 
 local function showAutoMessage(msg)
     local m = Instance.new("Frame"); m.Name="AutoMessageFrame"; m.Size=UDim2.new(0,320,0,45); m.Position=UDim2.new(1,-330,1,-55); m.BackgroundColor3=COLOR_BLACK; m.BorderSizePixel=0; m.Parent=ScreenGui; applyRoundedCorners(m,10);
@@ -92,7 +136,6 @@ local function closeHubWithAnimation(container)
     if container and container.Parent then container:Destroy() end
     MainFrameContainer = nil
     HubOpen = false
-    -- IMPORTANTE: Toggle só fica visível se o hub fechar E a key tiver sido validada
     if ToggleButton then ToggleButton.Visible = true end
 end
 
@@ -246,7 +289,6 @@ local function createHub()
             animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
         end
     end)
-    -- FIM DA LOGICA DE ARRASTAR
 
     local titleBarBorder=Instance.new("UIStroke")
     titleBarBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
@@ -549,10 +591,7 @@ local function createHub()
         btn.TextColor3=COLOR_TEXT
         btn.Font=Enum.Font.Gotham
         btn.TextSize=12
-        
-        -- AQUI ESTÁ A MUDANÇA: Converter para MAIÚSCULO
         btn.Text=name:upper()
-        
         btn.TextXAlignment=Enum.TextXAlignment.Center
         btn.Parent=scriptContainer
         applyRoundedCorners(btn,10)
@@ -569,7 +608,7 @@ local function createHub()
         gradient.Parent=border
 
         btn.MouseButton1Click:Connect(function()
-            btn.Text = "EXECUTANDO..." -- Também em maiúsculo para manter padrão
+            btn.Text = "EXECUTANDO..."
             btn.Active = false
             btn.AutoButtonColor = false
             spawn(function()
@@ -578,18 +617,6 @@ local function createHub()
                     print("ERRO AO EXECUTAR SCRIPT NO HUB:", errorMessage)
                     if _G.showAutoMessage then 
                         _G.showAutoMessage("Erro ao executar script: " .. tostring(errorMessage))
-                    else
-                        local m = Instance.new("TextLabel")
-                        m.Text = "Erro: " .. tostring(errorMessage)
-                        m.TextColor3 = Color3.fromRGB(255, 85, 85)
-                        m.Font = Enum.Font.GothamBold
-                        m.TextSize = 14
-                        m.BackgroundTransparency = 1
-                        m.Size = UDim2.new(0, 300, 0, 40)
-                        m.Position = UDim2.new(1, -310, 1, -50)
-                        m.Parent = ScreenGui
-                        m.TextWrapped = true
-                        spawn(function() wait(4); if m and m.Parent then m:Destroy() end end)
                     end
                     wait(3)
                     btn.Text = name:upper()
@@ -619,6 +646,13 @@ local function createHub()
         return lbl
     end
 
+    local function displayUpdates()
+        clearScripts()
+        for _, u in ipairs(updatesTextFormatted) do
+            createUpdateLabel(u.Text, u.Color, u.Font)
+        end
+    end
+
     local function createCategoryButton(name, contents, layoutOrder)
         local btn=Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
@@ -627,18 +661,13 @@ local function createHub()
         btn.BorderSizePixel=0
         btn.TextColor3=Color3.fromRGB(230,230,230)
         btn.Font=Enum.Font.Gotham
-        
-        -- AJUSTE DE TAMANHO AUTOMÁTICO
         btn.TextScaled = true 
         btn.TextWrapped = true
         local sizeConstraint = Instance.new("UITextSizeConstraint")
         sizeConstraint.MaxTextSize = 10 
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
-
-        -- NOME DA CATEGORIA PERMANECE NORMAL (SEM UPPER)
         btn.Text=name
-        
         btn.TextXAlignment=Enum.TextXAlignment.Center
         btn.Parent=categoryContainer
         applyRoundedCorners(btn,8)
@@ -658,20 +687,18 @@ local function createHub()
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
-            if typeof(contents)=="table" then
+            if name == "📣 Atualizações 📣" then
+                displayUpdates()
+            elseif typeof(contents)=="table" then
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
-            elseif typeof(contents)=="string" then
-                createUpdateLabel(contents)
-            elseif typeof(contents)=="function" then
-                contents()
             end
             if layoutScript then layoutScript:SetAttribute("Refresh", true) end
         end)
         return btn
     end
 
-    -- ATUALIZAÇÕES
-    local updatesTextFormatted = {
+    -- DADOS DO HUB (SCRIPTS E ATUALIZAÇÕES)
+    updatesTextFormatted = {
         {Text = "📣 Khalexis Hub V1.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
@@ -690,7 +717,6 @@ local function createHub()
         {Text = "Nos Envie no Discord!"}
     }
 
-    -- LISTA DE SCRIPTS
     local stealScripts = {
         {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
         {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
@@ -774,7 +800,7 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
 
-    createCategoryButton("📣 Atualizações 📣", displayUpdates, 1)
+    createCategoryButton("📣 Atualizações 📣", nil, 1)
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
     createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
     createCategoryButton("Grow A Garden", growScripts, 4)
@@ -869,164 +895,267 @@ local function showLoadingAndOpenHub()
 
     MainFrameContainer=createHub()
     HubOpen=true
-    -- Nota: Ao abrir o hub automaticamente, o toggle continua invisível até o hub ser fechado.
     if ToggleButton then ToggleButton.Visible = false end
 end
 
-local function validateKeyAndOpen(key,isAuto)
-    local lowerKey=key:lower()
-    if validKeys[lowerKey] then
-        saveKeyLocally(lowerKey)
-        if KeyFrame and KeyFrame.Parent then KeyFrame:Destroy(); KeyFrame=nil end
-        showLoadingAndOpenHub()
-        
-        -- SUCESSO: Agora o Toggle pode existir, mas fica oculto enquanto o hub está aberto
-        if ToggleButton then 
-            ToggleButton.Visible = false 
+-- ==========================================
+-- LÓGICA DO NOVO SISTEMA DE KEY (GUI)
+-- ==========================================
+
+local function main()
+    -- Função chamada quando a Key é validada com sucesso
+    showLoadingAndOpenHub()
+end
+
+-- Impedir múltiplas execuções do sistema de key
+if getgenv().RedExecutorKeySys then return end
+getgenv().RedExecutorKeySys = true
+
+local KeyGui = CreateObject("ScreenGui", {
+    Name = "KhalexisKeySystem", 
+    Parent = CoreGui, 
+    ResetOnSpawn = false,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    DisplayOrder = 999
+})
+
+local MainKeyFrame = CreateObject("Frame", {
+    Name = "MainFrame",
+    Parent = KeyGui,
+    BackgroundColor3 = KeySystemData.Colors.Background,
+    BorderColor3 = KeySystemData.Colors.InputFieldBorder,
+    BorderSizePixel = 2,
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    Size = UDim2.new(0, 350, 0, 250),
+    ClipsDescendants = true
+})
+CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
+
+local TitleBar = CreateObject("Frame", {
+    Name = "TitleBar",
+    Parent = MainKeyFrame,
+    BackgroundColor3 = KeySystemData.Colors.Background,
+    Size = UDim2.new(1, 0, 0, 30),
+    BorderSizePixel = 0,
+    Position = UDim2.new(0, 0, 0, 0)
+})
+CreateObject("UICorner", {CornerRadius = UDim.new(0, 8, 0, 0), Parent = TitleBar})
+
+local Title = CreateObject("TextLabel", {
+    Name = "Title",
+    Parent = TitleBar,
+    BackgroundTransparency = 1,
+    Text = KeySystemData.Name .. " - Sistema de Key",
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    Size = UDim2.new(0, 200, 0, 20),
+    Font = Enum.Font.GothamBold,
+    TextColor3 = KeySystemData.Colors.Title,
+    TextSize = 14,
+    TextXAlignment = Enum.TextXAlignment.Center,
+    AnchorPoint = Vector2.new(0.5, 0.5)
+})
+
+local KeyInput = CreateObject("TextBox", {
+    Name = "KeyInput",
+    Parent = MainKeyFrame,
+    BackgroundColor3 = KeySystemData.Colors.InputField,
+    Text = "",
+    PlaceholderText = "Cole sua key aqui...",
+    Position = UDim2.new(0.5, 0, 0.3, 0),
+    Size = UDim2.new(0, 280, 0, 35),
+    Font = Enum.Font.Gotham,
+    TextSize = 14,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    PlaceholderColor3 = Color3.fromRGB(140, 140, 140),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    AnchorPoint = Vector2.new(0.5, 0),
+    ClipsDescendants = true,
+    ClearTextOnFocus = false
+})
+CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = KeyInput})
+local inputStroke = CreateObject("UIStroke", {
+    Parent = KeyInput,
+    Color = KeySystemData.Colors.InputFieldBorder,
+    Thickness = 1,
+    Transparency = 0.8
+})
+CreateObject("UIPadding", {
+    Parent = KeyInput,
+    PaddingLeft = UDim.new(0, 10)
+})
+
+local SubmitButton = CreateObject("TextButton", {
+    Name = "ValidateButton",
+    Parent = MainKeyFrame,
+    BackgroundColor3 = KeySystemData.Colors.Button,
+    BorderColor3 = KeySystemData.Colors.InputFieldBorder,
+    BorderSizePixel = 1,
+    Position = UDim2.new(0.3, 0, 0.55, 0),
+    Size = UDim2.new(0, 110, 0, 32),
+    Text = "Verificar Key",
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    TextColor3 = KeySystemData.Colors.Title,
+    AutoButtonColor = false,
+    AnchorPoint = Vector2.new(0.5, 0)
+})
+CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = SubmitButton})
+
+local GetKeyButton = CreateObject("TextButton", {
+    Name = "GetKeyButton",
+    Parent = MainKeyFrame,
+    BackgroundColor3 = KeySystemData.Colors.Button,
+    BorderColor3 = KeySystemData.Colors.InputFieldBorder,
+    BorderSizePixel = 1,
+    Position = UDim2.new(0.7, 0, 0.55, 0),
+    Size = UDim2.new(0, 110, 0, 32),
+    Text = "Pegar Key",
+    Font = Enum.Font.Gotham,
+    TextSize = 14,
+    TextColor3 = KeySystemData.Colors.Title,
+    AutoButtonColor = false,
+    AnchorPoint = Vector2.new(0.5, 0)
+})
+CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = GetKeyButton})
+
+local DiscordButton = CreateObject("TextButton", {
+    Name = "DiscordButton",
+    Parent = MainKeyFrame,
+    BackgroundColor3 = KeySystemData.Colors.Discord,
+    Position = UDim2.new(0.5, 0, 0.75, 0),
+    Size = UDim2.new(0, 220, 0, 32),
+    Text = "Entrar no Discord",
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    TextColor3 = Color3.fromRGB(255, 255, 255),
+    AutoButtonColor = false,
+    AnchorPoint = Vector2.new(0.5, 0)
+})
+CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = DiscordButton})
+
+local StatusLabel = CreateObject("TextLabel", {
+    Name = "StatusLabel",
+    Parent = MainKeyFrame,
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0.5, 0, 0.9, 0),
+    Size = UDim2.new(0, 280, 0, 20),
+    Font = Enum.Font.Gotham,
+    Text = "",
+    TextColor3 = KeySystemData.Colors.Error,
+    TextSize = 12,
+    TextXAlignment = Enum.TextXAlignment.Center,
+    AnchorPoint = Vector2.new(0.5, 0),
+    TextTransparency = 1
+})
+
+local function ShowStatusMessage(text, color)
+    StatusLabel.Text = text
+    StatusLabel.TextColor3 = color
+    StatusLabel.TextTransparency = 0
+    SmoothTween(StatusLabel, 0.3, {TextTransparency = 0})
+    task.spawn(function()
+        task.wait(3)
+        if StatusLabel.Text == text then
+            SmoothTween(StatusLabel, 0.5, {TextTransparency = 1})
         end
-        
-        if isAuto then showAutoMessage("Khalexis Hub carregado! Sua key foi verificada automaticamente.") end
-        return true
+    end)
+end
+
+local function AddHoverEffect(button)
+    button.MouseEnter:Connect(function()
+        SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.ButtonHover})
+    end)
+    button.MouseLeave:Connect(function()
+        SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.Button})
+    end)
+end
+
+AddHoverEffect(SubmitButton)
+AddHoverEffect(GetKeyButton)
+
+KeyInput.Focused:Connect(function()
+    SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.Title, Transparency = 0.3})
+end)
+
+KeyInput.FocusLost:Connect(function()
+    SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
+end)
+
+local function openGetKey()
+    local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+    local link = JunkieKeySystem.getLink(Config.api, Config.provider, Config.service)
+    if link then
+        if setclipboard then
+            setclipboard(link)
+            ShowStatusMessage("Link de verificação copiado!", KeySystemData.Colors.Success)
+        else
+            ShowStatusMessage("Link: " .. link, KeySystemData.Colors.Success)
+        end
     else
-        removeLocalKey()
-        if not isAuto then showError("Key incorreta") end
-        return false
+        ShowStatusMessage("Erro ao gerar link", KeySystemData.Colors.Error)
     end
 end
 
-local function tryAutoValidate() 
-    local savedKey=loadKeyLocally()
-    -- SE A KEY SALVA NÃO ESTIVER NA LISTA 'validKeys', ELA É CONSIDERADA INVÁLIDA
-    if savedKey and validKeys[savedKey] then 
-        return validateKeyAndOpen(savedKey,true) 
-    else 
-        removeLocalKey() -- Deleta a key antiga do arquivo
-        return false 
-    end 
+local function validateKey()
+    local userKey = KeyInput.Text:gsub("%s+", "")
+    if not userKey or userKey == "" then
+        ShowStatusMessage("Por favor, insira uma key.", KeySystemData.Colors.Error)
+        return
+    end
+
+    ShowStatusMessage("Validando key...", Color3.fromRGB(255, 165, 0))
+    local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+    local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
+    
+    if isValid then
+        ShowStatusMessage("Key válida! Carregando Hub...", KeySystemData.Colors.Success)
+        SmoothTween(MainKeyFrame, 0.5, {
+            Position = UDim2.new(0.5, 0, -0.5, 0),
+            BackgroundTransparency = 1
+        })
+        task.wait(0.5)
+        KeyGui:Destroy()
+        main()
+    else
+        ShowStatusMessage("Key inválida. Tente novamente!", KeySystemData.Colors.Error)
+    end
 end
 
-local function createKeyInputFrame()
-    local frame=Instance.new("Frame")
-    frame.Name="KeyFrame"
-    frame.Size=UDim2.new(0,300,0,240)
-    frame.Position=UDim2.new(0.5,-150,0.5,-120)
-    frame.BackgroundColor3=Color3.fromRGB(30,30,30)
-    frame.BorderSizePixel=0
-    frame.Parent=ScreenGui
-    applyRoundedCorners(frame,12)
+SubmitButton.MouseButton1Click:Connect(validateKey)
+GetKeyButton.MouseButton1Click:Connect(openGetKey)
 
-    local titleLabel=Instance.new("TextLabel")
-    titleLabel.Name="KeyTitle"
-    titleLabel.Size=UDim2.new(1,0,0,30)
-    titleLabel.BackgroundTransparency=1
-    titleLabel.Text="🔑 COLE NO ESPAÇO ABAIXO A SUA KEY 🔑"
-    titleLabel.Font=Enum.Font.GothamBold
-    titleLabel.TextSize=14
-    titleLabel.TextYAlignment=Enum.TextYAlignment.Center
-    titleLabel.TextXAlignment=Enum.TextXAlignment.Center
-    titleLabel.Parent=frame
+-- Arrastar Key Frame
+local dragging, dragInput, dragStart, startPos
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainKeyFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
 
-    local byLabel=Instance.new("TextLabel")
-    byLabel.Name="ByLabel"
-    byLabel.Size=UDim2.new(1,0,0,18)
-    byLabel.Position=UDim2.new(0,0,0,32)
-    byLabel.BackgroundTransparency=1
-    byLabel.TextColor3=COLOR_FOOTER_TEXT
-    byLabel.Font=Enum.Font.Gotham
-    byLabel.TextSize=10
-    byLabel.Text="by khalexis"
-    byLabel.TextXAlignment=Enum.TextXAlignment.Center
-    byLabel.TextYAlignment=Enum.TextYAlignment.Top
-    byLabel.Parent=frame
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        MainKeyFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
-    spawn(function() local hue=0; while frame and frame.Parent do hue=(hue+0.01)%1; titleLabel.TextColor3=Color3.fromHSV(hue,1,1); wait(0.03) end end)
+DiscordButton.MouseButton1Click:Connect(function()
+    local discordUrl = "https://discord.gg/" .. KeySystemData.DiscordInvite
+    if setclipboard then
+        setclipboard(discordUrl)
+        ShowStatusMessage("Link do Discord copiado!", Color3.fromRGB(123, 48, 220))
+    else
+        ShowStatusMessage("Convite: " .. discordUrl, Color3.fromRGB(123, 48, 220))
+    end
+end)
 
-    local keyBox=Instance.new("TextBox")
-    keyBox.Name="KeyBox"
-    keyBox.Size=UDim2.new(1,-30,0,35)
-    keyBox.Position=UDim2.new(0,15,0,55)
-    keyBox.BackgroundColor3=Color3.fromRGB(45,45,45)
-    keyBox.TextColor3=COLOR_TEXT
-    keyBox.Font=Enum.Font.Gotham
-    keyBox.TextSize=16
-    keyBox.ClearTextOnFocus=false
-    keyBox.Text=""
-    keyBox.PlaceholderText=""
-    applyRoundedCorners(keyBox,8)
-    keyBox.Parent=frame
-
-    local confirmBtn=Instance.new("TextButton")
-    confirmBtn.Name="EnterButton"
-    confirmBtn.Size=UDim2.new(0,90,0,30)
-    confirmBtn.Position=UDim2.new(0.5,-45,0,95)
-    confirmBtn.BackgroundColor3=COLOR_SCRIPT_BTN
-    confirmBtn.TextColor3=COLOR_TEXT
-    confirmBtn.Font=Enum.Font.GothamBold
-    confirmBtn.TextSize=16
-    confirmBtn.Text="Confirmar"
-    applyRoundedCorners(confirmBtn,8)
-    confirmBtn.Parent=frame
-
-    local copyKeyBtn=Instance.new("TextButton")
-    copyKeyBtn.Name="PegarKeyButton"
-    copyKeyBtn.Size=UDim2.new(0,70,0,25)
-    copyKeyBtn.Position=UDim2.new(0.5,-35,0,130)
-    copyKeyBtn.BackgroundColor3=COLOR_SCRIPT_BTN
-    copyKeyBtn.TextColor3=Color3.new(1,1,1)
-    copyKeyBtn.Font=Enum.Font.GothamBold
-    copyKeyBtn.TextSize=10
-    copyKeyBtn.Text="Pegar Key"
-    applyRoundedCorners(copyKeyBtn,8)
-    copyKeyBtn.Parent=frame
-
-    local infoLabel=Instance.new("TextLabel")
-    infoLabel.Name="InfoText"
-    infoLabel.Size=UDim2.new(1,-20,0,25)
-    infoLabel.Position=UDim2.new(0,10,0,165)
-    infoLabel.BackgroundTransparency=1
-    infoLabel.Font=Enum.Font.GothamBold
-    infoLabel.TextSize=10
-    infoLabel.Text="CLIQUE EM PEGAR KEY E COLE NO NAVEGADOR"
-    infoLabel.TextWrapped=true
-    infoLabel.TextXAlignment=Enum.TextXAlignment.Center
-    infoLabel.TextYAlignment=Enum.TextYAlignment.Top
-    infoLabel.Parent=frame
-
-    local subInfoLabel=Instance.new("TextLabel")
-    subInfoLabel.Name="SubInfoText"
-    subInfoLabel.Size=UDim2.new(1,-20,0,18)
-    subInfoLabel.Position=UDim2.new(0,10,0,190)
-    subInfoLabel.BackgroundTransparency=1
-    subInfoLabel.Font=Enum.Font.Gotham
-    subInfoLabel.TextSize=12
-    subInfoLabel.TextColor3=COLOR_FOOTER_TEXT
-    subInfoLabel.TextWrapped=false
-    subInfoLabel.TextXAlignment=Enum.TextXAlignment.Center
-    subInfoLabel.TextYAlignment=Enum.TextYAlignment.Top
-    subInfoLabel.Text="Sistema de Key - Khalexis Hub"
-    subInfoLabel.Parent=frame
-
-    spawn(function() local hue=0; while frame and frame.Parent do hue=(hue+0.01)%1; infoLabel.TextColor3=Color3.fromHSV(hue,1,1); wait(0.03) end end)
-
-    ErrorLabel=Instance.new("TextLabel")
-    ErrorLabel.Name="ErrorLabel"
-    ErrorLabel.Size=UDim2.new(1,0,0,20)
-    ErrorLabel.Position=UDim2.new(0,0,1,-70)
-    ErrorLabel.BackgroundTransparency=1
-    ErrorLabel.TextColor3=COLOR_ERROR
-    ErrorLabel.Font=Enum.Font.GothamBold
-    ErrorLabel.TextSize=14
-    ErrorLabel.Text=""
-    ErrorLabel.Parent=frame
-
-    local function showLocalError(msg) ErrorLabel.Text=msg; spawn(function() wait(2); if ErrorLabel and ErrorLabel.Parent==frame then ErrorLabel.Text="" end end) end
-
-    copyKeyBtn.MouseButton1Click:Connect(function() local s,_=copyToClipboard("discord.gg/aNaFpb2Qsb"); if s then copyKeyBtn.Text="Link copiado!"; wait(2); copyKeyBtn.Text="Pegar Key" else showLocalError("Falha ao copiar.") end end)
-    confirmBtn.MouseButton1Click:Connect(function() validateKeyAndOpen(keyBox.Text:gsub("%s",""):lower(),false) end)
-    return frame,showLocalError
-end
-
--- CRIAÇÃO DO TOGGLE BUTTON (INICIALMENTE INVISÍVEL)
+-- CRIAÇÃO DO TOGGLE BUTTON (MANTIDO DO ORIGINAL)
 ToggleButton=Instance.new("TextButton")
 ToggleButton.Name="ToggleButton"
 ToggleButton.Size=UDim2.new(0,35,0,35)
@@ -1037,7 +1166,7 @@ ToggleButton.Text="K"
 ToggleButton.Font=Enum.Font.GothamBold
 ToggleButton.TextSize=24
 ToggleButton.Parent=ScreenGui
-ToggleButton.Visible = false -- GARANTINDO QUE COMEÇA INVISÍVEL
+ToggleButton.Visible = false
 applyRoundedCorners(ToggleButton,10)
 
 local draggingToggle=false
@@ -1072,8 +1201,6 @@ ToggleButton.MouseButton1Click:Connect(function()
     if HubOpen then
         if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
     else
-        if KeyFrame and KeyFrame.Parent then KeyFrame:Destroy(); KeyFrame=nil end
-        if LoadingScreen and LoadingScreen.Parent then if StopLoadingAnim then StopLoadingAnim() end; LoadingScreen:Destroy(); LoadingScreen=nil end
         if HasShownWelcome then
             MainFrameContainer=createHub()
             HubOpen=true
@@ -1084,5 +1211,13 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- VERIFICAÇÃO INICIAL
-if not tryAutoValidate() then KeyFrame,showError=createKeyInputFrame() end
+-- Inicialização Visual da Key
+MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
+MainKeyFrame.BackgroundTransparency = 1
+
+SmoothTween(MainKeyFrame, 0.5, {
+    Size = UDim2.new(0, 350, 0, 250), 
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    BackgroundTransparency = 0
+})
