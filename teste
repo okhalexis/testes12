@@ -1,6 +1,6 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.7 (Com Auto-Save Key)
+    -- Khalexis Hub - Versão Final v1.8 (Com Auto-Save Key)
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
@@ -693,22 +693,21 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novas Categorias Adicionadas", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nenhuma", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+3 The Forge", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Pegue o Peixe ( FISH IT )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 The Forge (HAZE & RYZEN)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 99 Noites (RAYFIELD & FOXNAME)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+3 Steal A Brainrot (STELLAR, DELFISCRIPT & SCRIPT)", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Removido status ( NOVO ) dos hubs antigos", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Limpeza de nome: LAZY, UB, VEX e 727EXE", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria na organização visual", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nos Envie no Discord!"}
+        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
     }
 
     local stealScripts = {
