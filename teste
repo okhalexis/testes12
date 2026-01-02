@@ -1,6 +1,6 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.7 (Com Auto-Save Key)
+    -- Khalexis Hub - Versão Final v1.8 (Com Auto-Save Key)
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
@@ -693,22 +693,21 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novas Categorias Adicionadas", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nenhuma", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+3 The Forge", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Pegue o Peixe ( FISH IT )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+ HAZE HUB & RYZEN HUB (The Forge)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+ RAYFIELD & FOXNAME (99 Noites)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+ STELLAR, DELFISCRIPT & SCRIPT (Brainrot)", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhorias e Ajustes", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Removido status ( NOVO ) de scripts antigos:", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Lazy, UB, Vex e 727EXE Hubs limpos", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Correção de Bugs e Estabilidade", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nos Envie no Discord!"}
+        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
     }
 
     local stealScripts = {
@@ -928,7 +927,7 @@ local function CreateKeyUI()
         BorderSizePixel = 2,
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 270), -- Aumentado para o novo texto
+        Size = UDim2.new(0, 350, 0, 270), 
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
@@ -948,7 +947,7 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = KeySystemData.Name .. " – Sistema de Key",
-        Position = UDim2.new(0.5, 0, 0, 45), -- Movido para baixo
+        Position = UDim2.new(0.5, 0, 0, 45), 
         Size = UDim2.new(0, 250, 0, 20),
         Font = Enum.Font.GothamBold,
         TextColor3 = KeySystemData.Colors.Title,
@@ -962,11 +961,11 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = "Clique em Pegar Key, logo em seguida cole o link no seu navegador!",
-        Position = UDim2.new(0.5, 0, 0, 65), -- Abaixo do título
+        Position = UDim2.new(0.5, 0, 0, 65), 
         Size = UDim2.new(0, 280, 0, 15),
         Font = Enum.Font.Gotham,
-        TextColor3 = Color3.fromRGB(160, 160, 160), -- Cor cinza
-        TextSize = 10, -- Menor que o título
+        TextColor3 = Color3.fromRGB(160, 160, 160), 
+        TextSize = 10, 
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
     })
@@ -977,7 +976,7 @@ local function CreateKeyUI()
         BackgroundColor3 = KeySystemData.Colors.InputField,
         Text = "",
         PlaceholderText = "Cole sua key aqui...",
-        Position = UDim2.new(0.5, 0, 0.35, 0), -- Ajustado para baixo
+        Position = UDim2.new(0.5, 0, 0.35, 0), 
         Size = UDim2.new(0, 280, 0, 35),
         Font = Enum.Font.Gotham,
         TextSize = 14,
@@ -1011,7 +1010,7 @@ local function CreateKeyUI()
         Text = "Verificar Key",
         Font = Enum.Font.GothamBold,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
+        TextColor3 = KeySystemData.Colors.Title, 
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1028,7 +1027,7 @@ local function CreateKeyUI()
         Text = "Pegar Key",
         Font = Enum.Font.GothamBold,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
+        TextColor3 = KeySystemData.Colors.Title, 
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1252,9 +1251,9 @@ local function startKeySystem()
     end
 
     if alreadyValid then
-        main() -- Entra direto no Hub
+        main() 
     else
-        CreateKeyUI() -- Exibe a tela de Key somente se não for válida
+        CreateKeyUI() 
     end
 end
 
