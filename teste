@@ -702,9 +702,10 @@ local function createHub()
         {Text = "+3 Steal A Brainrot (STELLAR, DELFISCRIPT & SCRIPT)", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Removido status ( NOVO ) dos hubs antigos", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Limpeza de nome: LAZY, UB, VEX e 727EXE", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria na organização visual", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Alguns Bugs Resolvidos", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novo Sistema de Key!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
