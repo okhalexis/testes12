@@ -1,6 +1,6 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.8 (Com Auto-Save Key)
+    -- Khalexis Hub - Versão Final v1.9 (Com Auto-Save Key)
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
@@ -692,25 +692,41 @@ local function createHub()
         return btn
     end
 
+    -- NOVO TEXTO DE ATUALIZAÇÃO V1.9
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+2 The Forge (HAZE & RYZEN)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 99 Noites (RAYFIELD & FOXNAME)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+3 Steal A Brainrot (STELLAR, DELFISCRIPT & SCRIPT)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novas Categorias Adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Fisch", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Grand Piece Online", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novos Scripts Adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 GPO", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhorias Gerais:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Alguns Bugs Resolvidos", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novo Sistema de Key!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
     }
 
+    -- Scripts para as Novas Categorias (Exemplos)
+    local fischScripts = {
+        {Name = "Script Fisch 1", Func = function() print("Rodando Fisch") end}
+    }
+    local gpoScripts = {
+        {Name = "Script GPO 1", Func = function() print("Rodando GPO 1") end},
+        {Name = "Script GPO 2", Func = function() print("Rodando GPO 2") end}
+    }
+    local afiScripts = {
+        {Name = "Anime Fighting 1", Func = function() print("Rodando AF:I") end}
+    }
+
+    -- Categorias Originais
     local stealScripts = {
         {Name = "( NOVO ) STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end},
         {Name = "( NOVO ) DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end},
@@ -802,37 +818,40 @@ local function createHub()
     }
 
     createCategoryButton("📣 Atualizações 📣", nil, 1)
-    createCategoryButton("Steal A Brainrot", stealScripts, 2)
-    createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
-    createCategoryButton("Grow A Garden", growScripts, 4)
-    createCategoryButton("Vox Seas", voxSeasScripts, 5)
-    createCategoryButton("Blox Fruits", bloxFruitsScripts, 6)
-    createCategoryButton("King Legacy", kingLegacyScripts, 7)
-    createCategoryButton("Rivals", rivalsScripts, 8)
-    createCategoryButton("Doors", doorsScripts, 9)
-    createCategoryButton("Brookhaven", brookhavenScripts, 10)
-    createCategoryButton("Build A Plane", buildAPlaneScripts, 11)
-    createCategoryButton("Ink Game", inkGameScripts, 12)
-    createCategoryButton("Natural Disaster", naturalDisasterScripts, 13)
-    createCategoryButton("Forsaken", forsakenScripts, 14)
-    createCategoryButton("Pegue O Peixe", pegueOPeixeScripts, 15)
-    createCategoryButton("Murder Mystery", murderMysteryScripts, 16)
-    createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 17)
-    createCategoryButton("Planta Vs Brainrot", plantaVSBrainrotScripts, 18)
-    createCategoryButton("Dead Rails", deadRailsScripts, 19)
-    createCategoryButton("Teste De Qi", testeDeQiScripts, 20)
-    createCategoryButton("Pass Or Die", passOrDieScripts, 21)
-    createCategoryButton("Math Murder", mathMurderScripts, 22)
-    createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
-    createCategoryButton("Dump", dumpScripts, 24)
-    createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 25)
-    createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
-    createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
-    createCategoryButton("Anime Eternal", animeEternalScripts, 28)
-    createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
-    createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
-    createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
-    createCategoryButton("The Forge", theForgeScripts, 32)
+    createCategoryButton("Fisch", fischScripts, 2)
+    createCategoryButton("Grand Piece Online", gpoScripts, 3)
+    createCategoryButton("Anime Fighting: Infinity", afiScripts, 4)
+    createCategoryButton("Steal A Brainrot", stealScripts, 5)
+    createCategoryButton("99 Noites Na Floresta", noiteScripts, 6)
+    createCategoryButton("Grow A Garden", growScripts, 7)
+    createCategoryButton("Vox Seas", voxSeasScripts, 8)
+    createCategoryButton("Blox Fruits", bloxFruitsScripts, 9)
+    createCategoryButton("King Legacy", kingLegacyScripts, 10)
+    createCategoryButton("Rivals", rivalsScripts, 11)
+    createCategoryButton("Doors", doorsScripts, 12)
+    createCategoryButton("Brookhaven", brookhavenScripts, 13)
+    createCategoryButton("Build A Plane", buildAPlaneScripts, 14)
+    createCategoryButton("Ink Game", inkGameScripts, 15)
+    createCategoryButton("Natural Disaster", naturalDisasterScripts, 16)
+    createCategoryButton("Forsaken", forsakenScripts, 17)
+    createCategoryButton("Pegue O Peixe", pegueOPeixeScripts, 18)
+    createCategoryButton("Murder Mystery", murderMysteryScripts, 19)
+    createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 20)
+    createCategoryButton("Planta Vs Brainrot", plantaVSBrainrotScripts, 21)
+    createCategoryButton("Dead Rails", deadRailsScripts, 22)
+    createCategoryButton("Teste De Qi", testeDeQiScripts, 23)
+    createCategoryButton("Pass Or Die", passOrDieScripts, 24)
+    createCategoryButton("Math Murder", mathMurderScripts, 25)
+    createCategoryButton("Brainrot Training", brainrotTrainingScripts, 26)
+    createCategoryButton("Dump", dumpScripts, 27)
+    createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 28)
+    createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 29)
+    createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 30)
+    createCategoryButton("Anime Eternal", animeEternalScripts, 31)
+    createCategoryButton("Anime Weapons", animeWeaponsScripts, 32)
+    createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 33)
+    createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 34)
+    createCategoryButton("The Forge", theForgeScripts, 35)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
     if firstCategoryButton then firstCategoryButton:MouseButton1Click() end
@@ -1236,7 +1255,7 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Inicialização com Check de Key Salva (Correção de Bug)
+-- Inicialização com Check de Key Salva
 local function startKeySystem()
     local alreadyValid = false
     
