@@ -1,6 +1,6 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.9 (Com Auto-Save Key)
+    -- Khalexis Hub - Versão Final v1.8 (Com Auto-Save Key)
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
@@ -9,6 +9,7 @@
     -- 4. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
     -- 5. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE.
     -- 6. Auto-ajuste de tamanho de fonte.
+    -- 7. Atualização de status (NOVO) e aba Atualizações.
 
 --]]
 
@@ -64,7 +65,7 @@ local HasShownWelcome = false
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 
 -- ==========================================
--- SISTEMA DE KEY
+-- NOVO SISTEMA DE KEY (IMPLEMENTAÇÃO)
 -- ==========================================
 
 Config = {
@@ -202,6 +203,24 @@ local function showLoadingScreen()
     return frame, function()
         if connection then connection:Disconnect(); connection = nil end
     end
+end
+
+local function applyTheme(themeName)
+    local palette = themes[themeName]
+    if not palette or not MainFrameContainer then return end
+    local MainFrame = MainFrameContainer:FindFirstChild("MainFrame")
+    if not MainFrame then return end
+    local titleBar = MainFrame:FindFirstChild("TitleBar")
+    local categoryFrame = MainFrame:FindFirstChild("CategoryFrame")
+    local scriptFrame = MainFrame:FindFirstChild("ScriptFrame")
+    local footerBackground = MainFrame:FindFirstChild("FooterBackground")
+
+    MainFrame.BackgroundColor3 = palette.main_bg
+    MainFrame.BackgroundTransparency = palette.transparency
+    if titleBar then titleBar.BackgroundColor3 = palette.title_bar end
+    if categoryFrame then categoryFrame.BackgroundColor3 = palette.category_bg end
+    if scriptFrame then scriptFrame.BackgroundColor3 = palette.script_frame_bg end
+    if footerBackground and (themeName == "normal" or themeName == "preto" or themeName == "transparente") then footerBackground.BackgroundColor3 = palette.title_bar end
 end
 
 local function createHub()
@@ -608,6 +627,28 @@ local function createHub()
         return btn
     end
 
+    local function createUpdateLabel(text, textColor, font)
+        local lbl=Instance.new("TextLabel")
+        lbl.Size=UDim2.new(1,0,0,18)
+        lbl.BackgroundTransparency=1
+        lbl.TextColor3=textColor or COLOR_TEXT
+        lbl.Font=font or Enum.Font.Gotham
+        lbl.TextSize=12
+        lbl.Text=text
+        lbl.TextWrapped=true
+        lbl.TextXAlignment=Enum.TextXAlignment.Center
+        lbl.TextYAlignment=Enum.TextYAlignment.Top
+        lbl.Parent=scriptContainer
+        return lbl
+    end
+
+    local function displayUpdates()
+        clearScripts()
+        for _, u in ipairs(updatesTextFormatted) do
+            createUpdateLabel(u.Text, u.Color, u.Font)
+        end
+    end
+
     local function createCategoryButton(name, contents, layoutOrder)
         local btn=Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
@@ -642,36 +683,44 @@ local function createHub()
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
-            if typeof(contents)=="table" then
+            if name == "📣 Atualizações 📣" then
+                displayUpdates()
+            elseif typeof(contents)=="table" then
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
         end)
         return btn
     end
 
-    -- Scripts para as Novas Categorias (MODIFICADOS)
-    local fischScripts = {
-        {Name = "( NOVO ) NO ROLE ASSIGNED", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end}
-    }
-    local gpoScripts = {
-        {Name = "( NOVO ) DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
-        {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
-    }
-    local afiScripts = {
-        {Name = "( NOVO ) SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
+    updatesTextFormatted = {
+        {Text = "📣 Khalexis Hub V1.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "+2 The Forge (HAZE & RYZEN)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 99 Noites (RAYFIELD & FOXNAME)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+3 Steal A Brainrot (STELLAR, DELFISCRIPT & SCRIPT)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Alguns Bugs Resolvidos", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novo Sistema de Key!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
+        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
     }
 
-    -- Categorias Originais (MODIFICADAS)
     local stealScripts = {
-        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, -- (NOVO) REMOVIDO
-        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, -- (NOVO) REMOVIDO
-        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, -- (NOVO) REMOVIDO
+        {Name = "( NOVO ) STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end},
+        {Name = "( NOVO ) DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end},
+        {Name = "( NOVO ) SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end},
         {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
         {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
     }
     local noiteScripts = {
-        {Name = "RAYFIELD", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/FourHub.lua"))() end}, -- (NOVO) REMOVIDO
-        {Name = "FOXNAME", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end}, -- (NOVO) REMOVIDO
+        {Name = "( NOVO ) RAYFIELD", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/FourHub.lua"))() end},
+        {Name = "( NOVO ) FOXNAME", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end},
         {Name = "Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
         {Name = "Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end},
         {Name = "Iliankytb", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Iliankytb/Iliankytb/main/Best99NightsInTheForest"))() end},
@@ -742,8 +791,8 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
-        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end}, -- (NOVO) REMOVIDO
-        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end}, -- (NOVO) REMOVIDO
+        {Name = "( NOVO ) HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end},
+        {Name = "( NOVO ) RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end},
         {Name = "LAZY HUB", Func = function() getgenv().mobileMode = false; repeat wait() until game:IsLoaded(); loadstring(game:HttpGet("https://raw.githubusercontent.com/LioK251/RbScripts/refs/heads/main/lazyuhub_theforge.lua"))() end},
         {Name = "UB HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua"))() end},
         {Name = "VEX HUB", Func = function() loadstring(game:HttpGet("https://ry-zen.studio/raw/VexHub/Hub.lua?key=U2VjdXJlQXV0aEtleQ"))() end},
@@ -751,50 +800,39 @@ local function createHub()
         {Name = "LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
-    
-    -- Definição da ordem das categorias (RE-INDEXADA)
-    local categoryOrder = {
-        {"Steal A Brainrot", stealScripts, 1},
-        {"99 Noites Na Floresta", noiteScripts, 2},
-        {"Grow A Garden", growScripts, 3},
-        {"Vox Seas", voxSeasScripts, 4},
-        {"Blox Fruits", bloxFruitsScripts, 5},
-        {"King Legacy", kingLegacyScripts, 6},
-        {"Rivals", rivalsScripts, 7},
-        {"Doors", doorsScripts, 8},
-        {"Brookhaven", brookhavenScripts, 9},
-        {"Build A Plane", buildAPlaneScripts, 10},
-        {"Ink Game", inkGameScripts, 11},
-        {"Natural Disaster", naturalDisasterScripts, 12},
-        {"Forsaken", forsakenScripts, 13},
-        {"Pegue O Peixe", pegueOPeixeScripts, 14},
-        {"Murder Mystery", murderMysteryScripts, 15},
-        {"Weak Legacy 2", weakLegacy2Scripts, 16},
-        {"Planta Vs Brainrot", plantaVSBrainrotScripts, 17},
-        {"Dead Rails", deadRailsScripts, 18},
-        {"Teste De Qi", testeDeQiScripts, 19},
-        {"Pass Or Die", passOrDieScripts, 20},
-        {"Math Murder", mathMurderScripts, 21},
-        {"Brainrot Training", brainrotTrainingScripts, 22},
-        {"Dump", dumpScripts, 23},
-        {"Eat Brainrot for fight", eatBrainrotForFightScripts, 24},
-        {"Sem limites simulador de soco mais forte", khSaeedScripts, 25},
-        {"Brainrot Evolução", brainrotEvolucaoScripts, 26},
-        {"Anime Eternal", animeEternalScripts, 27},
-        {"Anime Weapons", animeWeaponsScripts, 28},
-        {"Cars vs Trucks", carsVsTrucksScripts, 29},
-        {"Deadly Delivery", deadlyDeliveryScripts, 30},
-        {"The Forge", theForgeScripts, 31},
-        -- NOVAS CATEGORIAS
-        {"( NOVO ) Fisch", fischScripts, 32},
-        {"( NOVO ) Grand Piece Online", gpoScripts, 33},
-        {"( NOVO ) Anime Fighting: Infinity", afiScripts, 34},
-    }
 
-    -- Criação dos botões de categoria
-    for _, def in ipairs(categoryOrder) do
-        createCategoryButton(def[1], def[2], def[3])
-    end
+    createCategoryButton("📣 Atualizações 📣", nil, 1)
+    createCategoryButton("Steal A Brainrot", stealScripts, 2)
+    createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
+    createCategoryButton("Grow A Garden", growScripts, 4)
+    createCategoryButton("Vox Seas", voxSeasScripts, 5)
+    createCategoryButton("Blox Fruits", bloxFruitsScripts, 6)
+    createCategoryButton("King Legacy", kingLegacyScripts, 7)
+    createCategoryButton("Rivals", rivalsScripts, 8)
+    createCategoryButton("Doors", doorsScripts, 9)
+    createCategoryButton("Brookhaven", brookhavenScripts, 10)
+    createCategoryButton("Build A Plane", buildAPlaneScripts, 11)
+    createCategoryButton("Ink Game", inkGameScripts, 12)
+    createCategoryButton("Natural Disaster", naturalDisasterScripts, 13)
+    createCategoryButton("Forsaken", forsakenScripts, 14)
+    createCategoryButton("Pegue O Peixe", pegueOPeixeScripts, 15)
+    createCategoryButton("Murder Mystery", murderMysteryScripts, 16)
+    createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 17)
+    createCategoryButton("Planta Vs Brainrot", plantaVSBrainrotScripts, 18)
+    createCategoryButton("Dead Rails", deadRailsScripts, 19)
+    createCategoryButton("Teste De Qi", testeDeQiScripts, 20)
+    createCategoryButton("Pass Or Die", passOrDieScripts, 21)
+    createCategoryButton("Math Murder", mathMurderScripts, 22)
+    createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
+    createCategoryButton("Dump", dumpScripts, 24)
+    createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 25)
+    createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
+    createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
+    createCategoryButton("Anime Eternal", animeEternalScripts, 28)
+    createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
+    createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
+    createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
+    createCategoryButton("The Forge", theForgeScripts, 32)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
     if firstCategoryButton then firstCategoryButton:MouseButton1Click() end
@@ -890,7 +928,7 @@ local function CreateKeyUI()
         BorderSizePixel = 2,
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 270), 
+        Size = UDim2.new(0, 350, 0, 270), -- Aumentado para o novo texto
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
@@ -910,7 +948,7 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = KeySystemData.Name .. " – Sistema de Key",
-        Position = UDim2.new(0.5, 0, 0, 45), 
+        Position = UDim2.new(0.5, 0, 0, 45), -- Movido para baixo
         Size = UDim2.new(0, 250, 0, 20),
         Font = Enum.Font.GothamBold,
         TextColor3 = KeySystemData.Colors.Title,
@@ -924,11 +962,11 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = "Clique em Pegar Key, logo em seguida cole o link no seu navegador!",
-        Position = UDim2.new(0.5, 0, 0, 65), 
+        Position = UDim2.new(0.5, 0, 0, 65), -- Abaixo do título
         Size = UDim2.new(0, 280, 0, 15),
         Font = Enum.Font.Gotham,
-        TextColor3 = Color3.fromRGB(160, 160, 160), 
-        TextSize = 10, 
+        TextColor3 = Color3.fromRGB(160, 160, 160), -- Cor cinza
+        TextSize = 10, -- Menor que o título
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
     })
@@ -939,7 +977,7 @@ local function CreateKeyUI()
         BackgroundColor3 = KeySystemData.Colors.InputField,
         Text = "",
         PlaceholderText = "Cole sua key aqui...",
-        Position = UDim2.new(0.5, 0, 0.35, 0), 
+        Position = UDim2.new(0.5, 0, 0.35, 0), -- Ajustado para baixo
         Size = UDim2.new(0, 280, 0, 35),
         Font = Enum.Font.Gotham,
         TextSize = 14,
@@ -973,7 +1011,7 @@ local function CreateKeyUI()
         Text = "Verificar Key",
         Font = Enum.Font.GothamBold,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, 
+        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -990,7 +1028,7 @@ local function CreateKeyUI()
         Text = "Pegar Key",
         Font = Enum.Font.GothamBold,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, 
+        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1175,7 +1213,7 @@ ToggleButton.InputBegan:Connect(function(input)
             end
         end)
     end
-})
+end)
 
 UserInputService.InputChanged:Connect(function(input)
     if draggingToggle and currentInputObjectToggle == input and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
@@ -1198,7 +1236,7 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Inicialização com Check de Key Salva
+-- Inicialização com Check de Key Salva (Correção de Bug)
 local function startKeySystem()
     local alreadyValid = false
     
