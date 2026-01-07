@@ -626,6 +626,7 @@ local function createHub()
 
     local function displayUpdates()
         clearScripts()
+        -- BUGFIX: Garantir que a lista de atualizações seja exibida
         for _, u in ipairs(updatesTextFormatted) do
             createUpdateLabel(u.Text, u.Color, u.Font)
         end
@@ -678,7 +679,7 @@ local function createHub()
     local updatesTextFormatted = {
         {Text = "📣 Khalexis Hub V1.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novas Categorias Adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Fisch", Color = Color3.fromRGB(220, 220, 220)},
