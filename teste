@@ -626,7 +626,8 @@ local function createHub()
 
     local function displayUpdates()
         clearScripts()
-        task.wait() -- Adiciona um pequeno atraso para garantir que clearScripts() seja processado e o layout reajustado.
+        -- Adiciona um pequeno atraso para forçar o motor de layout a reajustar o ScrollFrame
+        task.wait() 
         
         -- Garante que a lista de atualizações seja exibida.
         for _, u in ipairs(updatesTextFormatted) do
@@ -677,7 +678,7 @@ local function createHub()
         return btn
     end
 
-    -- NOVO TEXTO DE ATUALIZAÇÃO V1.4 (SOLICITADO)
+    -- TEXTO DE ATUALIZAÇÃO V1.4 (SOLICITADO E RECONFIRMADO)
     local updatesTextFormatted = {
         {Text = "📣 Khalexis Hub V1.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
@@ -699,19 +700,19 @@ local function createHub()
         {Text = "Melhoria para executar scripts", Color = Color3.fromRGB(220, 220, 220)}
     }
 
-    -- Scripts para as Novas Categorias (MODIFICADOS)
+    -- Scripts para as Novas Categorias (REMOVIDAS AS TAGS 'NOVO')
     local fischScripts = {
-        {Name = "( NOVO ) NO ROLE ASSIGNED", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end}
+        {Name = "NO ROLE ASSIGNED", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end}
     }
     local gpoScripts = {
-        {Name = "( NOVO ) DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
-        {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
+        {Name = "DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
+        {Name = "MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
     }
     local afiScripts = {
-        {Name = "( NOVO ) SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
+        {Name = "SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
     }
 
-    -- Categorias Originais (MODIFICADAS)
+    -- Categorias Originais (SEM ALTERAÇÕES)
     local stealScripts = {
         {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, -- (NOVO) REMOVIDO
         {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, -- (NOVO) REMOVIDO
@@ -802,9 +803,9 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     
-    -- Definição da ordem das categorias (MODIFICADA COM (NOVO))
+    -- Definição da ordem das categorias (Recriada com nomes limpos no final)
     local categoryOrder = {
-        {"📣 Atualizações 📣", nil, 1},
+        {"📣 Atualizações 📣", nil, 1}, -- Mantido no topo
         {"Steal A Brainrot", stealScripts, 2},
         {"99 Noites Na Floresta", noiteScripts, 3},
         {"Grow A Garden", growScripts, 4},
@@ -836,10 +837,10 @@ local function createHub()
         {"Cars vs Trucks", carsVsTrucksScripts, 30},
         {"Deadly Delivery", deadlyDeliveryScripts, 31},
         {"The Forge", theForgeScripts, 32},
-        -- NOVAS CATEGORIAS MOVIDAS PARA O FINAL COM (NOVO)
-        {"( NOVO ) Fisch", fischScripts, 33},
-        {"( NOVO ) Grand Piece Online", gpoScripts, 34},
-        {"( NOVO ) Anime Fighting: Infinity", afiScripts, 35},
+        -- NOVAS CATEGORIAS COM NOMES LIMPOS
+        {"Fisch", fischScripts, 33},
+        {"Grand Piece Online", gpoScripts, 34},
+        {"Anime Fighting: Infinity", afiScripts, 35},
     }
 
     -- Criação dos botões de categoria
