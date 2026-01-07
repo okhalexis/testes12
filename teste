@@ -674,23 +674,24 @@ local function createHub()
         return btn
     end
 
-    -- NOVO TEXTO DE ATUALIZAÇÃO V1.9 (MODIFICADO)
+    -- NOVO TEXTO DE ATUALIZAÇÃO V1.5 (CORRIGIDO)
     local updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novas Categorias Adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Fisch", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Grand Piece Online", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Grand Piece Online ( GPO )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Anime Fighting ( Infinity )", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 GPO", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Anime Fighting ( Infinity )", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Menos Lag", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
@@ -799,7 +800,7 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     
-    -- Definição da ordem das categorias (MODIFICADA)
+    -- Definição da ordem das categorias (MODIFICADA COM (NOVO))
     local categoryOrder = {
         {"📣 Atualizações 📣", nil, 1},
         {"Steal A Brainrot", stealScripts, 2},
@@ -833,10 +834,10 @@ local function createHub()
         {"Cars vs Trucks", carsVsTrucksScripts, 30},
         {"Deadly Delivery", deadlyDeliveryScripts, 31},
         {"The Forge", theForgeScripts, 32},
-        -- NOVAS CATEGORIAS MOVIDAS PARA O FINAL
-        {"Fisch", fischScripts, 33},
-        {"Grand Piece Online", gpoScripts, 34},
-        {"Anime Fighting: Infinity", afiScripts, 35},
+        -- NOVAS CATEGORIAS MOVIDAS PARA O FINAL COM (NOVO)
+        {"( NOVO ) Fisch", fischScripts, 33},
+        {"( NOVO ) Grand Piece Online", gpoScripts, 34},
+        {"( NOVO ) Anime Fighting: Infinity", afiScripts, 35},
     }
 
     -- Criação dos botões de categoria
