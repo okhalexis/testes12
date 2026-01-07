@@ -675,16 +675,16 @@ local function createHub()
         return btn
     end
 
-    -- NOVO TEXTO DE ATUALIZAÇÃO V1.5 (CORRIGIDO)
+    -- NOVO TEXTO DE ATUALIZAÇÃO V1.4 (SOLICITADO)
     local updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novas Categorias Adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Fisch", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Grand Piece Online ( GPO )", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Anime Fighting ( Infinity )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "+2 GPO", Color = Color3.fromRGB(220, 220, 220)},
@@ -692,10 +692,9 @@ local function createHub()
         {Text = "+1 Anime Fighting ( Infinity )", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Menos Lag", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
+        {Text = "Melhoria no lag", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria ao carregar o hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria para executar scripts", Color = Color3.fromRGB(220, 220, 220)}
     }
 
     -- Scripts para as Novas Categorias (MODIFICADOS)
