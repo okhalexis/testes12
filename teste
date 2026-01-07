@@ -626,7 +626,9 @@ local function createHub()
 
     local function displayUpdates()
         clearScripts()
-        -- BUGFIX: Garantir que a lista de atualizações seja exibida
+        task.wait() -- Adiciona um pequeno atraso para garantir que clearScripts() seja processado e o layout reajustado.
+        
+        -- Garante que a lista de atualizações seja exibida.
         for _, u in ipairs(updatesTextFormatted) do
             createUpdateLabel(u.Text, u.Color, u.Font)
         end
