@@ -9,7 +9,6 @@
     -- 4. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
     -- 5. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE.
     -- 6. Auto-ajuste de tamanho de fonte.
-    -- 7. Atualização de status (NOVO) e aba Atualizações.
 
 --]]
 
@@ -609,31 +608,6 @@ local function createHub()
         return btn
     end
 
-    local function createUpdateLabel(text, textColor, font)
-        local lbl=Instance.new("TextLabel")
-        lbl.Size=UDim2.new(1,0,0,18)
-        lbl.BackgroundTransparency=1
-        lbl.TextColor3=textColor or COLOR_TEXT
-        lbl.Font=font or Enum.Font.Gotham
-        lbl.TextSize=12
-        lbl.Text=text
-        lbl.TextWrapped=true
-        lbl.TextXAlignment=Enum.TextXAlignment.Center
-        lbl.TextYAlignment=Enum.TextYAlignment.Top
-        lbl.Parent=scriptContainer
-        return lbl
-    end
-
-    local function displayUpdates()
-        clearScripts()
-        task.wait() -- Adiciona um pequeno atraso para garantir que clearScripts() seja processado e o layout reajustado.
-        
-        -- Garante que a lista de atualizações seja exibida.
-        for _, u in ipairs(updatesTextFormatted) do
-            createUpdateLabel(u.Text, u.Color, u.Font)
-        end
-    end
-
     local function createCategoryButton(name, contents, layoutOrder)
         local btn=Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
@@ -668,36 +642,12 @@ local function createHub()
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
-            if name == "📣 Atualizações 📣" then
-                displayUpdates()
-            elseif typeof(contents)=="table" then
+            if typeof(contents)=="table" then
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
         end)
         return btn
     end
-
-    -- NOVO TEXTO DE ATUALIZAÇÃO V1.4 (SOLICITADO)
-    local updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novas Categorias Adicionadas:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Fisch", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Grand Piece Online ( GPO )", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novos Scripts Adicionados:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+2 GPO", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Anime Fighting ( Infinity )", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhorias Gerais:", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria no lag", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria ao carregar o hub", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria para executar scripts", Color = Color3.fromRGB(220, 220, 220)}
-    }
 
     -- Scripts para as Novas Categorias (MODIFICADOS)
     local fischScripts = {
@@ -802,44 +752,43 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     
-    -- Definição da ordem das categorias (MODIFICADA COM (NOVO))
+    -- Definição da ordem das categorias (RE-INDEXADA)
     local categoryOrder = {
-        {"📣 Atualizações 📣", nil, 1},
-        {"Steal A Brainrot", stealScripts, 2},
-        {"99 Noites Na Floresta", noiteScripts, 3},
-        {"Grow A Garden", growScripts, 4},
-        {"Vox Seas", voxSeasScripts, 5},
-        {"Blox Fruits", bloxFruitsScripts, 6},
-        {"King Legacy", kingLegacyScripts, 7},
-        {"Rivals", rivalsScripts, 8},
-        {"Doors", doorsScripts, 9},
-        {"Brookhaven", brookhavenScripts, 10},
-        {"Build A Plane", buildAPlaneScripts, 11},
-        {"Ink Game", inkGameScripts, 12},
-        {"Natural Disaster", naturalDisasterScripts, 13},
-        {"Forsaken", forsakenScripts, 14},
-        {"Pegue O Peixe", pegueOPeixeScripts, 15},
-        {"Murder Mystery", murderMysteryScripts, 16},
-        {"Weak Legacy 2", weakLegacy2Scripts, 17},
-        {"Planta Vs Brainrot", plantaVSBrainrotScripts, 18},
-        {"Dead Rails", deadRailsScripts, 19},
-        {"Teste De Qi", testeDeQiScripts, 20},
-        {"Pass Or Die", passOrDieScripts, 21},
-        {"Math Murder", mathMurderScripts, 22},
-        {"Brainrot Training", brainrotTrainingScripts, 23},
-        {"Dump", dumpScripts, 24},
-        {"Eat Brainrot for fight", eatBrainrotForFightScripts, 25},
-        {"Sem limites simulador de soco mais forte", khSaeedScripts, 26},
-        {"Brainrot Evolução", brainrotEvolucaoScripts, 27},
-        {"Anime Eternal", animeEternalScripts, 28},
-        {"Anime Weapons", animeWeaponsScripts, 29},
-        {"Cars vs Trucks", carsVsTrucksScripts, 30},
-        {"Deadly Delivery", deadlyDeliveryScripts, 31},
-        {"The Forge", theForgeScripts, 32},
-        -- NOVAS CATEGORIAS MOVIDAS PARA O FINAL COM (NOVO)
-        {"( NOVO ) Fisch", fischScripts, 33},
-        {"( NOVO ) Grand Piece Online", gpoScripts, 34},
-        {"( NOVO ) Anime Fighting: Infinity", afiScripts, 35},
+        {"Steal A Brainrot", stealScripts, 1},
+        {"99 Noites Na Floresta", noiteScripts, 2},
+        {"Grow A Garden", growScripts, 3},
+        {"Vox Seas", voxSeasScripts, 4},
+        {"Blox Fruits", bloxFruitsScripts, 5},
+        {"King Legacy", kingLegacyScripts, 6},
+        {"Rivals", rivalsScripts, 7},
+        {"Doors", doorsScripts, 8},
+        {"Brookhaven", brookhavenScripts, 9},
+        {"Build A Plane", buildAPlaneScripts, 10},
+        {"Ink Game", inkGameScripts, 11},
+        {"Natural Disaster", naturalDisasterScripts, 12},
+        {"Forsaken", forsakenScripts, 13},
+        {"Pegue O Peixe", pegueOPeixeScripts, 14},
+        {"Murder Mystery", murderMysteryScripts, 15},
+        {"Weak Legacy 2", weakLegacy2Scripts, 16},
+        {"Planta Vs Brainrot", plantaVSBrainrotScripts, 17},
+        {"Dead Rails", deadRailsScripts, 18},
+        {"Teste De Qi", testeDeQiScripts, 19},
+        {"Pass Or Die", passOrDieScripts, 20},
+        {"Math Murder", mathMurderScripts, 21},
+        {"Brainrot Training", brainrotTrainingScripts, 22},
+        {"Dump", dumpScripts, 23},
+        {"Eat Brainrot for fight", eatBrainrotForFightScripts, 24},
+        {"Sem limites simulador de soco mais forte", khSaeedScripts, 25},
+        {"Brainrot Evolução", brainrotEvolucaoScripts, 26},
+        {"Anime Eternal", animeEternalScripts, 27},
+        {"Anime Weapons", animeWeaponsScripts, 28},
+        {"Cars vs Trucks", carsVsTrucksScripts, 29},
+        {"Deadly Delivery", deadlyDeliveryScripts, 30},
+        {"The Forge", theForgeScripts, 31},
+        -- NOVAS CATEGORIAS
+        {"( NOVO ) Fisch", fischScripts, 32},
+        {"( NOVO ) Grand Piece Online", gpoScripts, 33},
+        {"( NOVO ) Anime Fighting: Infinity", afiScripts, 34},
     }
 
     -- Criação dos botões de categoria
@@ -1226,7 +1175,7 @@ ToggleButton.InputBegan:Connect(function(input)
             end
         end)
     end
-end)
+})
 
 UserInputService.InputChanged:Connect(function(input)
     if draggingToggle and currentInputObjectToggle == input and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
