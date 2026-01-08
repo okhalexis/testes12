@@ -1,6 +1,6 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.8 (Com Auto-Save Key)
+    -- Khalexis Hub - Versão Final v1.9 (Com Auto-Save Key)
 
     -- Funcionalidades:
     -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
@@ -800,8 +800,6 @@ local function createHub()
         {Name = "LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
-
-    -- NOVAS CATEGORIAS
     local grandPieceOnlineScripts = {
         {Name = "( NOVO ) DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
         {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
