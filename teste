@@ -845,10 +845,10 @@ local function createHub()
     createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
     createCategoryButton("The Forge", theForgeScripts, 32)
-    -- ADICIONANDO NOVAS CATEGORIAS
-    createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
-    createCategoryButton("Fisch", fischScripts, 34)
-    createCategoryButton("Anime Fighting Simulator: Infinity", afsInfinityScripts, 35)
+    -- ADICIONANDO NOVAS CATEGORIAS COM ( NOVO )
+    createCategoryButton("( NOVO ) Grand Piece Online", grandPieceOnlineScripts, 33)
+    createCategoryButton("( NOVO ) Fisch", fischScripts, 34)
+    createCategoryButton("( NOVO ) Anime Fighting Simulator: Infinity", afsInfinityScripts, 35)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
     if firstCategoryButton then firstCategoryButton:MouseButton1Click() end
