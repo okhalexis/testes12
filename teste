@@ -693,19 +693,19 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V1.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+2 The Forge (HAZE & RYZEN)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 99 Noites (RAYFIELD & FOXNAME)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+3 Steal A Brainrot (STELLAR, DELFISCRIPT & SCRIPT)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Grand Piece Online", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Anime Fighting: Infinity", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria Geral no Hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Melhoria no Carregamento", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Alguns Bugs Resolvidos", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novo Sistema de Key!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "De resto, trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
