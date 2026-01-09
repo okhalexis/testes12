@@ -1,9 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.4 (Atualização de IDs e Nomes)
-    -- 1. IDs dos jogos atualizados conforme lista.
-    -- 2. Nomes das categorias alterados conforme solicitado.
-    -- 3. Funcionalidades visuais e sistema de movimento mantidos (v3.3).
+    -- Khalexis Hub - Versão Final v3.3 (Auto-Detect Fixed)
+    -- MODIFICAÇÕES:
+    -- 1. Banco de Dados de IDs expandido massivamente para cobrir Seas 1/2/3, Lobbies, Masmorras, etc.
+    -- 2. Correção visual mantida (Digital ID 12333784627 + Layout Estrela/Digital).
+    -- 3. Tamanho compacto mantido.
 
 --]]
 
@@ -28,88 +29,106 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS (ATUALIZADO)
+-- BANCO DE DADOS DE IDS (AUTO DETECT EXPANDIDO)
 -- ==========================================
+-- A chave é o PlaceId (game.PlaceId), o valor é o NOME EXATO da categoria no menu.
+
 local GameID_Database = {
-    -- NOVOS IDs
-    [109983668079237] = "Steal A Brainrot",
-    [79546208627805] = "99 Nights in the Florest",
-    [126884695634066] = "Grow A Garden",
+    -- === BLOX FRUITS ===
+    [2753915549] = "Blox Fruits", -- Sea 1
+    [4442272183] = "Blox Fruits", -- Sea 2
+    [7449423635] = "Blox Fruits", -- Sea 3
     
-    [2753915549] = "Blox Fruits", [4442272183] = "Blox Fruits", [7449423635] = "Blox Fruits",
-    [4520749081] = "King Legacy", [6377160089] = "King Legacy",
+    -- === KING LEGACY ===
+    [4520749081] = "King Legacy", -- Sea 1
+    [6377160089] = "King Legacy", -- Sea 2
     
-    [17625359962] = "Rivals",
-    [6516141723] = "Doors", [6839171747] = "Doors",
+    -- === BROOKHAVEN ===
     [4924922222] = "Brookhaven",
-    [137925884276740] = "Build A Plane",
-    [99567941238278] = "Ink Game",
+    
+    -- === DOORS ===
+    [6516141723] = "Doors", -- Lobby
+    [6839171747] = "Doors", -- The Hotel (Floor 1)
+    [12667032960] = "Doors", -- The Mines (Floor 2)
+    
+    -- === MURDER MYSTERY 2 ===
+    [142823291] = "Murder Mystery",
+    
+    -- === NATURAL DISASTER ===
     [189707] = "Natural Disaster",
-    [18687417158] = "Forsaken",
     
-    [121864768012064] = "Fish It", -- Antigo Pegue o Peixe
-    [142823291] = "Murder Mystery 2",
-    [18337464872] = "Weak Legacy 2",
-    [127742093697776] = "Plants vs Brainrots",
-    [116495829188952] = "Dead Rails",
-    [11782774748] = "Iq Test", -- Antigo Teste de Qi
-    [119564951960102] = "Pass or Die",
-    [127707120843339] = "Math Murder",
-    [86223718444028] = "Brainrot Training",
-    [98868317791094] = "Dump",
-    [89642885027451] = "Eat Brainrot For Fight",
-    [7215881810] = "No Limit Strongest Punch Simulator", -- Antigo Sem Limite
-    [111989938562194] = "Brainrot Evolution",
-    [90462358603255] = "Anime Eternal",
-    [79189799490564] = "Anime Weapons",
-    [120546894379169] = "Cars vs Trucks",
-    [125810438250765] = "Deadly Delivery",
-    [130247632398296] = "Anime Fighting Simulator: Endless", -- Antigo AFS Infinity
+    -- === RIVALS ===
+    [17625359962] = "Rivals",
     
-    -- The Forge (Mantendo IDs antigos caso necessário)
-    [16347316744] = "The Forge", 
-    [76558904092080] = "The Forge",
+    -- === FISCH (PEGUE O PEIXE) ===
+    [16732694052] = "Pegue O Peixe",
+    
+    -- === THE FORGE ===
+    [16347316744] = "The Forge",
+    [76558904092080] = "The Forge", 
+    
+    -- === GRAND PIECE ONLINE (GPO) ===
+    [1730877806] = "Grand Piece Online", -- Main Menu / Universe
+    [5732973455] = "Grand Piece Online", -- Main Game
+    [5956785391] = "Grand Piece Online", -- Trade Hub
+    [10472288019] = "Grand Piece Online", -- Battle Royale
+    
+    -- === WEAK LEGACY 2 ===
+    [10180479060] = "Weak Legacy 2",
+    [12108178652] = "Weak Legacy 2",
+    
+    -- === ANIME DEFENDERS / ETERNAL (Exemplos) ===
+    [17017769292] = "Anime Eternal",
+    
+    -- === AFS: INFINITY ===
+    [15167092803] = "AFS: Infinity",
+    
+    -- === BUILD A PLANE ===
+    [155615604] = "Build A Plane",
+    
+    -- === INK GAME ===
+    [10962386894] = "Ink Game",
+    
+    -- === PASS OR DIE ===
+    [13939622961] = "Pass Or Die",
 }
 
 local CurrentPlaceId = game.PlaceId
-local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
--- Debug
+-- Debug no console (F9) - Útil para ver o ID se o jogo não detectar
 print("------------------------------------------------")
-print("[KHALEXIS DEBUG] ID DO JOGO: " .. tostring(CurrentPlaceId))
-print("[KHALEXIS DEBUG] CATEGORIA: " .. tostring(DetectedGameCategory))
+print("[KHALEXIS DEBUG] ID ATUAL DO JOGO: " .. tostring(CurrentPlaceId))
+if GameID_Database[CurrentPlaceId] then
+    print("[KHALEXIS DEBUG] JOGO DETECTADO: " .. GameID_Database[CurrentPlaceId])
+else
+    print("[KHALEXIS DEBUG] ID NÃO ENCONTRADO NO BANCO DE DADOS.")
+end
 print("------------------------------------------------")
+
+local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Paletas de Cores (Dark + Laranja)
+-- Paletas de Cores
 local themes = {
-    normal = {
-        main_bg = Color3.fromRGB(15, 15, 15),       
-        category_bg = Color3.fromRGB(25, 25, 25),   
-        title_bar = Color3.fromRGB(20, 20, 20),     
-        script_frame_bg = Color3.fromRGB(15, 15, 15), 
-        transparency = 0
-    },
+    normal = {main_bg = Color3.fromRGB(30, 30, 30), category_bg = Color3.fromRGB(50, 50, 50), title_bar = Color3.fromRGB(45, 45, 45), script_frame_bg = Color3.fromRGB(30, 30, 30), transparency = 0},
 }
 
 -- Cores Padrão
 local COLOR_BLACK = themes.normal.main_bg
 local COLOR_CATEGORY_BG = themes.normal.category_bg
-local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
-local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
+local COLOR_CATEGORY_BTN = Color3.fromRGB(90, 90, 90)
+local COLOR_SCRIPT_BTN = Color3.fromRGB(70, 70, 70)
 local COLOR_TITLEBAR = themes.normal.title_bar
-
--- Textos Originais
-local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
-local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
+local COLOR_TEXT = Color3.fromRGB(220, 220, 220)
+local COLOR_TEXT_DIM = Color3.fromRGB(220, 220, 220)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
-local COLOR_FOOTER_TEXT = Color3.fromRGB(150, 150, 150)
-local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) 
-local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
+local COLOR_FOOTER_TEXT = Color3.fromRGB(170, 170, 170)
+local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) -- Amarelo Ouro
+local COLOR_STAR_OFF = Color3.fromRGB(120, 120, 120) -- Cinza Escuro
 
 local userId = player.UserId
 local userName = player.Name
@@ -126,7 +145,7 @@ local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
 
 -- ==========================================
--- SISTEMA DE FAVORITOS
+-- SISTEMA DE FAVORITOS (LISTA ORDENADA)
 -- ==========================================
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
@@ -194,18 +213,20 @@ Config = {
 local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
-        Background = COLOR_BLACK, 
+        Background = Color3.fromRGB(30, 30, 35),
         Title = Color3.fromRGB(255, 140, 0),
-        InputField = COLOR_CATEGORY_BG,
-        InputFieldBorder = Color3.fromRGB(60, 60, 60), 
-        Button = COLOR_CATEGORY_BG,
-        ButtonHover = Color3.fromRGB(45, 45, 45),
+        InputField = Color3.fromRGB(25, 25, 30),
+        InputFieldBorder = Color3.fromRGB(180, 0, 0),
+        Button = Color3.fromRGB(25, 25, 30),
+        ButtonHover = Color3.fromRGB(35, 35, 40),
         Error = Color3.fromRGB(220, 50, 50),
         Success = Color3.fromRGB(80, 200, 80),
         Discord = Color3.fromRGB(88, 101, 242)
     },
     Service = "redexecutor",
+    SilentMode = false,
     DiscordInvite = "aNaFpb2Qsb",
+    WebsiteURL = "https://yourwebsite.com/",
     FileName = "redexecutor/key.txt"
 }
 
@@ -260,14 +281,14 @@ local function showLoadingScreen()
     frame.Name = "LoadingFrame"
     frame.Size = UDim2.new(0, 300, 0, 120)
     frame.Position = UDim2.new(0.5, -150, 0.5, -60)
-    frame.BackgroundColor3 = COLOR_BLACK
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
     frame.Parent = ScreenGui
     applyRoundedCorners(frame, 16)
 
     local border = Instance.new("UIStroke")
     border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    border.Color = Color3.fromRGB(60, 60, 60)
+    border.Color = Color3.fromRGB(0, 0, 0)
     border.Thickness = 2
     border.Parent = frame
 
@@ -320,6 +341,7 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
+    -- [[ REDIMENSIONAMENTO: LARGURA 450 (Mais compacto), ALTURA 340 ]]
     animationContainer.Size = UDim2.new(0, 450, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -344,45 +366,10 @@ local function createHub()
     hubBorder.LineJoinMode=Enum.LineJoinMode.Round
     hubBorder.Parent=frame
 
-    -- Gradiente Cinza
     local hubGradient=Instance.new("UIGradient")
-    hubGradient.Color=ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(60,60,60))
-    })
+    hubGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
     hubGradient.Rotation=45
     hubGradient.Parent=hubBorder
-
-    -- SISTEMA DE ARRASTAR EM QUALQUER PARTE
-    local draggingHub = false
-    local dragInputHub, dragStartHub, startPosHub
-
-    frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            draggingHub = true
-            dragStartHub = input.Position
-            startPosHub = animationContainer.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    draggingHub = false
-                end
-            end)
-        end
-    end)
-
-    frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInputHub = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if draggingHub and input == dragInputHub then
-            local delta = input.Position - dragStartHub
-            animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
-        end
-    end)
 
     local titleBar=Instance.new("Frame")
     titleBar.Name="TitleBar"
@@ -393,6 +380,34 @@ local function createHub()
     titleBar.Parent=frame
     applyRoundedCorners(titleBar,10)
 
+    local draggingHub = false
+    local dragStartHub, startPosHub
+    local currentInputHub = nil
+
+    titleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            draggingHub = true
+            dragStartHub = input.Position
+            startPosHub = animationContainer.Position
+            currentInputHub = input
+            local connection
+            connection = input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.Ended then
+                    draggingHub = false
+                    currentInputHub = nil
+                    connection:Disconnect()
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if draggingHub and currentInputHub == input and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStartHub
+            animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
+        end
+    end)
+
     local titleBarBorder=Instance.new("UIStroke")
     titleBarBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
     titleBarBorder.Thickness=1.5
@@ -400,10 +415,7 @@ local function createHub()
     titleBarBorder.Parent=titleBar
 
     local titleBarGradient=Instance.new("UIGradient")
-    titleBarGradient.Color=ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(80,80,80)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(50,50,50))
-    })
+    titleBarGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
     titleBarGradient.Rotation=90
     titleBarGradient.Parent=titleBarBorder
 
@@ -442,7 +454,7 @@ local function createHub()
     searchBox.Name = "CategorySearchBox"
     searchBox.Size = UDim2.new(0, 120, 0, 22)
     searchBox.Position = UDim2.new(0, 5, 0, 50) 
-    searchBox.BackgroundColor3 = COLOR_CATEGORY_BG
+    searchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     searchBox.TextColor3 = COLOR_TEXT
     searchBox.PlaceholderText = "🔍 Pesquisar..."
     searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
@@ -460,19 +472,16 @@ local function createHub()
     searchBoxBorder.Parent = searchBox
 
     local searchBoxGradient = Instance.new("UIGradient")
-    searchBoxGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-    })
+    searchBoxGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
     searchBoxGradient.Rotation = 90
     searchBoxGradient.Parent = searchBoxBorder
 
-    -- === BOTÃO DE FAVORITOS ===
+    -- === BOTÃO DE FAVORITOS (FIXO) ===
     local favFixedBtn = Instance.new("TextButton")
     favFixedBtn.Name = "FixedFavoritesButton"
     favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
     favFixedBtn.Position = UDim2.new(0, 5, 0, 78) 
-    favFixedBtn.BackgroundColor3 = COLOR_CATEGORY_BG
+    favFixedBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     favFixedBtn.TextColor3 = COLOR_TEXT_DIM
     favFixedBtn.Text = "⭐ Favoritos"
     favFixedBtn.Font = HUB_FONT
@@ -487,10 +496,7 @@ local function createHub()
     favBorder.Parent = favFixedBtn
 
     local favGradient = Instance.new("UIGradient")
-    favGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-    })
+    favGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
     favGradient.Rotation = 90
     favGradient.Parent = favBorder
 
@@ -502,7 +508,7 @@ local function createHub()
     categoryFrame.BackgroundColor3 = COLOR_CATEGORY_BG
     categoryFrame.BorderSizePixel = 0
     categoryFrame.ScrollBarThickness = 4
-    categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100) 
+    categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 140, 0)
     categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     categoryFrame.Parent = frame
     applyRoundedCorners(categoryFrame, 12)
@@ -514,10 +520,7 @@ local function createHub()
     categoryFrameBorder.Parent = categoryFrame
 
     local categoryFrameGradient = Instance.new("UIGradient")
-    categoryFrameGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-    })
+    categoryFrameGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
     categoryFrameGradient.Rotation = 90
     categoryFrameGradient.Parent = categoryFrameBorder
 
@@ -560,7 +563,7 @@ local function createHub()
     scriptFrame.BackgroundColor3=COLOR_BLACK
     scriptFrame.BorderSizePixel=0
     scriptFrame.ScrollBarThickness=4
-    scriptFrame.ScrollBarImageColor3=Color3.fromRGB(100, 100, 100)
+    scriptFrame.ScrollBarImageColor3=Color3.fromRGB(255, 140, 0)
     scriptFrame.Parent=frame
     applyRoundedCorners(scriptFrame,16)
 
@@ -571,10 +574,7 @@ local function createHub()
     scriptFrameBorder.Parent=scriptFrame
 
     local scriptFrameGradient=Instance.new("UIGradient")
-    scriptFrameGradient.Color=ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(60,60,60))
-    })
+    scriptFrameGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
     scriptFrameGradient.Rotation=90
     scriptFrameGradient.Parent=scriptFrameBorder
 
@@ -616,10 +616,7 @@ local function createHub()
     footerBorder.Parent=footerBackground
 
     local footerGradient=Instance.new("UIGradient")
-    footerGradient.Color=ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(80,80,80)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(50,50,50))
-    })
+    footerGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
     footerGradient.Rotation=90
     footerGradient.Parent=footerBorder
 
@@ -751,33 +748,31 @@ local function createHub()
         border.Parent = btn
 
         local gradient = Instance.new("UIGradient")
-        gradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-        })
+        gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
         gradient.Rotation = 90
         gradient.Parent = border
         
-        -- Ícone de Digital 
+        -- === ADIÇÃO: Ícone de Digital (Fingerprint) ===
         local fingerIcon = Instance.new("ImageLabel")
         fingerIcon.Name = "FingerprintIcon"
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
-        fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) 
+        fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) -- No canto direito
         fingerIcon.BackgroundTransparency = 1
+        -- ID DA TEXTURA DA DIGITAL:
         fingerIcon.Image = "rbxassetid://12333784627" 
-        fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) 
+        fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) -- Cor cinza escuro
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- Botão de Estrela
+        -- === Botão de Estrela (Ao lado da digital, na esquerda) ===
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
         starBtn.BackgroundTransparency = 1
         starBtn.Size = UDim2.new(0, 30, 1, 0)
-        starBtn.Position = UDim2.new(1, -55, 0, 0) 
+        starBtn.Position = UDim2.new(1, -55, 0, 0) -- Movido para esquerda da digital
         starBtn.Font = HUB_FONT
-        starBtn.TextSize = 24 
+        starBtn.TextSize = 24 -- ESTRELA GRANDE
         starBtn.ZIndex = 2
         starBtn.Parent = btn
         
@@ -849,7 +844,9 @@ local function createHub()
         end
 
         local hasFav = false
+        -- Iterar sobre a lista de favoritos (Array) para manter a ordem
         for _, favName in ipairs(FavoritesList) do
+            -- Busca os dados do script no global
             local scriptData = nil
             for _, s in ipairs(AllScriptsGlobal) do
                 if s.Name == favName then
@@ -873,6 +870,7 @@ local function createHub()
     favFixedBtn.MouseButton1Click:Connect(onFavoritesClick)
 
     local function createCategoryButton(name, contents, defaultOrder)
+        -- Registra imediatamente os scripts na memória global
         if typeof(contents) == "table" then
             for _, s in ipairs(contents) do
                 RegisterScript(s.Name, s.Func)
@@ -907,15 +905,13 @@ local function createHub()
         border.Parent = btn
 
         local gradient = Instance.new("UIGradient")
-        gradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-        })
+        gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
         gradient.Rotation = 90
         gradient.Parent = border
 
         if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
+            -- MODIFICAÇÃO: Estrela tamanho normal
             btn.Text = '<font color="#FFD700">★</font> ' .. name
         else
             if defaultOrder then
@@ -949,12 +945,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
-        {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "--- AUTO DETECT FIX ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "IDs Atualizados!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Nomes das categorias", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "corrigidos.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Detecção de Jogos Melhorada!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Agora reconhece Seas 1, 2, 3,", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Lobbies e Sub-locais.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -1063,7 +1059,7 @@ local function createHub()
     createCategoryButton("📣 Atualizações 📣", nil, 1)
     
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
-    createCategoryButton("99 Nights in the Florest", noiteScripts, 3)
+    createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
     createCategoryButton("Grow A Garden", growScripts, 4)
     createCategoryButton("Vox Seas", voxSeasScripts, 5)
     createCategoryButton("Blox Fruits", bloxFruitsScripts, 6)
@@ -1075,26 +1071,26 @@ local function createHub()
     createCategoryButton("Ink Game", inkGameScripts, 12)
     createCategoryButton("Natural Disaster", naturalDisasterScripts, 13)
     createCategoryButton("Forsaken", forsakenScripts, 14)
-    createCategoryButton("Fish It", pegueOPeixeScripts, 15)
-    createCategoryButton("Murder Mystery 2", murderMysteryScripts, 16)
+    createCategoryButton("Pegue O Peixe", pegueOPeixeScripts, 15)
+    createCategoryButton("Murder Mystery", murderMysteryScripts, 16)
     createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 17)
-    createCategoryButton("Plants vs Brainrots", plantaVSBrainrotScripts, 18)
+    createCategoryButton("Planta Vs Brainrot", plantaVSBrainrotScripts, 18)
     createCategoryButton("Dead Rails", deadRailsScripts, 19)
-    createCategoryButton("Iq Test", testeDeQiScripts, 20)
-    createCategoryButton("Pass or Die", passOrDieScripts, 21)
+    createCategoryButton("Teste De Qi", testeDeQiScripts, 20)
+    createCategoryButton("Pass Or Die", passOrDieScripts, 21)
     createCategoryButton("Math Murder", mathMurderScripts, 22)
     createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
     createCategoryButton("Dump", dumpScripts, 24)
-    createCategoryButton("Eat Brainrot For Fight", eatBrainrotForFightScripts, 25)
-    createCategoryButton("No Limit Strongest Punch Simulator", khSaeedScripts, 26)
-    createCategoryButton("Brainrot Evolution", brainrotEvolucaoScripts, 27)
+    createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 25)
+    createCategoryButton("Sem limites soco forte", khSaeedScripts, 26)
+    createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
     createCategoryButton("Anime Eternal", animeEternalScripts, 28)
     createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
     createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
     createCategoryButton("The Forge", theForgeScripts, 32)
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
-    createCategoryButton("Anime Fighting Simulator: Endless", afsInfinityScripts, 35)
+    createCategoryButton("AFS: Infinity", afsInfinityScripts, 35)
 
     local autoClickBtn = nil
     if DetectedGameCategory then
@@ -1121,7 +1117,7 @@ local function showLoadingAndOpenHub()
         welcomeFrame.Size = UDim2.new(0, 300, 0, 50)
         welcomeFrame.Position = UDim2.new(0.5, -150, 0.5, -25)
         welcomeFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-        welcomeFrame.BackgroundColor3 = COLOR_BLACK
+        welcomeFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         welcomeFrame.BorderSizePixel = 0
         welcomeFrame.Parent = ScreenGui
         applyRoundedCorners(welcomeFrame, 16)
@@ -1129,7 +1125,7 @@ local function showLoadingAndOpenHub()
 
         local border = Instance.new("UIStroke")
         border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        border.Color = Color3.fromRGB(60, 60, 60)
+        border.Color = Color3.fromRGB(0, 0, 0)
         border.Thickness = 2
         border.Parent = welcomeFrame
 
@@ -1198,7 +1194,7 @@ local function CreateKeyUI()
         BorderSizePixel = 2,
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 270), 
+        Size = UDim2.new(0, 350, 0, 270), -- Aumentado para o novo texto
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
@@ -1218,10 +1214,10 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = KeySystemData.Name .. " – Sistema de Key",
-        Position = UDim2.new(0.5, 0, 0, 45), 
+        Position = UDim2.new(0.5, 0, 0, 45), -- Movido para baixo
         Size = UDim2.new(0, 250, 0, 20),
         Font = HUB_FONT,
-        TextColor3 = KeySystemData.Colors.Title, 
+        TextColor3 = KeySystemData.Colors.Title, -- Laranja Padronizado
         TextSize = 15,
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1232,11 +1228,11 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = "Clique em Pegar Key, logo em seguida cole o link no seu navegador!",
-        Position = UDim2.new(0.5, 0, 0, 65), 
+        Position = UDim2.new(0.5, 0, 0, 65), -- Abaixo do título
         Size = UDim2.new(0, 280, 0, 15),
         Font = HUB_FONT,
-        TextColor3 = Color3.fromRGB(160, 160, 160), 
-        TextSize = 10, 
+        TextColor3 = Color3.fromRGB(160, 160, 160), -- Cor cinza
+        TextSize = 10, -- Menor que o título
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
     })
@@ -1247,7 +1243,7 @@ local function CreateKeyUI()
         BackgroundColor3 = KeySystemData.Colors.InputField,
         Text = "",
         PlaceholderText = "Cole sua key aqui...",
-        Position = UDim2.new(0.5, 0, 0.35, 0), 
+        Position = UDim2.new(0.5, 0, 0.35, 0), -- Ajustado para baixo
         Size = UDim2.new(0, 280, 0, 35),
         Font = HUB_FONT,
         TextSize = 14,
@@ -1281,7 +1277,7 @@ local function CreateKeyUI()
         Text = "Verificar Key",
         Font = HUB_FONT,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, 
+        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1298,7 +1294,7 @@ local function CreateKeyUI()
         Text = "Pegar Key",
         Font = HUB_FONT,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, 
+        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1522,9 +1518,9 @@ local function startKeySystem()
     end
 
     if alreadyValid then
-        main() 
+        main() -- Entra direto no Hub
     else
-        CreateKeyUI() 
+        CreateKeyUI() -- Exibe a tela de Key somente se não for válida
     end
 end
 
