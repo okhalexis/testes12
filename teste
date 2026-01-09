@@ -955,8 +955,10 @@ local function createHub()
         {Text = "+2 Scripts The Forge: Endlass", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novo Sistema de Favoritar", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novo Sistema de Deslizar o Hub", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novo Sistema de Reconhecer o jogo que você está ( somente alguns )", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novo Sistema de Reconhecer o jogo que você está ( somente alguns )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novo Sistema de Reconhecer o jogo que você está", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Nova Fonte dos Textos", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Hub mais leve", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Bugs Corrigidos", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "texto centralizado.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
