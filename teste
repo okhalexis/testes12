@@ -1,11 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Dark Minimalist (Baseado na Foto)
-    -- MODIFICAÇÕES DE CORES:
-    -- 1. Fundo: Preto Suave/Cinza Escuro (Estilo Hub V3).
-    -- 2. Bordas: Cinza (Substituindo o gradiente Laranja).
-    -- 3. Textos: Branco e Cinza Claro.
-    -- 4. Ícones: Escala de cinza e branco.
+    -- Khalexis Hub - Versão Hybrid (Dark Photo Style + Cores Originais)
+    -- 1. Fundo: Preto/Cinza Escuro (Igual a foto).
+    -- 2. Bordas: Cinza Fino (Igual a foto).
+    -- 3. Textos: Laranja Forte e Dourado (Restaurado como pedido).
+    -- 4. Ícones: Estrela Dourada.
 
 --]]
 
@@ -17,7 +16,7 @@ local HUB_TEXT_SIZE = 14
 
 local function applyRoundedCorners(guiObject, radius)
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, radius or 6) -- Canto um pouco mais quadrado como na foto
+    corner.CornerRadius = UDim.new(0, radius or 6) 
     corner.Parent = guiObject
 end
 
@@ -30,38 +29,26 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS (AUTO DETECT)
+-- BANCO DE DADOS DE IDS
 -- ==========================================
 local GameID_Database = {
     [2753915549] = "Blox Fruits",
     [4442272183] = "Blox Fruits",
     [7449423635] = "Blox Fruits",
-    
     [4520749081] = "King Legacy",
     [6377160089] = "King Legacy",
-    
     [4924922222] = "Brookhaven",
-    
     [6516141723] = "Doors",
     [6839171747] = "Doors",
-    
     [142823291] = "Murder Mystery",
     [189707] = "Natural Disaster",
     [17625359962] = "Rivals",
     [16732694052] = "Pegue O Peixe",
-    
-    -- THE FORGE IDS
     [16347316744] = "The Forge",
     [76558904092080] = "The Forge", 
 }
 
 local CurrentPlaceId = game.PlaceId
-
--- Debug no console (F9)
-print("------------------------------------------------")
-print("[KHALEXIS DEBUG] ID ATUAL DO JOGO: " .. tostring(CurrentPlaceId))
-print("------------------------------------------------")
-
 local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -70,33 +57,34 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
 -- ==========================================
--- NOVAS CORES (BASEADO NA FOTO)
+-- CORES (MISTURA: FUNDO DARK + TEXTO LARANJA)
 -- ==========================================
 local themes = {
-    dark = {
-        main_bg = Color3.fromRGB(18, 18, 18),       -- Fundo muito escuro
-        element_bg = Color3.fromRGB(25, 25, 25),    -- Fundo dos botões/listas
-        border_color = Color3.fromRGB(60, 60, 60),  -- Borda Cinza (O destaque da foto)
-        text_white = Color3.fromRGB(240, 240, 240), -- Texto Branco
-        text_gray = Color3.fromRGB(150, 150, 150)   -- Texto Cinza
+    hybrid = {
+        main_bg = Color3.fromRGB(18, 18, 18),       -- Fundo escuro (Foto)
+        element_bg = Color3.fromRGB(25, 25, 25),    -- Elementos escuros (Foto)
+        border_color = Color3.fromRGB(60, 60, 60),  -- Borda Cinza Fina (Foto)
+        
+        text_orange = Color3.fromRGB(255, 140, 0),  -- Laranja Forte (Restaurado)
+        text_white = Color3.fromRGB(240, 240, 240), 
+        text_gray = Color3.fromRGB(150, 150, 150),
+        star_gold = Color3.fromRGB(255, 215, 0)     -- Dourado (Restaurado)
     },
 }
 
--- Mapeamento das Cores
-local COLOR_BLACK = themes.dark.main_bg
-local COLOR_CATEGORY_BG = themes.dark.element_bg
-local COLOR_CATEGORY_BTN = themes.dark.element_bg
-local COLOR_SCRIPT_BTN = themes.dark.element_bg
-local COLOR_TITLEBAR = themes.dark.main_bg
-local COLOR_BORDER = themes.dark.border_color -- Nova cor de borda global
+-- Mapeamento
+local COLOR_BLACK = themes.hybrid.main_bg
+local COLOR_CATEGORY_BG = themes.hybrid.element_bg
+local COLOR_TITLEBAR = themes.hybrid.main_bg
+local COLOR_BORDER = themes.hybrid.border_color 
 
-local COLOR_TEXT = themes.dark.text_white
-local COLOR_TEXT_DIM = themes.dark.text_gray
+local COLOR_TEXT_MAIN = themes.hybrid.text_white
+local COLOR_TEXT_HIGHLIGHT = themes.hybrid.text_orange -- Texto Laranja
+local COLOR_TEXT_DIM = themes.hybrid.text_gray
+
+local COLOR_STAR_ON = themes.hybrid.star_gold       -- Estrela Dourada
+local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
-local COLOR_FOOTER_TEXT = themes.dark.text_gray
-
-local COLOR_STAR_ON = Color3.fromRGB(255, 255, 255) -- Estrela Branca (Minimalista)
-local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)   -- Estrela Cinza Escuro
 
 local userId = player.UserId
 local userName = player.Name
@@ -105,7 +93,6 @@ local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
 local HubOpen = false
 local ToggleButton 
-local ErrorLabel
 local HasShownWelcome = false
 
 -- Configurações de Salvamento
@@ -113,7 +100,7 @@ local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
 
 -- ==========================================
--- SISTEMA DE FAVORITOS (LISTA ORDENADA)
+-- SISTEMA DE FAVORITOS
 -- ==========================================
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
@@ -169,7 +156,7 @@ local function RegisterScript(name, func)
 end
 
 -- ==========================================
--- KEY SYSTEM CONFIG (Cores Atualizadas)
+-- KEY SYSTEM CONFIG
 -- ==========================================
 
 Config = {
@@ -182,20 +169,16 @@ local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
         Background = COLOR_BLACK,
-        Title = COLOR_TEXT,
+        Title = COLOR_TEXT_HIGHLIGHT, -- Título Laranja
         InputField = COLOR_CATEGORY_BG,
         InputFieldBorder = COLOR_BORDER,
         Button = COLOR_CATEGORY_BG,
         ButtonHover = Color3.fromRGB(40, 40, 40),
-        Error = Color3.fromRGB(220, 50, 50),
+        Error = COLOR_ERROR,
         Success = Color3.fromRGB(80, 200, 80),
         Discord = Color3.fromRGB(88, 101, 242)
     },
-    Service = "redexecutor",
-    SilentMode = false,
-    DiscordInvite = "aNaFpb2Qsb",
-    WebsiteURL = "https://yourwebsite.com/",
-    FileName = "redexecutor/key.txt"
+    Service = "redexecutor"
 }
 
 local function CreateObject(class, props)
@@ -223,11 +206,8 @@ end
 
 local function showAutoMessage(msg)
     local m = Instance.new("Frame"); m.Name="AutoMessageFrame"; m.Size=UDim2.new(0,320,0,45); m.Position=UDim2.new(1,-330,1,-55); m.BackgroundColor3=COLOR_BLACK; m.BorderSizePixel=0; m.Parent=ScreenGui; applyRoundedCorners(m,10);
-    
-    -- Borda na mensagem
     local s = Instance.new("UIStroke"); s.Color = COLOR_BORDER; s.Thickness = 1; s.Parent = m;
-
-    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-20,1,-10); l.Position=UDim2.new(0,10,0,5); l.BackgroundTransparency=1; l.TextColor3=COLOR_TEXT; l.Font=HUB_FONT; l.TextSize=16; l.Text=msg; l.TextWrapped=true; l.TextXAlignment=Enum.TextXAlignment.Left; l.TextYAlignment=Enum.TextYAlignment.Center; l.Parent=m;
+    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-20,1,-10); l.Position=UDim2.new(0,10,0,5); l.BackgroundTransparency=1; l.TextColor3=COLOR_TEXT_HIGHLIGHT; l.Font=HUB_FONT; l.TextSize=16; l.Text=msg; l.TextWrapped=true; l.TextXAlignment=Enum.TextXAlignment.Left; l.TextYAlignment=Enum.TextYAlignment.Center; l.Parent=m;
     spawn(function() wait(4); if m and m.Parent then m:Destroy() end end)
 end
 
@@ -270,7 +250,7 @@ local function showLoadingScreen()
     label.Position = UDim2.new(0, 0, 0.3, -15)
     label.BackgroundTransparency = 1
     label.Text = "Carregando..."
-    label.TextColor3 = COLOR_TEXT
+    label.TextColor3 = COLOR_TEXT_HIGHLIGHT -- Laranja
     label.Font = HUB_FONT
     label.TextSize = 20
     label.Parent = frame
@@ -288,18 +268,17 @@ local function showLoadingScreen()
     spinnerBorder.Thickness = 1
     spinnerBorder.Parent = spinner
 
-    local orangeBall = Instance.new("Frame") -- Agora será Branca/Cinza
+    local orangeBall = Instance.new("Frame")
     orangeBall.Size = UDim2.new(0, 50, 0, 50)
     orangeBall.Position = UDim2.new(0, 0, 0, 0)
-    orangeBall.BackgroundColor3 = COLOR_TEXT -- Branco
-    orangeBall.BackgroundTransparency = 0.8
+    orangeBall.BackgroundColor3 = COLOR_TEXT_HIGHLIGHT -- Laranja de volta
     applyRoundedCorners(orangeBall, 25)
     orangeBall.Parent = spinner
 
     local whiteBall = Instance.new("Frame")
-    whiteBall.Size = UDim2.new(0, 15, 0, 15)
-    whiteBall.Position = UDim2.new(0.5, -7.5, 0.5, -7.5)
-    whiteBall.BackgroundColor3 = COLOR_TEXT
+    whiteBall.Size = UDim2.new(0, 20, 0, 20)
+    whiteBall.Position = UDim2.new(0.5, -10, 0.5, -10)
+    whiteBall.BackgroundColor3 = Color3.new(1,1,1)
     applyRoundedCorners(whiteBall, 10)
     whiteBall.Parent = orangeBall
 
@@ -340,10 +319,8 @@ local function createHub()
     local hubBorder=Instance.new("UIStroke")
     hubBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
     hubBorder.Thickness=1.5
-    hubBorder.Color = COLOR_BORDER -- Borda Cinza Fixa (Sem gradiente)
+    hubBorder.Color = COLOR_BORDER -- Borda Cinza Fina (Foto)
     hubBorder.Parent=frame
-
-    -- REMOVIDO GRADIENTE LARANJA DA BORDA PRINCIPAL PARA FICAR IGUAL A FOTO
 
     local titleBar=Instance.new("Frame")
     titleBar.Name="TitleBar"
@@ -386,10 +363,10 @@ local function createHub()
     titleLabel.Name="Title"
     titleLabel.Size=UDim2.new(1,0,1,0)
     titleLabel.BackgroundTransparency=1
-    titleLabel.Text="Khalexis Scripts HUB"
-    titleLabel.TextColor3=COLOR_TEXT
+    titleLabel.Text="Khalexis Hub"
+    titleLabel.TextColor3=COLOR_TEXT_HIGHLIGHT -- Texto Laranja
     titleLabel.Font=HUB_FONT
-    titleLabel.TextSize=16
+    titleLabel.TextSize=18
     titleLabel.TextXAlignment=Enum.TextXAlignment.Left
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.Parent=titleBar
@@ -421,7 +398,7 @@ local function createHub()
     searchBox.Size = UDim2.new(0, 120, 0, 24)
     searchBox.Position = UDim2.new(0, 5, 0, 50) 
     searchBox.BackgroundColor3 = COLOR_CATEGORY_BG
-    searchBox.TextColor3 = COLOR_TEXT
+    searchBox.TextColor3 = COLOR_TEXT_MAIN
     searchBox.PlaceholderText = "Pesquisar..."
     searchBox.PlaceholderColor3 = COLOR_TEXT_DIM
     searchBox.Text = ""
@@ -434,7 +411,7 @@ local function createHub()
     local searchBoxBorder = Instance.new("UIStroke")
     searchBoxBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     searchBoxBorder.Thickness = 1
-    searchBoxBorder.Color = COLOR_BORDER -- Borda Cinza Fixa
+    searchBoxBorder.Color = COLOR_BORDER
     searchBoxBorder.Parent = searchBox
 
     -- === BOTÃO DE FAVORITOS (FIXO) ===
@@ -453,7 +430,7 @@ local function createHub()
     local favBorder = Instance.new("UIStroke")
     favBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     favBorder.Thickness = 1
-    favBorder.Color = COLOR_BORDER -- Borda Cinza Fixa
+    favBorder.Color = COLOR_BORDER
     favBorder.Parent = favFixedBtn
 
     -- === LISTA DE CATEGORIAS ===
@@ -465,7 +442,7 @@ local function createHub()
     categoryFrame.BackgroundTransparency = 1
     categoryFrame.BorderSizePixel = 0
     categoryFrame.ScrollBarThickness = 2
-    categoryFrame.ScrollBarImageColor3 = COLOR_BORDER -- Scroll Cinza
+    categoryFrame.ScrollBarImageColor3 = COLOR_BORDER
     categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     categoryFrame.Parent = frame
     
@@ -507,7 +484,7 @@ local function createHub()
     scriptFrame.BackgroundTransparency = 1
     scriptFrame.BorderSizePixel=0
     scriptFrame.ScrollBarThickness=2
-    scriptFrame.ScrollBarImageColor3=COLOR_BORDER -- Scroll Cinza
+    scriptFrame.ScrollBarImageColor3=COLOR_BORDER
     scriptFrame.Parent=frame
 
     local scriptContainer=Instance.new("Frame")
@@ -563,7 +540,6 @@ local function createHub()
     avatar.ScaleType=Enum.ScaleType.Fit
     applyRoundedCorners(avatar,12)
     
-    -- Borda no avatar
     local avBorder = Instance.new("UIStroke"); avBorder.Color = COLOR_BORDER; avBorder.Thickness = 1; avBorder.Parent = avatar;
 
     local thumbType,thumbSize=Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48
@@ -576,7 +552,7 @@ local function createHub()
     playerNameLabel.Position=UDim2.new(0,30,0,0)
     playerNameLabel.BackgroundTransparency=1
     playerNameLabel.Text=userName
-    playerNameLabel.TextColor3 = COLOR_TEXT
+    playerNameLabel.TextColor3 = COLOR_TEXT_MAIN
     playerNameLabel.Font=HUB_FONT
     playerNameLabel.TextSize=12
     playerNameLabel.TextXAlignment=Enum.TextXAlignment.Left
@@ -587,7 +563,7 @@ local function createHub()
     footerCredit.Size = UDim2.new(0, 150, 1, 0)
     footerCredit.Position = UDim2.new(1, -155, 0, 0)
     footerCredit.BackgroundTransparency = 1
-    footerCredit.TextColor3 = COLOR_FOOTER_TEXT
+    footerCredit.TextColor3 = COLOR_TEXT_DIM
     footerCredit.TextSize = 10
     footerCredit.Font = HUB_FONT
     footerCredit.TextXAlignment = Enum.TextXAlignment.Right
@@ -603,10 +579,10 @@ local function createHub()
         RegisterScript(name, func)
         
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, 0, 0, 32) -- Altura como na foto
+        btn.Size = UDim2.new(1, 0, 0, 32)
         btn.BackgroundColor3 = COLOR_CATEGORY_BG
         btn.BorderSizePixel = 0
-        btn.TextColor3 = COLOR_TEXT
+        btn.TextColor3 = COLOR_TEXT_MAIN
         btn.Font = HUB_FONT
         btn.TextSize = 12
         btn.Text = "       " .. name:upper()
@@ -617,21 +593,21 @@ local function createHub()
         local border = Instance.new("UIStroke")
         border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         border.Thickness = 1
-        border.Color = COLOR_BORDER -- Borda Cinza Fixa
+        border.Color = COLOR_BORDER
         border.Parent = btn
 
-        -- Ícone de Digital (Fingerprint) - Cinza
+        -- Ícone de Digital 
         local fingerIcon = Instance.new("ImageLabel")
         fingerIcon.Name = "FingerprintIcon"
         fingerIcon.Size = UDim2.new(0, 20, 0, 20)
         fingerIcon.Position = UDim2.new(1, -30, 0.5, -10) 
         fingerIcon.BackgroundTransparency = 1
         fingerIcon.Image = "rbxassetid://12333784627" 
-        fingerIcon.ImageColor3 = Color3.fromRGB(80, 80, 80) -- Cinza Escuro
+        fingerIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- Botão de Estrela (Ao lado da digital)
+        -- Botão de Estrela (Dourada!)
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
@@ -644,7 +620,7 @@ local function createHub()
         starBtn.Parent = btn
         
         if IsFavorited(name) then
-            starBtn.TextColor3 = COLOR_STAR_ON
+            starBtn.TextColor3 = COLOR_STAR_ON -- Dourado
         else
             starBtn.TextColor3 = COLOR_STAR_OFF
         end
@@ -658,9 +634,8 @@ local function createHub()
             end
         end)
         
-        -- Efeito Hover para imitar a seleção da foto (Texto fica branco brilhante)
         btn.MouseEnter:Connect(function()
-            TweenService:Create(border, TweenInfo.new(0.2), {Color = Color3.fromRGB(150, 150, 150)}):Play()
+            TweenService:Create(border, TweenInfo.new(0.2), {Color = COLOR_TEXT_HIGHLIGHT}):Play() -- Borda fica laranja
             TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
         end)
         btn.MouseLeave:Connect(function()
@@ -670,6 +645,7 @@ local function createHub()
 
         btn.MouseButton1Click:Connect(function()
             btn.Text = "       EXECUTANDO..."
+            btn.TextColor3 = COLOR_TEXT_HIGHLIGHT -- Texto laranja ao clicar
             btn.Active = false
             spawn(function()
                 local success, errorMessage = pcall(func)
@@ -681,6 +657,7 @@ local function createHub()
                     closeHubWithAnimation(animationContainer)
                 end
                 btn.Text = "       " .. name:upper()
+                btn.TextColor3 = COLOR_TEXT_MAIN
                 btn.Active = true
             end)
         end)
@@ -691,7 +668,7 @@ local function createHub()
         local lbl=Instance.new("TextLabel")
         lbl.Size=UDim2.new(1,0,0,18)
         lbl.BackgroundTransparency=1
-        lbl.TextColor3=textColor or COLOR_TEXT
+        lbl.TextColor3=textColor or COLOR_TEXT_MAIN
         lbl.Font=font or HUB_FONT
         lbl.TextSize=12
         lbl.Text=text
@@ -754,7 +731,7 @@ local function createHub()
         btn.Name = name:gsub("%s+", "")
         btn.Size = UDim2.new(1, 0, 0, 24)
         btn.BackgroundColor3 = COLOR_CATEGORY_BG
-        btn.BackgroundTransparency = 1 -- Categorias transparentes como na foto
+        btn.BackgroundTransparency = 1 
         btn.BorderSizePixel = 0
         btn.TextColor3 = COLOR_TEXT_DIM
         btn.Font = HUB_FONT
@@ -763,14 +740,13 @@ local function createHub()
         btn.TextXAlignment = Enum.TextXAlignment.Left
         btn.Parent = categoryContainer
         
-        -- Adicionando padding a esquerda para alinhar texto
         local pad = Instance.new("UIPadding")
         pad.PaddingLeft = UDim.new(0, 5)
         pad.Parent = btn
 
         if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
-            btn.TextColor3 = COLOR_STAR_ON -- Destaque branco
+            btn.TextColor3 = COLOR_STAR_ON -- Dourado
             btn.Text = "➜ " .. name
         else
             if defaultOrder then
@@ -794,7 +770,7 @@ local function createHub()
                 end
             end
             
-            btn.TextColor3 = COLOR_STAR_ON
+            btn.TextColor3 = COLOR_TEXT_HIGHLIGHT -- Fica Laranja ao clicar
 
             if name == "📣 Atualizações 📣" then
                 displayUpdates()
@@ -807,11 +783,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub - Dark Edition 📣", Color = COLOR_TEXT, Font = HUB_FONT},
-        {Text = "", Color = COLOR_TEXT},
-        {Text = "Novo Visual:", Color = COLOR_STAR_ON, Font = HUB_FONT},
-        {Text = "Tema escuro e minimalista", Color = COLOR_TEXT_DIM},
-        {Text = "baseado no Roblox Leaks Hub.", Color = COLOR_TEXT_DIM},
+        {Text = "📣 Khalexis Hub - Hybrid 📣", Color = COLOR_TEXT_HIGHLIGHT, Font = HUB_FONT},
+        {Text = "", Color = COLOR_TEXT_MAIN},
+        {Text = "Visual da Foto + Cores Originais", Color = COLOR_STAR_ON, Font = HUB_FONT},
+        {Text = "Fundo Dark, Bordas Finas,", Color = COLOR_TEXT_DIM},
+        {Text = "Texto Laranja!", Color = COLOR_TEXT_HIGHLIGHT},
     }
 
     local stealScripts = {
@@ -908,7 +884,7 @@ local function showLoadingAndOpenHub()
         local welcomeMsg = Instance.new("TextLabel")
         welcomeMsg.Size = UDim2.new(1, 0, 1, 0)
         welcomeMsg.BackgroundTransparency = 1
-        welcomeMsg.TextColor3 = COLOR_TEXT
+        welcomeMsg.TextColor3 = COLOR_TEXT_HIGHLIGHT -- Texto Laranja
         welcomeMsg.Font = HUB_FONT
         welcomeMsg.TextSize = 20
         welcomeMsg.Text = "Bem Vindo " .. player.Name
@@ -985,7 +961,7 @@ local function CreateKeyUI()
         Position = UDim2.new(0.5, 0, 0, 30),
         Size = UDim2.new(0, 250, 0, 20),
         Font = HUB_FONT,
-        TextColor3 = COLOR_TEXT,
+        TextColor3 = COLOR_TEXT_HIGHLIGHT, -- Título Laranja
         TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1001,7 +977,7 @@ local function CreateKeyUI()
         Size = UDim2.new(0, 280, 0, 35),
         Font = HUB_FONT,
         TextSize = 14,
-        TextColor3 = COLOR_TEXT,
+        TextColor3 = COLOR_TEXT_MAIN,
         PlaceholderColor3 = COLOR_TEXT_DIM,
         TextXAlignment = Enum.TextXAlignment.Left,
         AnchorPoint = Vector2.new(0.5, 0),
@@ -1029,7 +1005,7 @@ local function CreateKeyUI()
         Text = "Verificar Key",
         Font = HUB_FONT,
         TextSize = 12,
-        TextColor3 = COLOR_TEXT,
+        TextColor3 = COLOR_TEXT_HIGHLIGHT, -- Botão Laranja
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1045,7 +1021,7 @@ local function CreateKeyUI()
         Text = "Pegar Key",
         Font = HUB_FONT,
         TextSize = 12,
-        TextColor3 = COLOR_TEXT,
+        TextColor3 = COLOR_TEXT_HIGHLIGHT, -- Botão Laranja
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1100,7 +1076,7 @@ local function CreateKeyUI()
             return
         end
 
-        ShowStatusMessage("Validando...", COLOR_TEXT)
+        ShowStatusMessage("Validando...", COLOR_TEXT_HIGHLIGHT)
         local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
         local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
         
@@ -1135,7 +1111,7 @@ ToggleButton.Name="ToggleButton"
 ToggleButton.Size=UDim2.new(0,35,0,35)
 ToggleButton.Position=UDim2.new(0,10,0,10)
 ToggleButton.BackgroundColor3=COLOR_BLACK
-ToggleButton.TextColor3=COLOR_TEXT
+ToggleButton.TextColor3=COLOR_TEXT_HIGHLIGHT
 ToggleButton.Text="K"
 ToggleButton.Font=HUB_FONT
 ToggleButton.TextSize=24
