@@ -1,8 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.3 (Drag Anywhere)
-    -- 1. Cores: Fundo Dark (Foto) + Textos Originais (Laranja/Dourado).
-    -- 2. Sistema de Movimento: Alterado para permitir arrastar clicando em qualquer parte do fundo.
+    -- Khalexis Hub - Versão Final v3.4 (Atualização de IDs e Nomes)
+    -- 1. IDs dos jogos atualizados conforme lista.
+    -- 2. Nomes das categorias alterados conforme solicitado.
+    -- 3. Funcionalidades visuais e sistema de movimento mantidos (v3.3).
 
 --]]
 
@@ -27,38 +28,68 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS (AUTO DETECT)
+-- BANCO DE DADOS DE IDS (ATUALIZADO)
 -- ==========================================
 local GameID_Database = {
-    [2753915549] = "Blox Fruits",
-    [4442272183] = "Blox Fruits",
-    [7449423635] = "Blox Fruits",
-    [4520749081] = "King Legacy",
-    [6377160089] = "King Legacy",
-    [4924922222] = "Brookhaven",
-    [6516141723] = "Doors",
-    [6839171747] = "Doors",
-    [142823291] = "Murder Mystery",
-    [189707] = "Natural Disaster",
+    -- NOVOS IDs
+    [109983668079237] = "Steal A Brainrot",
+    [79546208627805] = "99 Nights in the Florest",
+    [126884695634066] = "Grow A Garden",
+    
+    [2753915549] = "Blox Fruits", [4442272183] = "Blox Fruits", [7449423635] = "Blox Fruits",
+    [4520749081] = "King Legacy", [6377160089] = "King Legacy",
+    
     [17625359962] = "Rivals",
-    [16732694052] = "Pegue O Peixe",
-    [16347316744] = "The Forge",
-    [76558904092080] = "The Forge", 
+    [6516141723] = "Doors", [6839171747] = "Doors",
+    [4924922222] = "Brookhaven",
+    [137925884276740] = "Build A Plane",
+    [99567941238278] = "Ink Game",
+    [189707] = "Natural Disaster",
+    [18687417158] = "Forsaken",
+    
+    [121864768012064] = "Fish It", -- Antigo Pegue o Peixe
+    [142823291] = "Murder Mystery 2",
+    [18337464872] = "Weak Legacy 2",
+    [127742093697776] = "Plants vs Brainrots",
+    [116495829188952] = "Dead Rails",
+    [11782774748] = "Iq Test", -- Antigo Teste de Qi
+    [119564951960102] = "Pass or Die",
+    [127707120843339] = "Math Murder",
+    [86223718444028] = "Brainrot Training",
+    [98868317791094] = "Dump",
+    [89642885027451] = "Eat Brainrot For Fight",
+    [7215881810] = "No Limit Strongest Punch Simulator", -- Antigo Sem Limite
+    [111989938562194] = "Brainrot Evolution",
+    [90462358603255] = "Anime Eternal",
+    [79189799490564] = "Anime Weapons",
+    [120546894379169] = "Cars vs Trucks",
+    [125810438250765] = "Deadly Delivery",
+    [130247632398296] = "Anime Fighting Simulator: Endless", -- Antigo AFS Infinity
+    
+    -- The Forge (Mantendo IDs antigos caso necessário)
+    [16347316744] = "The Forge", 
+    [76558904092080] = "The Forge",
 }
 
 local CurrentPlaceId = game.PlaceId
 local DetectedGameCategory = GameID_Database[CurrentPlaceId]
+
+-- Debug
+print("------------------------------------------------")
+print("[KHALEXIS DEBUG] ID DO JOGO: " .. tostring(CurrentPlaceId))
+print("[KHALEXIS DEBUG] CATEGORIA: " .. tostring(DetectedGameCategory))
+print("------------------------------------------------")
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Paletas de Cores (Mantendo o Dark Background + Texto Original)
+-- Paletas de Cores (Dark + Laranja)
 local themes = {
     normal = {
-        main_bg = Color3.fromRGB(15, 15, 15),       -- Fundo Preto
-        category_bg = Color3.fromRGB(25, 25, 25),   -- Fundo dos itens
+        main_bg = Color3.fromRGB(15, 15, 15),       
+        category_bg = Color3.fromRGB(25, 25, 25),   
         title_bar = Color3.fromRGB(20, 20, 20),     
         script_frame_bg = Color3.fromRGB(15, 15, 15), 
         transparency = 0
@@ -72,12 +103,12 @@ local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
 local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
 local COLOR_TITLEBAR = themes.normal.title_bar
 
--- Textos Originais (Laranja/Dourado)
+-- Textos Originais
 local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
 local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
 local COLOR_FOOTER_TEXT = Color3.fromRGB(150, 150, 150)
-local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) -- Amarelo Ouro
+local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) 
 local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
 
 local userId = player.UserId
@@ -313,7 +344,7 @@ local function createHub()
     hubBorder.LineJoinMode=Enum.LineJoinMode.Round
     hubBorder.Parent=frame
 
-    -- Gradiente Cinza (Borda)
+    -- Gradiente Cinza
     local hubGradient=Instance.new("UIGradient")
     hubGradient.Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
@@ -322,9 +353,7 @@ local function createHub()
     hubGradient.Rotation=45
     hubGradient.Parent=hubBorder
 
-    -- =========================================================================
-    -- NOVO SISTEMA DE ARRASTAR (APLICADO AO FRAME PRINCIPAL - "ANY PART")
-    -- =========================================================================
+    -- SISTEMA DE ARRASTAR EM QUALQUER PARTE
     local draggingHub = false
     local dragInputHub, dragStartHub, startPosHub
 
@@ -354,7 +383,6 @@ local function createHub()
             animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
         end
     end)
-    -- =========================================================================
 
     local titleBar=Instance.new("Frame")
     titleBar.Name="TitleBar"
@@ -921,12 +949,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
-        {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Fonte Fredoka One adicionada", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "para um visual mais limpo.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "IDs Atualizados!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Nomes das categorias", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "corrigidos.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -1035,7 +1063,7 @@ local function createHub()
     createCategoryButton("📣 Atualizações 📣", nil, 1)
     
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
-    createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
+    createCategoryButton("99 Nights in the Florest", noiteScripts, 3)
     createCategoryButton("Grow A Garden", growScripts, 4)
     createCategoryButton("Vox Seas", voxSeasScripts, 5)
     createCategoryButton("Blox Fruits", bloxFruitsScripts, 6)
@@ -1047,26 +1075,26 @@ local function createHub()
     createCategoryButton("Ink Game", inkGameScripts, 12)
     createCategoryButton("Natural Disaster", naturalDisasterScripts, 13)
     createCategoryButton("Forsaken", forsakenScripts, 14)
-    createCategoryButton("Pegue O Peixe", pegueOPeixeScripts, 15)
-    createCategoryButton("Murder Mystery", murderMysteryScripts, 16)
+    createCategoryButton("Fish It", pegueOPeixeScripts, 15)
+    createCategoryButton("Murder Mystery 2", murderMysteryScripts, 16)
     createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 17)
-    createCategoryButton("Planta Vs Brainrot", plantaVSBrainrotScripts, 18)
+    createCategoryButton("Plants vs Brainrots", plantaVSBrainrotScripts, 18)
     createCategoryButton("Dead Rails", deadRailsScripts, 19)
-    createCategoryButton("Teste De Qi", testeDeQiScripts, 20)
-    createCategoryButton("Pass Or Die", passOrDieScripts, 21)
+    createCategoryButton("Iq Test", testeDeQiScripts, 20)
+    createCategoryButton("Pass or Die", passOrDieScripts, 21)
     createCategoryButton("Math Murder", mathMurderScripts, 22)
     createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
     createCategoryButton("Dump", dumpScripts, 24)
-    createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 25)
-    createCategoryButton("Sem limites soco forte", khSaeedScripts, 26)
-    createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
+    createCategoryButton("Eat Brainrot For Fight", eatBrainrotForFightScripts, 25)
+    createCategoryButton("No Limit Strongest Punch Simulator", khSaeedScripts, 26)
+    createCategoryButton("Brainrot Evolution", brainrotEvolucaoScripts, 27)
     createCategoryButton("Anime Eternal", animeEternalScripts, 28)
     createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
     createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
     createCategoryButton("The Forge", theForgeScripts, 32)
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
-    createCategoryButton("AFS: Infinity", afsInfinityScripts, 35)
+    createCategoryButton("Anime Fighting Simulator: Endless", afsInfinityScripts, 35)
 
     local autoClickBtn = nil
     if DetectedGameCategory then
