@@ -801,6 +801,8 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     local grandPieceOnlineScripts = {
+        {Name = "( NOVO ) SWITCHHUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a7a8e715b8e.lua"))() end},
+        {Name = "( NOVO ) KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
         {Name = "( NOVO ) DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
         {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
     }
