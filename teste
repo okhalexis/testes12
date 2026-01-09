@@ -809,8 +809,8 @@ local function createHub()
         {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
     }
     local afsInfinityScripts = {
-        {Name = "( NOVO ) NSHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OhhMyGehlee/sh/refs/heads/main/a"))() end}
-        {Name = "( NOVO ) SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end}
+        {Name = "( NOVO ) NSHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OhhMyGehlee/sh/refs/heads/main/a"))() end},
+        {Name = "( NOVO ) SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end},
         {Name = "( NOVO ) SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
     }
 
