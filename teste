@@ -1,11 +1,22 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.0 (Posicionamento Preciso)
-    -- 1. Ícone de Mira (ID 4483345998) fixado na extrema esquerda.
-    -- 2. Texto com margem (Padding) para começar DEPOIS do ícone.
-    -- 3. Auto-Select "Atualizações" mantido.
+    -- Khalexis Hub - Versão Final v4.1 (Correção de Layout Baseada na Imagem)
+    -- 1. CLEANUP: Remove interfaces antigas antes de criar.
+    -- 2. LAYOUT: Texto alinhado à ESQUERDA com margem de 30px.
+    -- 3. ÍCONE: Fixado a 6px da borda esquerda (naquele espaço vazio).
+    -- 4. AUTO-SELECT: Entra direto em Atualizações.
 
 --]]
+
+-- ==========================================
+-- LIMPEZA DE GUI ANTIGA (Importante para atualizar)
+-- ==========================================
+if game.CoreGui:FindFirstChild("KhalexisHub") then
+    game.CoreGui:FindFirstChild("KhalexisHub"):Destroy()
+end
+if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
+    game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
+end
 
 -- ==========================================
 -- CONFIGURAÇÃO VISUAL (FONTE)
@@ -31,14 +42,11 @@ local CoreGui = game:GetService("CoreGui")
 -- BANCO DE DADOS DE IDS (ATUALIZADO)
 -- ==========================================
 local GameID_Database = {
-    -- NOVOS IDs
     [109983668079237] = "Steal A Brainrot",
     [79546208627805] = "99 Nights in the Florest",
     [126884695634066] = "Grow A Garden",
-    
     [2753915549] = "Blox Fruits", [4442272183] = "Blox Fruits", [7449423635] = "Blox Fruits",
     [4520749081] = "King Legacy", [6377160089] = "King Legacy",
-    
     [17625359962] = "Rivals",
     [6516141723] = "Doors", [6839171747] = "Doors",
     [4924922222] = "Brookhaven",
@@ -46,7 +54,6 @@ local GameID_Database = {
     [99567941238278] = "Ink Game",
     [189707] = "Natural Disaster",
     [18687417158] = "Forsaken",
-    
     [121864768012064] = "Fish It", 
     [142823291] = "Murder Mystery 2",
     [18337464872] = "Weak Legacy 2",
@@ -65,7 +72,6 @@ local GameID_Database = {
     [120546894379169] = "Cars vs Trucks",
     [125810438250765] = "Deadly Delivery",
     [130247632398296] = "Anime Fighting Simulator: Endless", 
-    
     [16347316744] = "The Forge", 
     [76558904092080] = "The Forge",
 }
@@ -73,18 +79,12 @@ local GameID_Database = {
 local CurrentPlaceId = game.PlaceId
 local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
--- Debug
-print("------------------------------------------------")
-print("[KHALEXIS DEBUG] ID DO JOGO: " .. tostring(CurrentPlaceId))
-print("[KHALEXIS DEBUG] CATEGORIA: " .. tostring(DetectedGameCategory))
-print("------------------------------------------------")
-
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Paletas de Cores (Dark + Laranja)
+-- Paletas de Cores
 local themes = {
     normal = {
         main_bg = Color3.fromRGB(15, 15, 15),       
@@ -115,7 +115,6 @@ local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
 local HubOpen = false
 local ToggleButton 
-local ErrorLabel
 local HasShownWelcome = false
 
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
@@ -220,6 +219,10 @@ local function SmoothTween(obj, time, properties)
     tween:Play()
     return tween
 end
+
+-- ==========================================
+-- FUNÇÕES DO HUB
+-- ==========================================
 
 local function showAutoMessage(msg)
     local m = Instance.new("Frame"); m.Name="AutoMessageFrame"; m.Size=UDim2.new(0,320,0,45); m.Position=UDim2.new(1,-330,1,-55); m.BackgroundColor3=COLOR_BLACK; m.BorderSizePixel=0; m.Parent=ScreenGui; applyRoundedCorners(m,10);
@@ -904,27 +907,28 @@ local function createHub()
                 btn.LayoutOrder = defaultOrder + 10
             end
             
-            -- [NOVO] Ícone ajustado com AnchorPoint para a esquerda exata
+            -- [CORREÇÃO VISUAL]
+            -- 1. Ícone "grudado" na esquerda (6px de margem)
             local icon = Instance.new("ImageLabel")
             icon.Name = "CategoryIcon"
             icon.Size = UDim2.new(0, 14, 0, 14)
-            icon.AnchorPoint = Vector2.new(0, 0.5) -- Ponto de ancoragem na esquerda-centro
-            icon.Position = UDim2.new(0, 5, 0.5, 0) -- 5 pixels da borda esquerda
+            icon.AnchorPoint = Vector2.new(0, 0.5) -- Pivô no centro vertical, esquerda horizontal
+            icon.Position = UDim2.new(0, 6, 0.5, 0) -- 6px da borda esquerda
             icon.BackgroundTransparency = 1
             icon.Image = "rbxassetid://4483345998"
             icon.ImageColor3 = Color3.fromRGB(180, 180, 180) 
             icon.Parent = btn
             
-            -- [NOVO] Texto alinhado após o ícone com padding
+            -- 2. Texto alinhado à esquerda com margem grande (Padding) para não cobrir o ícone
             btn.TextXAlignment = Enum.TextXAlignment.Left
             local pad = Instance.new("UIPadding")
-            pad.PaddingLeft = UDim.new(0, 30) -- Empurra o texto para começar após o ícone
+            pad.PaddingLeft = UDim.new(0, 30) -- Empurra o texto 30px para a direita
             pad.Parent = btn
         end
         
         if name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
-            -- Remove ícones/padding de Atualizações
+            -- Garante que atualização não tenha ícone/padding extra
             if btn:FindFirstChild("CategoryIcon") then btn.CategoryIcon:Destroy() end
             if btn:FindFirstChild("UIPadding") then btn.UIPadding:Destroy() end
             btn.TextXAlignment = Enum.TextXAlignment.Center
@@ -954,12 +958,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V4.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V4.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Ícones alinhados", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "perfeitamente à esquerda.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Texto ajustado.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Layout corrigido:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Ícone na esquerda e", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "texto alinhado.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
