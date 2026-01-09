@@ -1,17 +1,13 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.0 (Com Sistema de Favoritos)
+    -- Khalexis Hub - Versão Final v2.1 (Auto-Game Detector)
 
     -- Funcionalidades Novas:
-    -- 1. Aba Favoritos (Salva scripts marcados).
-    -- 2. Estrela animada para favoritar scripts.
-    -- 3. Persistência de dados (Scripts continuam salvos ao reentrar).
+    -- 1. Auto-Detecção de Jogo: Se o jogador entrar no Blox Fruits, a categoria sobe para o topo.
+    -- 2. Indicador visual na categoria do jogo atual.
 
-    -- Funcionalidades Antigas Mantidas:
-    -- 1. Sistema de Key Seguro.
-    -- 2. Auto-Save Key.
-    -- 3. Toggle "K".
-    -- 4. Drag System.
+    -- Funcionalidades Mantidas:
+    -- Favoritos, Key System, Drag System, etc.
     
 --]]
 
@@ -28,6 +24,52 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+
+-- ==========================================
+-- BANCO DE DADOS DE IDS (AUTO DETECT)
+-- Coloque aqui o ID do jogo e o Nome Exato da Categoria
+-- ==========================================
+local GameID_Database = {
+    -- Blox Fruits (Sea 1, 2, 3)
+    [2753915549] = "Blox Fruits",
+    [4442272183] = "Blox Fruits",
+    [7449423635] = "Blox Fruits",
+    
+    -- King Legacy
+    [4520749081] = "King Legacy",
+    [6377160089] = "King Legacy",
+    
+    -- Brookhaven
+    [4924922222] = "Brookhaven",
+    
+    -- Doors
+    [6516141723] = "Doors",
+    [6839171747] = "Doors",
+    
+    -- Murder Mystery 2
+    [142823291] = "Murder Mystery",
+    
+    -- Natural Disaster Survival
+    [189707] = "Natural Disaster",
+    
+    -- Rivals
+    [17625359962] = "Rivals",
+    
+    -- Fisch (Pegue o Peixe)
+    [16732694052] = "Pegue O Peixe",
+    
+    -- The Forge
+    [16347316744] = "The Forge",
+    
+    -- Blade Ball (Exemplo genérico se tiver)
+    [13772394625] = "Blade Ball",
+    
+    -- Adicione mais IDs aqui conforme necessário
+    -- [ID_DO_JOGO] = "Nome Da Categoria",
+}
+
+local CurrentPlaceId = game.PlaceId
+local DetectedGameCategory = GameID_Database[CurrentPlaceId] -- Verifica se o jogo atual está na lista
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
@@ -69,9 +111,8 @@ local FAV_FILE_NAME = "KhalexisHub_Favorites.json"
 -- SISTEMA DE FAVORITOS (LOGICA)
 -- ==========================================
 local Favorites = {}
-local AllScriptsGlobal = {} -- Armazena todos os scripts para poder carregar nos favoritos
+local AllScriptsGlobal = {}
 
--- Carregar Favoritos
 if isfile(FAV_FILE_NAME) then
     pcall(function()
         local content = readfile(FAV_FILE_NAME)
@@ -89,7 +130,6 @@ local function SaveFavorites()
 end
 
 local function RegisterScript(name, func)
-    -- Registra o script na tabela global para acesso posterior
     local found = false
     for _, s in ipairs(AllScriptsGlobal) do
         if s.Name == name then found = true; break end
@@ -599,7 +639,6 @@ local function createHub()
     end
 
     local function createScriptButton(name, func)
-        -- Registra globalmente para a aba favoritos
         RegisterScript(name, func)
         
         local btn = Instance.new("TextButton")
@@ -609,8 +648,8 @@ local function createHub()
         btn.TextColor3 = COLOR_TEXT
         btn.Font = Enum.Font.Gotham
         btn.TextSize = 12
-        btn.Text = "       " .. name:upper() -- Espaço para a esquerda
-        btn.TextXAlignment = Enum.TextXAlignment.Left -- Alinhado a esquerda fica mais bonito com a estrela na direita
+        btn.Text = "       " .. name:upper()
+        btn.TextXAlignment = Enum.TextXAlignment.Left
         btn.Parent = scriptContainer
         applyRoundedCorners(btn, 10)
 
@@ -625,39 +664,33 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
         
-        -- === BOTÃO DE FAVORITO (ESTRELA) ===
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
         starBtn.BackgroundTransparency = 1
         starBtn.Size = UDim2.new(0, 30, 1, 0)
-        starBtn.Position = UDim2.new(1, -30, 0, 0) -- Direita
+        starBtn.Position = UDim2.new(1, -30, 0, 0)
         starBtn.Font = Enum.Font.GothamBold
         starBtn.TextSize = 18
         starBtn.ZIndex = 2
         starBtn.Parent = btn
         
-        -- Define cor inicial da estrela
         if Favorites[name] then
             starBtn.TextColor3 = COLOR_STAR_ON
         else
             starBtn.TextColor3 = COLOR_STAR_OFF
         end
         
-        -- Lógica de Favoritar
         starBtn.MouseButton1Click:Connect(function()
             if Favorites[name] then
-                -- Remover dos favoritos
                 Favorites[name] = nil
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
             else
-                -- Adicionar aos favoritos
                 Favorites[name] = true
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
             end
             SaveFavorites()
         end)
-        -- ===================================
 
         btn.MouseButton1Click:Connect(function()
             btn.Text = "       EXECUTANDO..."
@@ -700,7 +733,7 @@ local function createHub()
         end
     end
 
-    local function createCategoryButton(name, contents, layoutOrder)
+    local function createCategoryButton(name, contents, defaultOrder)
         local btn = Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
         btn.Size = UDim2.new(1, 0, 0, 22)
@@ -730,20 +763,46 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
 
-        if layoutOrder then btn.LayoutOrder = layoutOrder end
+        -- LÓGICA DE DETECÇÃO DE JOGO
+        -- Se o nome da categoria bater com o jogo detectado, sobe a prioridade
+        if DetectedGameCategory and name == DetectedGameCategory then
+            btn.LayoutOrder = 2 -- Logo abaixo de Favoritos e Updates
+            
+            -- Adiciona estrela visual no botão da categoria
+            local gameIcon = Instance.new("TextLabel")
+            gameIcon.Text = "★"
+            gameIcon.TextColor3 = COLOR_STAR_ON
+            gameIcon.BackgroundTransparency = 1
+            gameIcon.TextSize = 14
+            gameIcon.Size = UDim2.new(0, 15, 1, 0)
+            gameIcon.Position = UDim2.new(1, -15, 0, 0)
+            gameIcon.Font = Enum.Font.GothamBold
+            gameIcon.Parent = btn
+            
+            -- Opcional: Destacar a cor da borda
+            border.Color = COLOR_STAR_ON
+            gradient:Destroy() -- Remove gradiente padrão para ficar amarelo sólido se quiser
+            border.Color = Color3.fromRGB(255, 215, 0)
+        else
+            -- Se não for o jogo detectado, usa a ordem padrão + 10 para ficar lá embaixo
+            if defaultOrder then
+                btn.LayoutOrder = defaultOrder + 10
+            end
+        end
+        
+        -- Mantém Favoritos e Updates no topo absoluto
+        if name == "⭐ Favoritos" then btn.LayoutOrder = 0 end
+        if name == "📣 Atualizações 📣" then btn.LayoutOrder = 1 end
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
             
-            -- Animação da cor do texto (se for favorito fica amarelo, outros normal)
             if name == "⭐ Favoritos" then
                  SmoothTween(btn, 0.3, {TextColor3 = Color3.fromRGB(255, 215, 0)})
             else
-                 -- Reseta cor do botão clicado
                  btn.TextColor3 = Color3.fromRGB(230, 230, 230)
             end
             
-            -- Lógica das Categorias
             if name == "⭐ Favoritos" then
                 local hasFav = false
                 for _, scriptData in ipairs(AllScriptsGlobal) do
@@ -764,7 +823,6 @@ local function createHub()
             end
         end)
         
-        -- Se não for clicado, reseta a cor quando outro for clicado (simulação simples)
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
             if otherBtn:IsA("TextButton") and otherBtn ~= btn then
                 otherBtn.MouseButton1Click:Connect(function()
@@ -777,15 +835,13 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V2.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- AUTO DETECT ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Sistema de Favoritos!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
-        {Text = "Agora você pode salvar seus scripts", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "preferidos clicando na estrela ★", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
+        {Text = "Jogo Detectado!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
+        {Text = "A categoria do seu jogo atual", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "agora aparece no topo da lista", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "marcada com uma estrela ★", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -892,8 +948,11 @@ local function createHub()
     }
 
     -- Criação dos Botões de Categoria
-    createCategoryButton("⭐ Favoritos", nil, 0) -- Prioridade 0 (Topo)
+    -- A ordem padrão é 0 para favoritos, 1 para updates, e os outros começam em 2 (mas no script eu somo +10 para jogar eles lá pra baixo, dando espaço pro jogo detectado assumir a posição 2)
+    
+    createCategoryButton("⭐ Favoritos", nil, 0)
     createCategoryButton("📣 Atualizações 📣", nil, 1)
+    
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
     createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
     createCategoryButton("Grow A Garden", growScripts, 4)
@@ -928,9 +987,18 @@ local function createHub()
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
     createCategoryButton("AFS: Infinity", afsInfinityScripts, 35)
 
-    -- Inicia na aba Favoritos
-    local favBtn = categoryContainer:FindFirstChild("⭐Favoritos")
-    if favBtn then favBtn:MouseButton1Click() end
+    -- Se detectou um jogo, clica nele automaticamente, senão clica em Favoritos
+    local autoClickBtn = nil
+    if DetectedGameCategory then
+        autoClickBtn = categoryContainer:FindFirstChild(DetectedGameCategory:gsub("%s+", ""))
+    end
+    
+    if autoClickBtn then
+        autoClickBtn:MouseButton1Click()
+    else
+        local favBtn = categoryContainer:FindFirstChild("⭐Favoritos")
+        if favBtn then favBtn:MouseButton1Click() end
+    end
 
     return animationContainer
 end
