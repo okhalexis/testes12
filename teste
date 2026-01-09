@@ -1,13 +1,22 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.5 (Fix Auto-Detect The Forge)
+    -- Khalexis Hub - Versão Final v2.6 (Nova Fonte + Auto Detect)
 
-    -- Mudanças:
-    -- 1. Adicionado novo ID do The Forge.
-    -- 2. Debug no Console (F9) para mostrar o ID real do jogo.
-    -- 3. Reforço na lógica de prioridade das categorias.
+    -- Mudanças Visuais:
+    -- 1. Fonte alterada para 'FredokaOne' (Estilo Rubik/Bold/Moderno).
+    -- 2. Variável 'HUB_FONT' criada no topo para fácil edição.
     
+    -- Funcionalidades:
+    -- Auto-Detect (The Forge e outros), Favoritos Fixos, Key System.
+
 --]]
+
+-- ==========================================
+-- CONFIGURAÇÃO VISUAL (FONTE)
+-- ==========================================
+-- Você pode trocar 'FredokaOne' por: 'GothamBlack', 'LuckiestGuy', 'Sarpanch', etc.
+local HUB_FONT = Enum.Font.FredokaOne 
+local HUB_TEXT_SIZE = 14 -- Tamanho padrão ajustado para essa fonte
 
 local function applyRoundedCorners(guiObject, radius)
     local corner = Instance.new("UICorner")
@@ -26,7 +35,6 @@ local CoreGui = game:GetService("CoreGui")
 -- ==========================================
 -- BANCO DE DADOS DE IDS (AUTO DETECT)
 -- ==========================================
--- DICA: Aperte F9 no jogo para ver o ID real se não funcionar
 local GameID_Database = {
     [2753915549] = "Blox Fruits",
     [4442272183] = "Blox Fruits",
@@ -46,13 +54,13 @@ local GameID_Database = {
     [16732694052] = "Pegue O Peixe",
     
     -- THE FORGE IDS
-    [16347316744] = "The Forge", -- ID Antigo
-    [76558904092080] = "The Forge", -- ID Novo (Do Link)
+    [16347316744] = "The Forge",
+    [76558904092080] = "The Forge", 
 }
 
 local CurrentPlaceId = game.PlaceId
 
--- DEBUG PARA VOCÊ VERIFICAR O ID
+-- Debug no console (F9)
 print("------------------------------------------------")
 print("[KHALEXIS DEBUG] ID ATUAL DO JOGO: " .. tostring(CurrentPlaceId))
 print("------------------------------------------------")
@@ -102,7 +110,6 @@ local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
 
--- Carregar Favoritos
 if isfile(FAV_FILE_NAME) then
     pcall(function()
         local content = readfile(FAV_FILE_NAME)
@@ -154,7 +161,7 @@ local function RegisterScript(name, func)
 end
 
 -- ==========================================
--- NOVO SISTEMA DE KEY (IMPLEMENTAÇÃO)
+-- KEY SYSTEM CONFIG
 -- ==========================================
 
 Config = {
@@ -203,12 +210,12 @@ local function SmoothTween(obj, time, properties)
 end
 
 -- ==========================================
--- FUNÇÕES DO HUB ORIGINAL
+-- FUNÇÕES DO HUB
 -- ==========================================
 
 local function showAutoMessage(msg)
     local m = Instance.new("Frame"); m.Name="AutoMessageFrame"; m.Size=UDim2.new(0,320,0,45); m.Position=UDim2.new(1,-330,1,-55); m.BackgroundColor3=COLOR_BLACK; m.BorderSizePixel=0; m.Parent=ScreenGui; applyRoundedCorners(m,10);
-    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-20,1,-10); l.Position=UDim2.new(0,10,0,5); l.BackgroundTransparency=1; l.TextColor3=COLOR_TEXT; l.Font=Enum.Font.GothamBold; l.TextSize=16; l.Text=msg; l.TextWrapped=true; l.TextXAlignment=Enum.TextXAlignment.Left; l.TextYAlignment=Enum.TextYAlignment.Center; l.Parent=m;
+    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-20,1,-10); l.Position=UDim2.new(0,10,0,5); l.BackgroundTransparency=1; l.TextColor3=COLOR_TEXT; l.Font=HUB_FONT; l.TextSize=16; l.Text=msg; l.TextWrapped=true; l.TextXAlignment=Enum.TextXAlignment.Left; l.TextYAlignment=Enum.TextYAlignment.Center; l.Parent=m;
     spawn(function() wait(4); if m and m.Parent then m:Destroy() end end)
 end
 
@@ -252,7 +259,7 @@ local function showLoadingScreen()
     label.BackgroundTransparency = 1
     label.Text = "Carregando..."
     label.TextColor3 = COLOR_TEXT
-    label.Font = Enum.Font.GothamBold
+    label.Font = HUB_FONT
     label.TextSize = 20
     label.Parent = frame
 
@@ -377,7 +384,7 @@ local function createHub()
     titleLabel.BackgroundTransparency=1
     titleLabel.Text="Khalexis Hub"
     titleLabel.TextColor3=COLOR_TEXT
-    titleLabel.Font=Enum.Font.GothamBold
+    titleLabel.Font=HUB_FONT
     titleLabel.TextSize=18
     titleLabel.TextXAlignment=Enum.TextXAlignment.Center
     titleLabel.TextYAlignment=Enum.TextYAlignment.Center
@@ -390,7 +397,7 @@ local function createHub()
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
     closeButton.BackgroundTransparency = 1
     closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.Font = Enum.Font.GothamBold
+    closeButton.Font = HUB_FONT
     closeButton.TextSize=18
     closeButton.Text = "X"
     closeButton.Parent = titleBar
@@ -411,7 +418,7 @@ local function createHub()
     searchBox.PlaceholderText = "🔍 Pesquisar..."
     searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
     searchBox.Text = ""
-    searchBox.Font = Enum.Font.Gotham
+    searchBox.Font = HUB_FONT
     searchBox.TextSize = 11
     searchBox.ClearTextOnFocus = false
     searchBox.Parent = frame
@@ -436,8 +443,8 @@ local function createHub()
     favFixedBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     favFixedBtn.TextColor3 = COLOR_TEXT_DIM
     favFixedBtn.Text = "⭐ Favoritos"
-    favFixedBtn.Font = Enum.Font.GothamBold
-    favFixedBtn.TextSize = 11
+    favFixedBtn.Font = HUB_FONT
+    favFixedBtn.TextSize = 12
     favFixedBtn.Parent = frame
     applyRoundedCorners(favFixedBtn, 8)
 
@@ -575,7 +582,7 @@ local function createHub()
     local footerText=Instance.new("TextLabel")
     footerText.Name="FooterText"
     footerText.Text="By Khalexis"
-    footerText.Font=Enum.Font.GothamBold
+    footerText.Font=HUB_FONT
     footerText.TextSize=10
     footerText.TextColor3=COLOR_FOOTER_TEXT
     footerText.BackgroundTransparency=1
@@ -606,7 +613,7 @@ local function createHub()
     local ytLabel=Instance.new("TextLabel")
     ytLabel.Name="YouTubeLabel"
     ytLabel.Text="Youtube: Khalexis"
-    ytLabel.Font=Enum.Font.Gotham
+    ytLabel.Font=HUB_FONT
     ytLabel.TextSize=9
     ytLabel.TextColor3=Color3.fromRGB(180,180,180)
     ytLabel.BackgroundTransparency=1
@@ -618,7 +625,7 @@ local function createHub()
     local discordLabel=Instance.new("TextLabel")
     discordLabel.Name="DiscordLabel"
     discordLabel.Text="Discord: discord.gg/aNaFpb2Qsb"
-    discordLabel.Font=Enum.Font.Gotham
+    discordLabel.Font=HUB_FONT
     discordLabel.TextSize=9
     discordLabel.TextColor3=Color3.fromRGB(180,180,180)
     discordLabel.BackgroundTransparency=1
@@ -630,7 +637,7 @@ local function createHub()
     local hintLabel=Instance.new("TextLabel")
     hintLabel.Name="DudaLabel"
     hintLabel.Text="Se tiver alguma dúvida entre no Discord!"
-    hintLabel.Font=Enum.Font.Gotham
+    hintLabel.Font=HUB_FONT
     hintLabel.TextSize=7
     hintLabel.TextColor3=Color3.fromRGB(150,150,150)
     hintLabel.BackgroundTransparency=1
@@ -667,7 +674,7 @@ local function createHub()
     playerNameLabel.BackgroundTransparency=1
     playerNameLabel.Text=userName
     playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    playerNameLabel.Font=Enum.Font.Gotham
+    playerNameLabel.Font=HUB_FONT
     playerNameLabel.TextSize=10
     playerNameLabel.TextXAlignment=Enum.TextXAlignment.Left
     playerNameLabel.Parent=playerInfo
@@ -686,7 +693,7 @@ local function createHub()
         btn.BackgroundColor3 = COLOR_SCRIPT_BTN
         btn.BorderSizePixel = 0
         btn.TextColor3 = COLOR_TEXT
-        btn.Font = Enum.Font.Gotham
+        btn.Font = HUB_FONT
         btn.TextSize = 12
         btn.Text = "       " .. name:upper()
         btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -710,7 +717,7 @@ local function createHub()
         starBtn.BackgroundTransparency = 1
         starBtn.Size = UDim2.new(0, 30, 1, 0)
         starBtn.Position = UDim2.new(1, -30, 0, 0)
-        starBtn.Font = Enum.Font.GothamBold
+        starBtn.Font = HUB_FONT
         starBtn.TextSize = 18
         starBtn.ZIndex = 2
         starBtn.Parent = btn
@@ -754,7 +761,7 @@ local function createHub()
         lbl.Size=UDim2.new(1,0,0,18)
         lbl.BackgroundTransparency=1
         lbl.TextColor3=textColor or COLOR_TEXT
-        lbl.Font=font or Enum.Font.Gotham
+        lbl.Font=font or HUB_FONT
         lbl.TextSize=12
         lbl.Text=text
         lbl.TextWrapped=true
@@ -822,7 +829,7 @@ local function createHub()
         btn.BackgroundColor3 = COLOR_CATEGORY_BTN
         btn.BorderSizePixel = 0
         btn.TextColor3 = COLOR_TEXT_DIM
-        btn.Font = Enum.Font.Gotham
+        btn.Font = HUB_FONT
         btn.TextScaled = true 
         btn.TextWrapped = true
         local sizeConstraint = Instance.new("UITextSizeConstraint")
@@ -855,7 +862,7 @@ local function createHub()
             gameIcon.TextSize = 14
             gameIcon.Size = UDim2.new(0, 15, 1, 0)
             gameIcon.Position = UDim2.new(1, -15, 0, 0)
-            gameIcon.Font = Enum.Font.GothamBold
+            gameIcon.Font = HUB_FONT
             gameIcon.Parent = btn
             
             border.Color = Color3.fromRGB(255, 215, 0)
@@ -891,12 +898,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "--- AUTO DETECT ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V2.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "IDs Corrigidos!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
-        {Text = "Adicionado novo ID do The Forge", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "para detecção automática.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Fonte Fredoka One adicionada", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "para um visual mais limpo.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -1079,7 +1086,7 @@ local function showLoadingAndOpenHub()
         welcomeMsg.Size = UDim2.new(1, 0, 1, 0)
         welcomeMsg.BackgroundTransparency = 1
         welcomeMsg.TextColor3 = Color3.fromRGB(255, 255, 255)
-        welcomeMsg.Font = Enum.Font.GothamBold
+        welcomeMsg.Font = HUB_FONT
         welcomeMsg.TextSize = 20
         welcomeMsg.Text = "Bem Vindo " .. player.Name .. " ao Khalexis Hub!"
         welcomeMsg.TextWrapped = true
@@ -1162,7 +1169,7 @@ local function CreateKeyUI()
         Text = KeySystemData.Name .. " – Sistema de Key",
         Position = UDim2.new(0.5, 0, 0, 45), -- Movido para baixo
         Size = UDim2.new(0, 250, 0, 20),
-        Font = Enum.Font.GothamBold,
+        Font = HUB_FONT,
         TextColor3 = KeySystemData.Colors.Title, -- Laranja Padronizado
         TextSize = 15,
         TextXAlignment = Enum.TextXAlignment.Center,
@@ -1176,7 +1183,7 @@ local function CreateKeyUI()
         Text = "Clique em Pegar Key, logo em seguida cole o link no seu navegador!",
         Position = UDim2.new(0.5, 0, 0, 65), -- Abaixo do título
         Size = UDim2.new(0, 280, 0, 15),
-        Font = Enum.Font.Gotham,
+        Font = HUB_FONT,
         TextColor3 = Color3.fromRGB(160, 160, 160), -- Cor cinza
         TextSize = 10, -- Menor que o título
         TextXAlignment = Enum.TextXAlignment.Center,
@@ -1191,7 +1198,7 @@ local function CreateKeyUI()
         PlaceholderText = "Cole sua key aqui...",
         Position = UDim2.new(0.5, 0, 0.35, 0), -- Ajustado para baixo
         Size = UDim2.new(0, 280, 0, 35),
-        Font = Enum.Font.Gotham,
+        Font = HUB_FONT,
         TextSize = 14,
         TextColor3 = Color3.fromRGB(220, 220, 220),
         PlaceholderColor3 = Color3.fromRGB(140, 140, 140),
@@ -1221,7 +1228,7 @@ local function CreateKeyUI()
         Position = UDim2.new(0.3, 0, 0.58, 0),
         Size = UDim2.new(0, 110, 0, 32),
         Text = "Verificar Key",
-        Font = Enum.Font.GothamBold,
+        Font = HUB_FONT,
         TextSize = 14,
         TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
         AutoButtonColor = false,
@@ -1238,7 +1245,7 @@ local function CreateKeyUI()
         Position = UDim2.new(0.7, 0, 0.58, 0),
         Size = UDim2.new(0, 110, 0, 32),
         Text = "Pegar Key",
-        Font = Enum.Font.GothamBold,
+        Font = HUB_FONT,
         TextSize = 14,
         TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
         AutoButtonColor = false,
@@ -1253,7 +1260,7 @@ local function CreateKeyUI()
         Position = UDim2.new(0.5, 0, 0.77, 0),
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Entrar no Discord",
-        Font = Enum.Font.GothamBold,
+        Font = HUB_FONT,
         TextSize = 14,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         AutoButtonColor = false,
@@ -1267,7 +1274,7 @@ local function CreateKeyUI()
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, 0, 0.92, 0),
         Size = UDim2.new(0, 280, 0, 20),
-        Font = Enum.Font.Gotham,
+        Font = HUB_FONT,
         Text = "",
         TextColor3 = KeySystemData.Colors.Error,
         TextSize = 12,
@@ -1400,7 +1407,7 @@ ToggleButton.Position=UDim2.new(0,10,0,10)
 ToggleButton.BackgroundColor3=Color3.new(0,0,0)
 ToggleButton.TextColor3=Color3.new(1,1,1)
 ToggleButton.Text="K"
-ToggleButton.Font=Enum.Font.GothamBold
+ToggleButton.Font=HUB_FONT
 ToggleButton.TextSize=24
 ToggleButton.Parent=ScreenGui
 ToggleButton.Visible = false
