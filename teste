@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.4 (Atualização de IDs e Nomes)
-    -- 1. IDs dos jogos atualizados conforme lista.
-    -- 2. Nomes das categorias alterados conforme solicitado.
-    -- 3. Funcionalidades visuais e sistema de movimento mantidos (v3.3).
+    -- Khalexis Hub - Versão Final v3.5 (Atualização de UI e Auto-Select)
+    -- 1. IDs dos jogos atualizados.
+    -- 2. AUTO-SELECT: Entra direto na aba "Atualizações" ao abrir.
+    -- 3. VISUAL: Adicionado ícone personalizado nas categorias (Exceto no jogo atual).
 
 --]]
 
@@ -921,6 +921,15 @@ local function createHub()
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
             end
+            
+            -- [NOVO] Adicionando Ícone para categorias não identificadas
+            local catIcon = Instance.new("ImageLabel")
+            catIcon.Name = "CatIcon"
+            catIcon.Size = UDim2.new(0, 14, 0, 14) -- Ajustado para caber no botão de 22px
+            catIcon.Position = UDim2.new(0, 5, 0.5, -7) -- Esquerda, centralizado verticalmente
+            catIcon.BackgroundTransparency = 1
+            catIcon.Image = "rbxassetid://12614416526" -- ID solicitado
+            catIcon.Parent = btn
         end
         
         if name == "📣 Atualizações 📣" then btn.LayoutOrder = 1 end
@@ -949,12 +958,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "IDs Atualizados!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Nomes das categorias", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "corrigidos.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Atualizações selecionadas", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "automaticamente ao entrar.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Ícones adicionados.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -1096,13 +1105,16 @@ local function createHub()
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
     createCategoryButton("Anime Fighting Simulator: Endless", afsInfinityScripts, 35)
 
-    local autoClickBtn = nil
-    if DetectedGameCategory then
-        autoClickBtn = categoryContainer:FindFirstChild(DetectedGameCategory:gsub("%s+", ""))
-    end
+    -- [MODIFICADO] Lógica para abrir "Atualizações" direto
+    local updatesBtn = categoryContainer:FindFirstChild("📣Atualizações📣") 
     
-    if autoClickBtn then
-        autoClickBtn:MouseButton1Click()
+    if updatesBtn then
+        -- Se o botão de atualizações existir, clica nele (Isso abre a categoria)
+        updatesBtn:MouseButton1Click()
+    elseif DetectedGameCategory then
+        -- Fallback: Se por algum motivo não achar, tenta abrir o jogo
+        local autoClickBtn = categoryContainer:FindFirstChild(DetectedGameCategory:gsub("%s+", ""))
+        if autoClickBtn then autoClickBtn:MouseButton1Click() end
     else
         onFavoritesClick()
     end
