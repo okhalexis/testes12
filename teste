@@ -1,10 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.3 (Auto-Detect Fixed)
-    -- MODIFICAÇÕES:
-    -- 1. Banco de Dados de IDs expandido massivamente para cobrir Seas 1/2/3, Lobbies, Masmorras, etc.
-    -- 2. Correção visual mantida (Digital ID 12333784627 + Layout Estrela/Digital).
-    -- 3. Tamanho compacto mantido.
+    -- Khalexis Hub - Versão Final v3.2
+    -- MODIFICAÇÕES RECENTES:
+    -- 1. Tamanho reduzido para 450px (Horizontalmente mais compacto).
+    -- 2. Asset de digital atualizado para o ID da textura: 12333784627.
+    -- 3. Layout: Estrela na esquerda da digital, Digital na direita.
 
 --]]
 
@@ -29,80 +29,36 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS (AUTO DETECT EXPANDIDO)
+-- BANCO DE DADOS DE IDS (AUTO DETECT)
 -- ==========================================
--- A chave é o PlaceId (game.PlaceId), o valor é o NOME EXATO da categoria no menu.
-
 local GameID_Database = {
-    -- === BLOX FRUITS ===
-    [2753915549] = "Blox Fruits", -- Sea 1
-    [4442272183] = "Blox Fruits", -- Sea 2
-    [7449423635] = "Blox Fruits", -- Sea 3
+    [2753915549] = "Blox Fruits",
+    [4442272183] = "Blox Fruits",
+    [7449423635] = "Blox Fruits",
     
-    -- === KING LEGACY ===
-    [4520749081] = "King Legacy", -- Sea 1
-    [6377160089] = "King Legacy", -- Sea 2
+    [4520749081] = "King Legacy",
+    [6377160089] = "King Legacy",
     
-    -- === BROOKHAVEN ===
     [4924922222] = "Brookhaven",
     
-    -- === DOORS ===
-    [6516141723] = "Doors", -- Lobby
-    [6839171747] = "Doors", -- The Hotel (Floor 1)
-    [12667032960] = "Doors", -- The Mines (Floor 2)
+    [6516141723] = "Doors",
+    [6839171747] = "Doors",
     
-    -- === MURDER MYSTERY 2 ===
     [142823291] = "Murder Mystery",
-    
-    -- === NATURAL DISASTER ===
     [189707] = "Natural Disaster",
-    
-    -- === RIVALS ===
     [17625359962] = "Rivals",
-    
-    -- === FISCH (PEGUE O PEIXE) ===
     [16732694052] = "Pegue O Peixe",
     
-    -- === THE FORGE ===
+    -- THE FORGE IDS
     [16347316744] = "The Forge",
     [76558904092080] = "The Forge", 
-    
-    -- === GRAND PIECE ONLINE (GPO) ===
-    [1730877806] = "Grand Piece Online", -- Main Menu / Universe
-    [5732973455] = "Grand Piece Online", -- Main Game
-    [5956785391] = "Grand Piece Online", -- Trade Hub
-    [10472288019] = "Grand Piece Online", -- Battle Royale
-    
-    -- === WEAK LEGACY 2 ===
-    [10180479060] = "Weak Legacy 2",
-    [12108178652] = "Weak Legacy 2",
-    
-    -- === ANIME DEFENDERS / ETERNAL (Exemplos) ===
-    [17017769292] = "Anime Eternal",
-    
-    -- === AFS: INFINITY ===
-    [15167092803] = "AFS: Infinity",
-    
-    -- === BUILD A PLANE ===
-    [155615604] = "Build A Plane",
-    
-    -- === INK GAME ===
-    [10962386894] = "Ink Game",
-    
-    -- === PASS OR DIE ===
-    [13939622961] = "Pass Or Die",
 }
 
 local CurrentPlaceId = game.PlaceId
 
--- Debug no console (F9) - Útil para ver o ID se o jogo não detectar
+-- Debug no console (F9)
 print("------------------------------------------------")
 print("[KHALEXIS DEBUG] ID ATUAL DO JOGO: " .. tostring(CurrentPlaceId))
-if GameID_Database[CurrentPlaceId] then
-    print("[KHALEXIS DEBUG] JOGO DETECTADO: " .. GameID_Database[CurrentPlaceId])
-else
-    print("[KHALEXIS DEBUG] ID NÃO ENCONTRADO NO BANCO DE DADOS.")
-end
 print("------------------------------------------------")
 
 local DetectedGameCategory = GameID_Database[CurrentPlaceId]
@@ -758,13 +714,13 @@ local function createHub()
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
         fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) -- No canto direito
         fingerIcon.BackgroundTransparency = 1
-        -- ID DA TEXTURA DA DIGITAL:
-        fingerIcon.Image = "rbxassetid://12333784627" 
+        -- ALTERAÇÃO DO ID AQUI:
+        fingerIcon.Image = "rbxassetid://12333784627" -- Novo ID da Textura
         fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) -- Cor cinza escuro
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- === Botão de Estrela (Ao lado da digital, na esquerda) ===
+        -- === Botão de Estrela (Ao lado da digital) ===
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
@@ -945,12 +901,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
-        {Text = "--- AUTO DETECT FIX ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Detecção de Jogos Melhorada!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Agora reconhece Seas 1, 2, 3,", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Lobbies e Sub-locais.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Fonte Fredoka One adicionada", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "para um visual mais limpo.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
