@@ -1,8 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.8
-    -- MODIFICAÇÃO: Adicionado ícone de Digital (Fingerprint) ao lado da estrela nos scripts.
-    -- MANTIDO: Tamanho largo e estrela de categoria na esquerda.
+    -- Khalexis Hub - Versão Final v2.9
+    -- MODIFICAÇÃO FINAL: 
+    -- 1. Largura reduzida em ~15% (de 620 para 530).
+    -- 2. Estrela do jogo identificado aumentada.
 
 --]]
 
@@ -295,8 +296,8 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    -- [[ REDIMENSIONAMENTO: LARGURA 620, ALTURA 340 ]]
-    animationContainer.Size = UDim2.new(0, 620, 0, 340)
+    -- [[ REDIMENSIONAMENTO: LARGURA 530 (15% menor), ALTURA 340 ]]
+    animationContainer.Size = UDim2.new(0, 530, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
     animationContainer.BackgroundTransparency = 1
@@ -717,7 +718,7 @@ local function createHub()
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- === MODIFICAÇÃO: Botão de Estrela movido para esquerda ===
+        -- === Botão de Estrela ===
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
@@ -864,7 +865,8 @@ local function createHub()
 
         if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
-            btn.Text = '<font color="#FFD700">★</font> ' .. name
+            -- AUMENTADO O TAMANHO DA ESTRELA PARA 20
+            btn.Text = '<font size="20" color="#FFD700">★</font> ' .. name
         else
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
@@ -897,7 +899,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
