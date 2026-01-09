@@ -1,10 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.8 (Ajuste de Espaçamento)
-    -- 1. IDs dos jogos atualizados.
-    -- 2. AUTO-SELECT: Entra direto na aba "Atualizações" ao abrir.
-    -- 3. VISUAL: Ícone de Mira (ID 4483345998) ajustado.
-    -- 4. FIX: Texto agora tem mais margem para não ficar "dentro" do ícone.
+    -- Khalexis Hub - Versão Final v3.9 (Alinhamento Preciso)
+    -- 1. Ícone de Mira (ID 4483345998) colado na borda esquerda (5px).
+    -- 2. Texto alinhado logo após o ícone usando UIPadding.
+    -- 3. Auto-Select na aba Atualizações mantido.
 
 --]]
 
@@ -48,26 +47,25 @@ local GameID_Database = {
     [189707] = "Natural Disaster",
     [18687417158] = "Forsaken",
     
-    [121864768012064] = "Fish It", -- Antigo Pegue o Peixe
+    [121864768012064] = "Fish It", 
     [142823291] = "Murder Mystery 2",
     [18337464872] = "Weak Legacy 2",
     [127742093697776] = "Plants vs Brainrots",
     [116495829188952] = "Dead Rails",
-    [11782774748] = "Iq Test", -- Antigo Teste de Qi
+    [11782774748] = "Iq Test", 
     [119564951960102] = "Pass or Die",
     [127707120843339] = "Math Murder",
     [86223718444028] = "Brainrot Training",
     [98868317791094] = "Dump",
     [89642885027451] = "Eat Brainrot For Fight",
-    [7215881810] = "No Limit Strongest Punch Simulator", -- Antigo Sem Limite
+    [7215881810] = "No Limit Strongest Punch Simulator", 
     [111989938562194] = "Brainrot Evolution",
     [90462358603255] = "Anime Eternal",
     [79189799490564] = "Anime Weapons",
     [120546894379169] = "Cars vs Trucks",
     [125810438250765] = "Deadly Delivery",
-    [130247632398296] = "Anime Fighting Simulator: Endless", -- Antigo AFS Infinity
+    [130247632398296] = "Anime Fighting Simulator: Endless", 
     
-    -- The Forge (Mantendo IDs antigos caso necessário)
     [16347316744] = "The Forge", 
     [76558904092080] = "The Forge",
 }
@@ -97,14 +95,12 @@ local themes = {
     },
 }
 
--- Cores Padrão
 local COLOR_BLACK = themes.normal.main_bg
 local COLOR_CATEGORY_BG = themes.normal.category_bg
 local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
 local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
 local COLOR_TITLEBAR = themes.normal.title_bar
 
--- Textos Originais
 local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
 local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
@@ -122,13 +118,9 @@ local ToggleButton
 local ErrorLabel
 local HasShownWelcome = false
 
--- Configurações de Salvamento
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
 
--- ==========================================
--- SISTEMA DE FAVORITOS
--- ==========================================
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
 
@@ -228,10 +220,6 @@ local function SmoothTween(obj, time, properties)
     tween:Play()
     return tween
 end
-
--- ==========================================
--- FUNÇÕES DO HUB
--- ==========================================
 
 local function showAutoMessage(msg)
     local m = Instance.new("Frame"); m.Name="AutoMessageFrame"; m.Size=UDim2.new(0,320,0,45); m.Position=UDim2.new(1,-330,1,-55); m.BackgroundColor3=COLOR_BLACK; m.BorderSizePixel=0; m.Parent=ScreenGui; applyRoundedCorners(m,10);
@@ -345,7 +333,6 @@ local function createHub()
     hubBorder.LineJoinMode=Enum.LineJoinMode.Round
     hubBorder.Parent=frame
 
-    -- Gradiente Cinza
     local hubGradient=Instance.new("UIGradient")
     hubGradient.Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
@@ -354,7 +341,6 @@ local function createHub()
     hubGradient.Rotation=45
     hubGradient.Parent=hubBorder
 
-    -- SISTEMA DE ARRASTAR EM QUALQUER PARTE
     local draggingHub = false
     local dragInputHub, dragStartHub, startPosHub
 
@@ -438,7 +424,6 @@ local function createHub()
     closeButton.MouseLeave:Connect(function() TweenService:Create(closeButton, closeTweenInfo, {BackgroundTransparency = 1}):Play() end)
     closeButton.MouseButton1Click:Connect(function() closeHubWithAnimation(animationContainer) end)
 
-    -- === BARRA DE PESQUISA ===
     local searchBox = Instance.new("TextBox")
     searchBox.Name = "CategorySearchBox"
     searchBox.Size = UDim2.new(0, 120, 0, 22)
@@ -468,7 +453,6 @@ local function createHub()
     searchBoxGradient.Rotation = 90
     searchBoxGradient.Parent = searchBoxBorder
 
-    -- === BOTÃO DE FAVORITOS ===
     local favFixedBtn = Instance.new("TextButton")
     favFixedBtn.Name = "FixedFavoritesButton"
     favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
@@ -495,7 +479,6 @@ local function createHub()
     favGradient.Rotation = 90
     favGradient.Parent = favBorder
 
-    -- === LISTA DE CATEGORIAS ===
     local categoryFrame = Instance.new("ScrollingFrame")
     categoryFrame.Name = "CategoryFrame"
     categoryFrame.Size = UDim2.new(0, 120, 0, 190) 
@@ -759,7 +742,6 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
         
-        -- Ícone de Digital 
         local fingerIcon = Instance.new("ImageLabel")
         fingerIcon.Name = "FingerprintIcon"
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
@@ -770,7 +752,6 @@ local function createHub()
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- Botão de Estrela
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
@@ -923,26 +904,27 @@ local function createHub()
                 btn.LayoutOrder = defaultOrder + 10
             end
             
-            -- LÓGICA DO ÍCONE E ALINHAMENTO
+            -- [NOVO] Ícone ajustado
             local icon = Instance.new("ImageLabel")
             icon.Name = "CategoryIcon"
             icon.Size = UDim2.new(0, 14, 0, 14)
-            icon.Position = UDim2.new(0, 5, 0.5, -7) -- Fica bem na esquerda (margem 5px)
+            icon.AnchorPoint = Vector2.new(0, 0.5) -- Ponto de ancoragem na esquerda-centro
+            icon.Position = UDim2.new(0, 5, 0.5, 0) -- 5 pixels da borda esquerda
             icon.BackgroundTransparency = 1
             icon.Image = "rbxassetid://4483345998"
-            icon.ImageColor3 = Color3.fromRGB(180, 180, 180) -- Cor cinza suave
+            icon.ImageColor3 = Color3.fromRGB(180, 180, 180) 
             icon.Parent = btn
             
-            -- Alinhar texto para esquerda e dar margem maior
+            -- [NOVO] Texto alinhado após o ícone
             btn.TextXAlignment = Enum.TextXAlignment.Left
             local pad = Instance.new("UIPadding")
-            pad.PaddingLeft = UDim.new(0, 30) -- Aumentado para 30 para o texto não ficar em cima do ícone
+            pad.PaddingLeft = UDim.new(0, 25) -- Espaço para o texto não encostar
             pad.Parent = btn
         end
         
         if name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
-            -- REMOVIDO: Limpeza de ícones e padding para Atualizações
+            -- Remove ícones/padding de Atualizações
             if btn:FindFirstChild("CategoryIcon") then btn.CategoryIcon:Destroy() end
             if btn:FindFirstChild("UIPadding") then btn.UIPadding:Destroy() end
             btn.TextXAlignment = Enum.TextXAlignment.Center
@@ -972,12 +954,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Atualizações selecionadas", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "automaticamente ao entrar.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Ícones alinhados.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Ícones perfeitamente", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "alinhados à esquerda.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
