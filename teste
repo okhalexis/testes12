@@ -1,9 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.9
-    -- MODIFICAÇÃO FINAL: 
-    -- 1. Largura reduzida em ~15% (de 620 para 530).
-    -- 2. Estrela do jogo identificado aumentada.
+    -- Khalexis Hub - Versão Final v3.0
+    -- MODIFICAÇÕES FINAIS:
+    -- 1. Asset da digital trocado.
+    -- 2. Estrela dos scripts aumentada (TextSize 24).
+    -- 3. Estrela do jogo identificado normalizada (mesmo tamanho da fonte).
+    -- 4. Tamanho do Hub mantido reduzido (530x340).
 
 --]]
 
@@ -296,7 +298,7 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    -- [[ REDIMENSIONAMENTO: LARGURA 530 (15% menor), ALTURA 340 ]]
+    -- [[ REDIMENSIONAMENTO: LARGURA 530, ALTURA 340 ]]
     animationContainer.Size = UDim2.new(0, 530, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -713,12 +715,12 @@ local function createHub()
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
         fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) -- No canto direito
         fingerIcon.BackgroundTransparency = 1
-        fingerIcon.Image = "rbxassetid://10723415903" -- ID de icone tipo digital
+        fingerIcon.Image = "rbxassetid://3120636251" -- ID NOVO DA DIGITAL
         fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) -- Cor cinza escuro
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- === Botão de Estrela ===
+        -- === MODIFICAÇÃO: Botão de Estrela movido para esquerda e AUMENTADO ===
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
@@ -726,7 +728,7 @@ local function createHub()
         starBtn.Size = UDim2.new(0, 30, 1, 0)
         starBtn.Position = UDim2.new(1, -55, 0, 0) -- Movido para esquerda do ícone digital
         starBtn.Font = HUB_FONT
-        starBtn.TextSize = 18
+        starBtn.TextSize = 24 -- AUMENTADO DE 18 PARA 24
         starBtn.ZIndex = 2
         starBtn.Parent = btn
         
@@ -865,8 +867,8 @@ local function createHub()
 
         if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
-            -- AUMENTADO O TAMANHO DA ESTRELA PARA 20
-            btn.Text = '<font size="20" color="#FFD700">★</font> ' .. name
+            -- MODIFICAÇÃO: TAMANHO PADRÃO (sem size="20")
+            btn.Text = '<font color="#FFD700">★</font> ' .. name
         else
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
@@ -899,7 +901,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
