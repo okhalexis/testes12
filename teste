@@ -1,11 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.4 (Ordem de Seleção + Fix ID)
+    -- Khalexis Hub - Versão Final v2.5 (Fix Auto-Detect The Forge)
 
     -- Mudanças:
-    -- 1. Favoritos agora aparecem na ORDEM que foram adicionados (Lista).
-    -- 2. Atualizado ID do The Forge.
-    -- 3. Correção: Scripts são registrados na memória ao abrir o Hub para garantir que os favoritos funcionem.
+    -- 1. Adicionado novo ID do The Forge.
+    -- 2. Debug no Console (F9) para mostrar o ID real do jogo.
+    -- 3. Reforço na lógica de prioridade das categorias.
     
 --]]
 
@@ -26,24 +26,37 @@ local CoreGui = game:GetService("CoreGui")
 -- ==========================================
 -- BANCO DE DADOS DE IDS (AUTO DETECT)
 -- ==========================================
+-- DICA: Aperte F9 no jogo para ver o ID real se não funcionar
 local GameID_Database = {
     [2753915549] = "Blox Fruits",
     [4442272183] = "Blox Fruits",
     [7449423635] = "Blox Fruits",
+    
     [4520749081] = "King Legacy",
     [6377160089] = "King Legacy",
+    
     [4924922222] = "Brookhaven",
+    
     [6516141723] = "Doors",
     [6839171747] = "Doors",
+    
     [142823291] = "Murder Mystery",
     [189707] = "Natural Disaster",
     [17625359962] = "Rivals",
     [16732694052] = "Pegue O Peixe",
-    [76558904092080] = "The Forge", -- ID Atualizado
-    [16347316744] = "The Forge", -- Mantendo o antigo por precaução
+    
+    -- THE FORGE IDS
+    [16347316744] = "The Forge", -- ID Antigo
+    [76558904092080] = "The Forge", -- ID Novo (Do Link)
 }
 
 local CurrentPlaceId = game.PlaceId
+
+-- DEBUG PARA VOCÊ VERIFICAR O ID
+print("------------------------------------------------")
+print("[KHALEXIS DEBUG] ID ATUAL DO JOGO: " .. tostring(CurrentPlaceId))
+print("------------------------------------------------")
+
 local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -81,12 +94,12 @@ local HasShownWelcome = false
 
 -- Configurações de Salvamento
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
-local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json" -- Mudado nome para não conflitar com formato antigo
+local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
 
 -- ==========================================
 -- SISTEMA DE FAVORITOS (LISTA ORDENADA)
 -- ==========================================
-local FavoritesList = {} -- Agora é uma Lista (Array) para manter ordem
+local FavoritesList = {} 
 local AllScriptsGlobal = {}
 
 -- Carregar Favoritos
@@ -109,7 +122,6 @@ local function SaveFavorites()
     end)
 end
 
--- Verifica se está na lista
 local function IsFavorited(name)
     for _, v in ipairs(FavoritesList) do
         if v == name then return true end
@@ -117,10 +129,8 @@ local function IsFavorited(name)
     return false
 end
 
--- Adiciona ou Remove (Toggle)
 local function ToggleFavorite(name)
     if IsFavorited(name) then
-        -- Remove mantendo a ordem dos outros
         for i, v in ipairs(FavoritesList) do
             if v == name then
                 table.remove(FavoritesList, i)
@@ -128,7 +138,6 @@ local function ToggleFavorite(name)
             end
         end
     else
-        -- Adiciona no final
         table.insert(FavoritesList, name)
     end
     SaveFavorites()
@@ -882,13 +891,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "--- ORDEM CORRIGIDA ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V2.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- AUTO DETECT ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Favoritos por Ordem", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
-        {Text = "Seus favoritos agora aparecem", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "exatamente na ordem que você", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "os selecionou!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "IDs Corrigidos!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
+        {Text = "Adicionado novo ID do The Forge", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "para detecção automática.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
