@@ -1,16 +1,18 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v1.9 (Com Auto-Save Key)
+    -- Khalexis Hub - Versão Final v2.0 (Com Sistema de Favoritos)
 
-    -- Funcionalidades:
-    -- 1. Sistema de Key Seguro (Invalidação automática de keys antigas).
-    -- 2. Sistema de Salvamento de Key (Entra direto se a key for válida).
-    -- 3. Toggle "K" Oculto até validação da key.
-    -- 4. Drag System (Arrastar) no Hub Principal e no Toggle (PC e Mobile).
-    -- 5. Nomes dos Scripts em MAIÚSCULO AUTOMATICAMENTE.
-    -- 6. Auto-ajuste de tamanho de fonte.
-    -- 7. Atualização de status (NOVO) e aba Atualizações.
+    -- Funcionalidades Novas:
+    -- 1. Aba Favoritos (Salva scripts marcados).
+    -- 2. Estrela animada para favoritar scripts.
+    -- 3. Persistência de dados (Scripts continuam salvos ao reentrar).
 
+    -- Funcionalidades Antigas Mantidas:
+    -- 1. Sistema de Key Seguro.
+    -- 2. Auto-Save Key.
+    -- 3. Toggle "K".
+    -- 4. Drag System.
+    
 --]]
 
 local function applyRoundedCorners(guiObject, radius)
@@ -35,10 +37,6 @@ ScreenGui.Parent = game.CoreGui
 -- Paletas de Cores
 local themes = {
     normal = {main_bg = Color3.fromRGB(30, 30, 30), category_bg = Color3.fromRGB(50, 50, 50), title_bar = Color3.fromRGB(45, 45, 45), script_frame_bg = Color3.fromRGB(30, 30, 30), transparency = 0},
-    preto = {main_bg = Color3.fromRGB(10, 10, 10), category_bg = Color3.fromRGB(25, 25, 25), title_bar = Color3.fromRGB(20, 20, 20), script_frame_bg = Color3.fromRGB(10, 10, 10), transparency = 0},
-    laranja = {main_bg = Color3.fromRGB(255, 140, 0), category_bg = Color3.fromRGB(40, 40, 40), title_bar = Color3.fromRGB(30, 30, 30), script_frame_bg = Color3.fromRGB(50, 50, 50), transparency = 0},
-    roxo = {main_bg = Color3.fromRGB(138, 43, 226), category_bg = Color3.fromRGB(40, 40, 40), title_bar = Color3.fromRGB(30, 30, 30), script_frame_bg = Color3.fromRGB(50, 50, 50), transparency = 0},
-    transparente = {main_bg = Color3.fromRGB(30, 30, 30), category_bg = Color3.fromRGB(50, 50, 50), title_bar = Color3.fromRGB(45, 45, 45), script_frame_bg = Color3.fromRGB(30, 30, 30), transparency = 0.4}
 }
 
 -- Cores Padrão
@@ -50,6 +48,8 @@ local COLOR_TITLEBAR = themes.normal.title_bar
 local COLOR_TEXT = Color3.fromRGB(220, 220, 220)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
 local COLOR_FOOTER_TEXT = Color3.fromRGB(170, 170, 170)
+local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) -- Amarelo Ouro
+local COLOR_STAR_OFF = Color3.fromRGB(120, 120, 120) -- Cinza Escuro
 
 local userId = player.UserId
 local userName = player.Name
@@ -63,6 +63,41 @@ local HasShownWelcome = false
 
 -- Configurações de Salvamento
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
+local FAV_FILE_NAME = "KhalexisHub_Favorites.json"
+
+-- ==========================================
+-- SISTEMA DE FAVORITOS (LOGICA)
+-- ==========================================
+local Favorites = {}
+local AllScriptsGlobal = {} -- Armazena todos os scripts para poder carregar nos favoritos
+
+-- Carregar Favoritos
+if isfile(FAV_FILE_NAME) then
+    pcall(function()
+        local content = readfile(FAV_FILE_NAME)
+        Favorites = HttpService:JSONDecode(content)
+    end)
+else
+    Favorites = {}
+end
+
+local function SaveFavorites()
+    pcall(function()
+        local json = HttpService:JSONEncode(Favorites)
+        writefile(FAV_FILE_NAME, json)
+    end)
+end
+
+local function RegisterScript(name, func)
+    -- Registra o script na tabela global para acesso posterior
+    local found = false
+    for _, s in ipairs(AllScriptsGlobal) do
+        if s.Name == name then found = true; break end
+    end
+    if not found then
+        table.insert(AllScriptsGlobal, {Name = name, Func = func})
+    end
+end
 
 -- ==========================================
 -- NOVO SISTEMA DE KEY (IMPLEMENTAÇÃO)
@@ -78,7 +113,7 @@ local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
         Background = Color3.fromRGB(30, 30, 35),
-        Title = Color3.fromRGB(255, 140, 0), -- Laranja Padronizado
+        Title = Color3.fromRGB(255, 140, 0),
         InputField = Color3.fromRGB(25, 25, 30),
         InputFieldBorder = Color3.fromRGB(180, 0, 0),
         Button = Color3.fromRGB(25, 25, 30),
@@ -124,9 +159,6 @@ local function showAutoMessage(msg)
 end
 
 _G.showAutoMessage = showAutoMessage
-
-local function showError(msg) if ErrorLabel then ErrorLabel.Text=msg; spawn(function() wait(2); if ErrorLabel and ErrorLabel.Parent then ErrorLabel.Text="" end end) end end
-local function copyToClipboard(text) return pcall(function() if setclipboard then setclipboard(text)elseif toclipboard then toclipboard(text) else error("Clipboard function not supported.") end end) end
 
 local function closeHubWithAnimation(container)
     if not (container and container.Parent) then return end
@@ -203,24 +235,6 @@ local function showLoadingScreen()
     return frame, function()
         if connection then connection:Disconnect(); connection = nil end
     end
-end
-
-local function applyTheme(themeName)
-    local palette = themes[themeName]
-    if not palette or not MainFrameContainer then return end
-    local MainFrame = MainFrameContainer:FindFirstChild("MainFrame")
-    if not MainFrame then return end
-    local titleBar = MainFrame:FindFirstChild("TitleBar")
-    local categoryFrame = MainFrame:FindFirstChild("CategoryFrame")
-    local scriptFrame = MainFrame:FindFirstChild("ScriptFrame")
-    local footerBackground = MainFrame:FindFirstChild("FooterBackground")
-
-    MainFrame.BackgroundColor3 = palette.main_bg
-    MainFrame.BackgroundTransparency = palette.transparency
-    if titleBar then titleBar.BackgroundColor3 = palette.title_bar end
-    if categoryFrame then categoryFrame.BackgroundColor3 = palette.category_bg end
-    if scriptFrame then scriptFrame.BackgroundColor3 = palette.script_frame_bg end
-    if footerBackground and (themeName == "normal" or themeName == "preto" or themeName == "transparente") then footerBackground.BackgroundColor3 = palette.title_bar end
 end
 
 local function createHub()
@@ -585,31 +599,68 @@ local function createHub()
     end
 
     local function createScriptButton(name, func)
-        local btn=Instance.new("TextButton")
-        btn.Size=UDim2.new(1,0,0,28)
-        btn.BackgroundColor3=COLOR_SCRIPT_BTN
-        btn.BorderSizePixel=0
-        btn.TextColor3=COLOR_TEXT
-        btn.Font=Enum.Font.Gotham
-        btn.TextSize=12
-        btn.Text=name:upper()
-        btn.TextXAlignment=Enum.TextXAlignment.Center
-        btn.Parent=scriptContainer
-        applyRoundedCorners(btn,10)
+        -- Registra globalmente para a aba favoritos
+        RegisterScript(name, func)
+        
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, 0, 0, 28)
+        btn.BackgroundColor3 = COLOR_SCRIPT_BTN
+        btn.BorderSizePixel = 0
+        btn.TextColor3 = COLOR_TEXT
+        btn.Font = Enum.Font.Gotham
+        btn.TextSize = 12
+        btn.Text = "       " .. name:upper() -- Espaço para a esquerda
+        btn.TextXAlignment = Enum.TextXAlignment.Left -- Alinhado a esquerda fica mais bonito com a estrela na direita
+        btn.Parent = scriptContainer
+        applyRoundedCorners(btn, 10)
 
-        local border=Instance.new("UIStroke")
-        border.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
-        border.Thickness=1.5
-        border.LineJoinMode=Enum.LineJoinMode.Round
-        border.Parent=btn
+        local border = Instance.new("UIStroke")
+        border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        border.Thickness = 1.5
+        border.LineJoinMode = Enum.LineJoinMode.Round
+        border.Parent = btn
 
-        local gradient=Instance.new("UIGradient")
-        gradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
-        gradient.Rotation=90
-        gradient.Parent=border
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
+        gradient.Rotation = 90
+        gradient.Parent = border
+        
+        -- === BOTÃO DE FAVORITO (ESTRELA) ===
+        local starBtn = Instance.new("TextButton")
+        starBtn.Name = "StarButton"
+        starBtn.Text = "★"
+        starBtn.BackgroundTransparency = 1
+        starBtn.Size = UDim2.new(0, 30, 1, 0)
+        starBtn.Position = UDim2.new(1, -30, 0, 0) -- Direita
+        starBtn.Font = Enum.Font.GothamBold
+        starBtn.TextSize = 18
+        starBtn.ZIndex = 2
+        starBtn.Parent = btn
+        
+        -- Define cor inicial da estrela
+        if Favorites[name] then
+            starBtn.TextColor3 = COLOR_STAR_ON
+        else
+            starBtn.TextColor3 = COLOR_STAR_OFF
+        end
+        
+        -- Lógica de Favoritar
+        starBtn.MouseButton1Click:Connect(function()
+            if Favorites[name] then
+                -- Remover dos favoritos
+                Favorites[name] = nil
+                SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
+            else
+                -- Adicionar aos favoritos
+                Favorites[name] = true
+                SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+            end
+            SaveFavorites()
+        end)
+        -- ===================================
 
         btn.MouseButton1Click:Connect(function()
-            btn.Text = "EXECUTANDO..."
+            btn.Text = "       EXECUTANDO..."
             btn.Active = false
             spawn(function()
                 local success, errorMessage = pcall(func)
@@ -620,7 +671,7 @@ local function createHub()
                     wait(1)
                     closeHubWithAnimation(animationContainer)
                 end
-                btn.Text = name:upper()
+                btn.Text = "       " .. name:upper()
                 btn.Active = true
             end)
         end)
@@ -650,78 +701,103 @@ local function createHub()
     end
 
     local function createCategoryButton(name, contents, layoutOrder)
-        local btn=Instance.new("TextButton")
+        local btn = Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
-        btn.Size=UDim2.new(1,0,0,22)
-        btn.BackgroundColor3=COLOR_CATEGORY_BTN
-        btn.BorderSizePixel=0
-        btn.TextColor3=Color3.fromRGB(230,230,230)
-        btn.Font=Enum.Font.Gotham
+        btn.Size = UDim2.new(1, 0, 0, 22)
+        btn.BackgroundColor3 = COLOR_CATEGORY_BTN
+        btn.BorderSizePixel = 0
+        btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+        btn.Font = Enum.Font.Gotham
         btn.TextScaled = true 
         btn.TextWrapped = true
         local sizeConstraint = Instance.new("UITextSizeConstraint")
         sizeConstraint.MaxTextSize = 10 
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
-        btn.Text=name
-        btn.TextXAlignment=Enum.TextXAlignment.Center
-        btn.Parent=categoryContainer
-        applyRoundedCorners(btn,8)
+        btn.Text = name
+        btn.TextXAlignment = Enum.TextXAlignment.Center
+        btn.Parent = categoryContainer
+        applyRoundedCorners(btn, 8)
 
-        local border=Instance.new("UIStroke")
-        border.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
-        border.Thickness=1.5
-        border.LineJoinMode=Enum.LineJoinMode.Round
-        border.Parent=btn
+        local border = Instance.new("UIStroke")
+        border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        border.Thickness = 1.5
+        border.LineJoinMode = Enum.LineJoinMode.Round
+        border.Parent = btn
 
-        local gradient=Instance.new("UIGradient")
-        gradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
-        gradient.Rotation=90
-        gradient.Parent=border
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
+        gradient.Rotation = 90
+        gradient.Parent = border
 
         if layoutOrder then btn.LayoutOrder = layoutOrder end
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
-            if name == "📣 Atualizações 📣" then
+            
+            -- Animação da cor do texto (se for favorito fica amarelo, outros normal)
+            if name == "⭐ Favoritos" then
+                 SmoothTween(btn, 0.3, {TextColor3 = Color3.fromRGB(255, 215, 0)})
+            else
+                 -- Reseta cor do botão clicado
+                 btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+            end
+            
+            -- Lógica das Categorias
+            if name == "⭐ Favoritos" then
+                local hasFav = false
+                for _, scriptData in ipairs(AllScriptsGlobal) do
+                    if Favorites[scriptData.Name] then
+                        createScriptButton(scriptData.Name, scriptData.Func)
+                        hasFav = true
+                    end
+                end
+                if not hasFav then
+                    createUpdateLabel("Você não tem favoritos ainda!", Color3.fromRGB(150, 150, 150))
+                    createUpdateLabel("Clique na estrela ao lado dos scripts.", Color3.fromRGB(150, 150, 150))
+                end
+
+            elseif name == "📣 Atualizações 📣" then
                 displayUpdates()
             elseif typeof(contents)=="table" then
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
         end)
+        
+        -- Se não for clicado, reseta a cor quando outro for clicado (simulação simples)
+        for _, otherBtn in pairs(categoryContainer:GetChildren()) do
+            if otherBtn:IsA("TextButton") and otherBtn ~= btn then
+                otherBtn.MouseButton1Click:Connect(function()
+                     btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+                end)
+            end
+        end
+
         return btn
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V1.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V2.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+4 Grand Piece Online", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+3 Anime Fighting: Endless", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 The Forge", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "Melhoria no Carregamento", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Melhoria no Lag", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Alguns Bugs Resolvidos", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "De resto, trabalhando...", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Sistema de Favoritos!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
+        {Text = "Agora você pode salvar seus scripts", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "preferidos clicando na estrela ★", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Feedback e Sugestões", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Nos Envie no Discord!", Color = Color3.fromRGB(220, 220, 220)}
     }
 
     local stealScripts = {
-        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, -- Removido ( NOVO )
-        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, -- Removido ( NOVO )
-        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, -- Removido ( NOVO )
+        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, 
+        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, 
+        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, 
         {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
         {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
     }
     local noiteScripts = {
-        {Name = "RAYFIELD", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/FourHub.lua"))() end}, -- Removido ( NOVO )
-        {Name = "FOXNAME", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end}, -- Removido ( NOVO )
+        {Name = "RAYFIELD", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/FourHub.lua"))() end},
+        {Name = "FOXNAME", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end}, 
         {Name = "Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
         {Name = "Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end},
         {Name = "Iliankytb", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Iliankytb/Iliankytb/main/Best99NightsInTheForest"))() end},
@@ -792,10 +868,10 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
-        {Name = "( NOVO ) SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
-        {Name = "( NOVO ) NOVA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/luareflection/public-novahub/refs/heads/main/forge/loader.luau"))() end},
-        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end}, -- Removido ( NOVO )
-        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end}, -- Removido ( NOVO )
+        {Name = "SPEED HUB X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
+        {Name = "NOVA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/luareflection/public-novahub/refs/heads/main/forge/loader.luau"))() end},
+        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end}, 
+        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end}, 
         {Name = "LAZY HUB", Func = function() getgenv().mobileMode = false; repeat wait() until game:IsLoaded(); loadstring(game:HttpGet("https://raw.githubusercontent.com/LioK251/RbScripts/refs/heads/main/lazyuhub_theforge.lua"))() end},
         {Name = "UB HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua"))() end},
         {Name = "VEX HUB", Func = function() loadstring(game:HttpGet("https://ry-zen.studio/raw/VexHub/Hub.lua?key=U2VjdXJlQXV0aEtleQ"))() end},
@@ -804,17 +880,19 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     local grandPieceOnlineScripts = {
-        {Name = "( NOVO ) SWITCHHUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a7a8e715b8e.lua"))() end},
-        {Name = "( NOVO ) KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
-        {Name = "( NOVO ) DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
-        {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
+        {Name = "SWITCHHUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a7a8e715b8e.lua"))() end},
+        {Name = "KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
+        {Name = "DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
+        {Name = "MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
     }
     local afsInfinityScripts = {
-        {Name = "( NOVO ) NSHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OhhMyGehlee/sh/refs/heads/main/a"))() end},
-        {Name = "( NOVO ) SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end},
-        {Name = "( NOVO ) SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
+        {Name = "NSHUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OhhMyGehlee/sh/refs/heads/main/a"))() end},
+        {Name = "SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end},
+        {Name = "SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
     }
 
+    -- Criação dos Botões de Categoria
+    createCategoryButton("⭐ Favoritos", nil, 0) -- Prioridade 0 (Topo)
     createCategoryButton("📣 Atualizações 📣", nil, 1)
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
     createCategoryButton("99 Noites Na Floresta", noiteScripts, 3)
@@ -840,7 +918,7 @@ local function createHub()
     createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
     createCategoryButton("Dump", dumpScripts, 24)
     createCategoryButton("Eat Brainrot for fight", eatBrainrotForFightScripts, 25)
-    createCategoryButton("Sem limites simulador de soco mais forte", khSaeedScripts, 26)
+    createCategoryButton("Sem limites soco forte", khSaeedScripts, 26)
     createCategoryButton("Brainrot Evolução", brainrotEvolucaoScripts, 27)
     createCategoryButton("Anime Eternal", animeEternalScripts, 28)
     createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
@@ -848,10 +926,11 @@ local function createHub()
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
     createCategoryButton("The Forge", theForgeScripts, 32)
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
-    createCategoryButton("Anime Fighting Simulator: Infinity", afsInfinityScripts, 35)
+    createCategoryButton("AFS: Infinity", afsInfinityScripts, 35)
 
-    local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
-    if firstCategoryButton then firstCategoryButton:MouseButton1Click() end
+    -- Inicia na aba Favoritos
+    local favBtn = categoryContainer:FindFirstChild("⭐Favoritos")
+    if favBtn then favBtn:MouseButton1Click() end
 
     return animationContainer
 end
