@@ -713,9 +713,9 @@ local function createHub()
     }
 
     local stealScripts = {
-        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, -- Removido ( NOVO )
-        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, -- Removido ( NOVO )
-        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, -- Removido ( NOVO )
+        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end},
+        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end},
+        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, 
         {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
         {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
     }
@@ -792,10 +792,10 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
-        {Name = "( NOVO ) SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end}, -- Removido ( NOVO )
-        {Name = "( NOVO ) NOVA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/luareflection/public-novahub/refs/heads/main/forge/loader.luau"))() end}, -- Removido ( NOVO )
-        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end}, -- Removido ( NOVO )
-        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end}, -- Removido ( NOVO )
+        {Name = "( NOVO ) SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
+        {Name = "( NOVO ) NOVA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/luareflection/public-novahub/refs/heads/main/forge/loader.luau"))() end},
+        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end},
+        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end},
         {Name = "LAZY HUB", Func = function() getgenv().mobileMode = false; repeat wait() until game:IsLoaded(); loadstring(game:HttpGet("https://raw.githubusercontent.com/LioK251/RbScripts/refs/heads/main/lazyuhub_theforge.lua"))() end},
         {Name = "UB HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua"))() end},
         {Name = "VEX HUB", Func = function() loadstring(game:HttpGet("https://ry-zen.studio/raw/VexHub/Hub.lua?key=U2VjdXJlQXV0aEtleQ"))() end},
