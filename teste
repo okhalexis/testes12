@@ -1,8 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.2 (CORES CORRIGIDAS)
-    -- MODIFICAÇÃO: Apenas alteração da paleta de cores para Dark/Black (Igual a foto).
-    -- Mantida toda a estrutura original.
+    -- Khalexis Hub - Versão Final v3.3 (Drag Anywhere)
+    -- 1. Cores: Fundo Dark (Foto) + Textos Originais (Laranja/Dourado).
+    -- 2. Sistema de Movimento: Alterado para permitir arrastar clicando em qualquer parte do fundo.
 
 --]]
 
@@ -33,32 +33,20 @@ local GameID_Database = {
     [2753915549] = "Blox Fruits",
     [4442272183] = "Blox Fruits",
     [7449423635] = "Blox Fruits",
-    
     [4520749081] = "King Legacy",
     [6377160089] = "King Legacy",
-    
     [4924922222] = "Brookhaven",
-    
     [6516141723] = "Doors",
     [6839171747] = "Doors",
-    
     [142823291] = "Murder Mystery",
     [189707] = "Natural Disaster",
     [17625359962] = "Rivals",
     [16732694052] = "Pegue O Peixe",
-    
-    -- THE FORGE IDS
     [16347316744] = "The Forge",
     [76558904092080] = "The Forge", 
 }
 
 local CurrentPlaceId = game.PlaceId
-
--- Debug no console (F9)
-print("------------------------------------------------")
-print("[KHALEXIS DEBUG] ID ATUAL DO JOGO: " .. tostring(CurrentPlaceId))
-print("------------------------------------------------")
-
 local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -66,12 +54,12 @@ ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Paletas de Cores (ALTERADO AQUI PARA FICAR PRETO IGUAL A FOTO)
+-- Paletas de Cores (Mantendo o Dark Background + Texto Original)
 local themes = {
     normal = {
-        main_bg = Color3.fromRGB(15, 15, 15),       -- Fundo Preto (Era 30,30,30)
-        category_bg = Color3.fromRGB(25, 25, 25),   -- Fundo dos itens mais escuro (Era 50,50,50)
-        title_bar = Color3.fromRGB(20, 20, 20),     -- Barra de título escura
+        main_bg = Color3.fromRGB(15, 15, 15),       -- Fundo Preto
+        category_bg = Color3.fromRGB(25, 25, 25),   -- Fundo dos itens
+        title_bar = Color3.fromRGB(20, 20, 20),     
         script_frame_bg = Color3.fromRGB(15, 15, 15), 
         transparency = 0
     },
@@ -80,15 +68,17 @@ local themes = {
 -- Cores Padrão
 local COLOR_BLACK = themes.normal.main_bg
 local COLOR_CATEGORY_BG = themes.normal.category_bg
-local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35) -- Botões cinza escuro
-local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)   -- Botões de script escuros
+local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
+local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
 local COLOR_TITLEBAR = themes.normal.title_bar
-local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      -- Texto Branco
+
+-- Textos Originais (Laranja/Dourado)
+local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
 local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
 local COLOR_FOOTER_TEXT = Color3.fromRGB(150, 150, 150)
-local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) -- Amarelo Ouro (Mantido)
-local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80) -- Cinza Escuro
+local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) -- Amarelo Ouro
+local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
 
 local userId = player.UserId
 local userName = player.Name
@@ -105,7 +95,7 @@ local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
 
 -- ==========================================
--- SISTEMA DE FAVORITOS (LISTA ORDENADA)
+-- SISTEMA DE FAVORITOS
 -- ==========================================
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
@@ -173,10 +163,10 @@ Config = {
 local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
-        Background = COLOR_BLACK, -- Usando a nova cor preta
+        Background = COLOR_BLACK, 
         Title = Color3.fromRGB(255, 140, 0),
         InputField = COLOR_CATEGORY_BG,
-        InputFieldBorder = Color3.fromRGB(60, 60, 60), -- Borda cinza
+        InputFieldBorder = Color3.fromRGB(60, 60, 60), 
         Button = COLOR_CATEGORY_BG,
         ButtonHover = Color3.fromRGB(45, 45, 45),
         Error = Color3.fromRGB(220, 50, 50),
@@ -184,9 +174,7 @@ local KeySystemData = {
         Discord = Color3.fromRGB(88, 101, 242)
     },
     Service = "redexecutor",
-    SilentMode = false,
     DiscordInvite = "aNaFpb2Qsb",
-    WebsiteURL = "https://yourwebsite.com/",
     FileName = "redexecutor/key.txt"
 }
 
@@ -248,7 +236,7 @@ local function showLoadingScreen()
 
     local border = Instance.new("UIStroke")
     border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    border.Color = Color3.fromRGB(60, 60, 60) -- Borda Cinza
+    border.Color = Color3.fromRGB(60, 60, 60)
     border.Thickness = 2
     border.Parent = frame
 
@@ -301,7 +289,6 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    -- [[ REDIMENSIONAMENTO: LARGURA 450 (Mais compacto), ALTURA 340 ]]
     animationContainer.Size = UDim2.new(0, 450, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -326,7 +313,7 @@ local function createHub()
     hubBorder.LineJoinMode=Enum.LineJoinMode.Round
     hubBorder.Parent=frame
 
-    -- ALTERADO: Gradiente agora é CINZA/BRANCO (Para imitar a borda da foto)
+    -- Gradiente Cinza (Borda)
     local hubGradient=Instance.new("UIGradient")
     hubGradient.Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
@@ -334,6 +321,40 @@ local function createHub()
     })
     hubGradient.Rotation=45
     hubGradient.Parent=hubBorder
+
+    -- =========================================================================
+    -- NOVO SISTEMA DE ARRASTAR (APLICADO AO FRAME PRINCIPAL - "ANY PART")
+    -- =========================================================================
+    local draggingHub = false
+    local dragInputHub, dragStartHub, startPosHub
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            draggingHub = true
+            dragStartHub = input.Position
+            startPosHub = animationContainer.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    draggingHub = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInputHub = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if draggingHub and input == dragInputHub then
+            local delta = input.Position - dragStartHub
+            animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
+        end
+    end)
+    -- =========================================================================
 
     local titleBar=Instance.new("Frame")
     titleBar.Name="TitleBar"
@@ -344,41 +365,12 @@ local function createHub()
     titleBar.Parent=frame
     applyRoundedCorners(titleBar,10)
 
-    local draggingHub = false
-    local dragStartHub, startPosHub
-    local currentInputHub = nil
-
-    titleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            draggingHub = true
-            dragStartHub = input.Position
-            startPosHub = animationContainer.Position
-            currentInputHub = input
-            local connection
-            connection = input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.Ended then
-                    draggingHub = false
-                    currentInputHub = nil
-                    connection:Disconnect()
-                end
-            end)
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if draggingHub and currentInputHub == input and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStartHub
-            animationContainer.Position = UDim2.new(startPosHub.X.Scale, startPosHub.X.Offset + delta.X, startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y)
-        end
-    end)
-
     local titleBarBorder=Instance.new("UIStroke")
     titleBarBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
     titleBarBorder.Thickness=1.5
     titleBarBorder.LineJoinMode=Enum.LineJoinMode.Round
     titleBarBorder.Parent=titleBar
 
-    -- ALTERADO: Gradiente da barra de título para Cinza (Clean)
     local titleBarGradient=Instance.new("UIGradient")
     titleBarGradient.Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(80,80,80)),
@@ -439,7 +431,6 @@ local function createHub()
     searchBoxBorder.LineJoinMode = Enum.LineJoinMode.Round
     searchBoxBorder.Parent = searchBox
 
-    -- ALTERADO: Gradiente Cinza
     local searchBoxGradient = Instance.new("UIGradient")
     searchBoxGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
@@ -448,7 +439,7 @@ local function createHub()
     searchBoxGradient.Rotation = 90
     searchBoxGradient.Parent = searchBoxBorder
 
-    -- === BOTÃO DE FAVORITOS (FIXO) ===
+    -- === BOTÃO DE FAVORITOS ===
     local favFixedBtn = Instance.new("TextButton")
     favFixedBtn.Name = "FixedFavoritesButton"
     favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
@@ -467,7 +458,6 @@ local function createHub()
     favBorder.LineJoinMode = Enum.LineJoinMode.Round
     favBorder.Parent = favFixedBtn
 
-    -- ALTERADO: Gradiente Cinza
     local favGradient = Instance.new("UIGradient")
     favGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
@@ -484,7 +474,7 @@ local function createHub()
     categoryFrame.BackgroundColor3 = COLOR_CATEGORY_BG
     categoryFrame.BorderSizePixel = 0
     categoryFrame.ScrollBarThickness = 4
-    categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100) -- Scroll Cinza
+    categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100) 
     categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     categoryFrame.Parent = frame
     applyRoundedCorners(categoryFrame, 12)
@@ -495,7 +485,6 @@ local function createHub()
     categoryFrameBorder.LineJoinMode = Enum.LineJoinMode.Round
     categoryFrameBorder.Parent = categoryFrame
 
-    -- ALTERADO: Gradiente Cinza
     local categoryFrameGradient = Instance.new("UIGradient")
     categoryFrameGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
@@ -543,7 +532,7 @@ local function createHub()
     scriptFrame.BackgroundColor3=COLOR_BLACK
     scriptFrame.BorderSizePixel=0
     scriptFrame.ScrollBarThickness=4
-    scriptFrame.ScrollBarImageColor3=Color3.fromRGB(100, 100, 100) -- Scroll Cinza
+    scriptFrame.ScrollBarImageColor3=Color3.fromRGB(100, 100, 100)
     scriptFrame.Parent=frame
     applyRoundedCorners(scriptFrame,16)
 
@@ -553,7 +542,6 @@ local function createHub()
     scriptFrameBorder.LineJoinMode=Enum.LineJoinMode.Round
     scriptFrameBorder.Parent=scriptFrame
 
-    -- ALTERADO: Gradiente Cinza
     local scriptFrameGradient=Instance.new("UIGradient")
     scriptFrameGradient.Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
@@ -599,7 +587,6 @@ local function createHub()
     footerBorder.LineJoinMode=Enum.LineJoinMode.Round
     footerBorder.Parent=footerBackground
 
-    -- ALTERADO: Gradiente Cinza
     local footerGradient=Instance.new("UIGradient")
     footerGradient.Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(80,80,80)),
@@ -735,7 +722,6 @@ local function createHub()
         border.LineJoinMode = Enum.LineJoinMode.Round
         border.Parent = btn
 
-        -- ALTERADO: Gradiente Cinza
         local gradient = Instance.new("UIGradient")
         gradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
@@ -744,27 +730,26 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
         
-        -- === ADIÇÃO: Ícone de Digital (Fingerprint) ===
+        -- Ícone de Digital 
         local fingerIcon = Instance.new("ImageLabel")
         fingerIcon.Name = "FingerprintIcon"
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
-        fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) -- No canto direito
+        fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) 
         fingerIcon.BackgroundTransparency = 1
-        -- ALTERAÇÃO DO ID AQUI:
-        fingerIcon.Image = "rbxassetid://12333784627" -- Novo ID da Textura
-        fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) -- Cor cinza escuro
+        fingerIcon.Image = "rbxassetid://12333784627" 
+        fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) 
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- === Botão de Estrela (Ao lado da digital) ===
+        -- Botão de Estrela
         local starBtn = Instance.new("TextButton")
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
         starBtn.BackgroundTransparency = 1
         starBtn.Size = UDim2.new(0, 30, 1, 0)
-        starBtn.Position = UDim2.new(1, -55, 0, 0) -- Movido para esquerda da digital
+        starBtn.Position = UDim2.new(1, -55, 0, 0) 
         starBtn.Font = HUB_FONT
-        starBtn.TextSize = 24 -- ESTRELA GRANDE
+        starBtn.TextSize = 24 
         starBtn.ZIndex = 2
         starBtn.Parent = btn
         
@@ -836,9 +821,7 @@ local function createHub()
         end
 
         local hasFav = false
-        -- Iterar sobre a lista de favoritos (Array) para manter a ordem
         for _, favName in ipairs(FavoritesList) do
-            -- Busca os dados do script no global
             local scriptData = nil
             for _, s in ipairs(AllScriptsGlobal) do
                 if s.Name == favName then
@@ -862,7 +845,6 @@ local function createHub()
     favFixedBtn.MouseButton1Click:Connect(onFavoritesClick)
 
     local function createCategoryButton(name, contents, defaultOrder)
-        -- Registra imediatamente os scripts na memória global
         if typeof(contents) == "table" then
             for _, s in ipairs(contents) do
                 RegisterScript(s.Name, s.Func)
@@ -896,7 +878,6 @@ local function createHub()
         border.LineJoinMode = Enum.LineJoinMode.Round
         border.Parent = btn
 
-        -- ALTERADO: Gradiente Cinza
         local gradient = Instance.new("UIGradient")
         gradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
@@ -907,7 +888,6 @@ local function createHub()
 
         if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
-            -- MODIFICAÇÃO: Estrela tamanho normal
             btn.Text = '<font color="#FFD700">★</font> ' .. name
         else
             if defaultOrder then
@@ -941,7 +921,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
@@ -1190,7 +1170,7 @@ local function CreateKeyUI()
         BorderSizePixel = 2,
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 270), -- Aumentado para o novo texto
+        Size = UDim2.new(0, 350, 0, 270), 
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
@@ -1210,10 +1190,10 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = KeySystemData.Name .. " – Sistema de Key",
-        Position = UDim2.new(0.5, 0, 0, 45), -- Movido para baixo
+        Position = UDim2.new(0.5, 0, 0, 45), 
         Size = UDim2.new(0, 250, 0, 20),
         Font = HUB_FONT,
-        TextColor3 = KeySystemData.Colors.Title, -- Laranja Padronizado
+        TextColor3 = KeySystemData.Colors.Title, 
         TextSize = 15,
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1224,11 +1204,11 @@ local function CreateKeyUI()
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = "Clique em Pegar Key, logo em seguida cole o link no seu navegador!",
-        Position = UDim2.new(0.5, 0, 0, 65), -- Abaixo do título
+        Position = UDim2.new(0.5, 0, 0, 65), 
         Size = UDim2.new(0, 280, 0, 15),
         Font = HUB_FONT,
-        TextColor3 = Color3.fromRGB(160, 160, 160), -- Cor cinza
-        TextSize = 10, -- Menor que o título
+        TextColor3 = Color3.fromRGB(160, 160, 160), 
+        TextSize = 10, 
         TextXAlignment = Enum.TextXAlignment.Center,
         AnchorPoint = Vector2.new(0.5, 0.5)
     })
@@ -1239,7 +1219,7 @@ local function CreateKeyUI()
         BackgroundColor3 = KeySystemData.Colors.InputField,
         Text = "",
         PlaceholderText = "Cole sua key aqui...",
-        Position = UDim2.new(0.5, 0, 0.35, 0), -- Ajustado para baixo
+        Position = UDim2.new(0.5, 0, 0.35, 0), 
         Size = UDim2.new(0, 280, 0, 35),
         Font = HUB_FONT,
         TextSize = 14,
@@ -1273,7 +1253,7 @@ local function CreateKeyUI()
         Text = "Verificar Key",
         Font = HUB_FONT,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
+        TextColor3 = KeySystemData.Colors.Title, 
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1290,7 +1270,7 @@ local function CreateKeyUI()
         Text = "Pegar Key",
         Font = HUB_FONT,
         TextSize = 14,
-        TextColor3 = KeySystemData.Colors.Title, -- Tom de laranja padronizado
+        TextColor3 = KeySystemData.Colors.Title, 
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
@@ -1514,9 +1494,9 @@ local function startKeySystem()
     end
 
     if alreadyValid then
-        main() -- Entra direto no Hub
+        main() 
     else
-        CreateKeyUI() -- Exibe a tela de Key somente se não for válida
+        CreateKeyUI() 
     end
 end
 
