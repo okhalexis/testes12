@@ -1,23 +1,15 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.6 (Nova Fonte + Auto Detect)
-    -- MODIFICAÇÃO: Redimensionamento Horizontal (Estilo Wide/Print)
-
-    -- Mudanças Visuais:
-    -- 1. Fonte alterada para 'FredokaOne' (Estilo Rubik/Bold/Moderno).
-    -- 2. Variável 'HUB_FONT' criada no topo para fácil edição.
-    
-    -- Funcionalidades:
-    -- Auto-Detect (The Forge e outros), Favoritos Fixos, Key System.
+    -- Khalexis Hub - Versão Final v2.7
+    -- MODIFICAÇÃO: Estrela na esquerda (perto do nome) + Remoção de destaque da borda.
 
 --]]
 
 -- ==========================================
 -- CONFIGURAÇÃO VISUAL (FONTE)
 -- ==========================================
--- Você pode trocar 'FredokaOne' por: 'GothamBlack', 'LuckiestGuy', 'Sarpanch', etc.
 local HUB_FONT = Enum.Font.FredokaOne 
-local HUB_TEXT_SIZE = 14 -- Tamanho padrão ajustado para essa fonte
+local HUB_TEXT_SIZE = 14 
 
 local function applyRoundedCorners(guiObject, radius)
     local corner = Instance.new("UICorner")
@@ -302,7 +294,7 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    -- [[ REDIMENSIONAMENTO: AUMENTADO PARA 620x340 PARA FICAR LARGO IGUAL A PRINT ]]
+    -- [[ REDIMENSIONAMENTO: LARGURA 620, ALTURA 340 ]]
     animationContainer.Size = UDim2.new(0, 620, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -464,7 +456,6 @@ local function createHub()
     -- === LISTA DE CATEGORIAS ===
     local categoryFrame = Instance.new("ScrollingFrame")
     categoryFrame.Name = "CategoryFrame"
-    -- AJUSTADO A ALTURA PARA PREENCHER O NOVO TAMANHO VERTICAL
     categoryFrame.Size = UDim2.new(0, 120, 0, 190) 
     categoryFrame.Position = UDim2.new(0, 5, 0, 106)
     categoryFrame.BackgroundColor3 = COLOR_CATEGORY_BG
@@ -520,7 +511,6 @@ local function createHub()
 
     local scriptFrame=Instance.new("ScrollingFrame")
     scriptFrame.Name="ScriptFrame"
-    -- AJUSTADO A ALTURA E MANTIDO O WIDGET DINAMICO PARA LARGURA
     scriptFrame.Size=UDim2.new(1,-135,0,250)
     scriptFrame.Position=UDim2.new(0,130,0,40)
     scriptFrame.BackgroundColor3=COLOR_BLACK
@@ -836,10 +826,13 @@ local function createHub()
         btn.Font = HUB_FONT
         btn.TextScaled = true 
         btn.TextWrapped = true
+        btn.RichText = true -- Habilitado para usar cor no texto
+        
         local sizeConstraint = Instance.new("UITextSizeConstraint")
         sizeConstraint.MaxTextSize = 10 
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
+        
         btn.Text = name
         btn.TextXAlignment = Enum.TextXAlignment.Center
         btn.Parent = categoryContainer
@@ -858,18 +851,10 @@ local function createHub()
 
         if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
+            -- A estrela agora faz parte do texto, colada na esquerda e dourada
+            btn.Text = '<font color="#FFD700">★</font> ' .. name
             
-            local gameIcon = Instance.new("TextLabel")
-            gameIcon.Text = "★"
-            gameIcon.TextColor3 = COLOR_STAR_ON
-            gameIcon.BackgroundTransparency = 1
-            gameIcon.TextSize = 14
-            gameIcon.Size = UDim2.new(0, 15, 1, 0)
-            gameIcon.Position = UDim2.new(1, -15, 0, 0)
-            gameIcon.Font = HUB_FONT
-            gameIcon.Parent = btn
-            
-            border.Color = Color3.fromRGB(255, 215, 0)
+            -- Removido o destaque da borda (fundo personalizado) conforme solicitado
         else
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
@@ -902,7 +887,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
