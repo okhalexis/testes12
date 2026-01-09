@@ -1,10 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.7 (Novo Ícone e Ajustes Visuais)
+    -- Khalexis Hub - Versão Final v3.8 (Ajuste de Espaçamento)
     -- 1. IDs dos jogos atualizados.
     -- 2. AUTO-SELECT: Entra direto na aba "Atualizações" ao abrir.
-    -- 3. VISUAL: Ícone de Mira (ID 4483345998) adicionado nas categorias de jogos.
-    -- 4. EXCEÇÕES: Atualizações, Favoritos e Pesquisa NÃO recebem o ícone.
+    -- 3. VISUAL: Ícone de Mira (ID 4483345998) ajustado.
+    -- 4. FIX: Texto agora tem mais margem para não ficar "dentro" do ícone.
 
 --]]
 
@@ -438,7 +438,7 @@ local function createHub()
     closeButton.MouseLeave:Connect(function() TweenService:Create(closeButton, closeTweenInfo, {BackgroundTransparency = 1}):Play() end)
     closeButton.MouseButton1Click:Connect(function() closeHubWithAnimation(animationContainer) end)
 
-    -- === BARRA DE PESQUISA (SEM ÍCONE EXTRA, APENAS O PLACEHOLDER) ===
+    -- === BARRA DE PESQUISA ===
     local searchBox = Instance.new("TextBox")
     searchBox.Name = "CategorySearchBox"
     searchBox.Size = UDim2.new(0, 120, 0, 22)
@@ -468,7 +468,7 @@ local function createHub()
     searchBoxGradient.Rotation = 90
     searchBoxGradient.Parent = searchBoxBorder
 
-    -- === BOTÃO DE FAVORITOS (SEM ÍCONE EXTRA) ===
+    -- === BOTÃO DE FAVORITOS ===
     local favFixedBtn = Instance.new("TextButton")
     favFixedBtn.Name = "FixedFavoritesButton"
     favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
@@ -914,37 +914,38 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
 
-        -- Lógica de Layout e Ícones
-        if name == "📣 Atualizações 📣" then 
-            btn.LayoutOrder = 1 
-            btn.TextXAlignment = Enum.TextXAlignment.Center
-            -- SEM ÍCONE AQUI (Texto centralizado com Emojis)
-        elseif DetectedGameCategory and name == DetectedGameCategory then
+        if DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
             btn.Text = '<font color="#FFD700">★</font> ' .. name
             btn.TextXAlignment = Enum.TextXAlignment.Center
-            -- SEM ÍCONE AQUI (Estrela Dourada)
         else
-            -- Categorias Comuns (Jogos)
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
             end
             
-            -- ÍCONE DE MIRA (CROSSHAIR)
+            -- LÓGICA DO ÍCONE E ALINHAMENTO
             local icon = Instance.new("ImageLabel")
             icon.Name = "CategoryIcon"
             icon.Size = UDim2.new(0, 14, 0, 14)
-            icon.Position = UDim2.new(0, 6, 0.5, -7)
+            icon.Position = UDim2.new(0, 5, 0.5, -7) -- Fica bem na esquerda (margem 5px)
             icon.BackgroundTransparency = 1
-            icon.Image = "rbxassetid://4483345998" -- Novo ID (Mira)
+            icon.Image = "rbxassetid://4483345998"
             icon.ImageColor3 = Color3.fromRGB(180, 180, 180) -- Cor cinza suave
             icon.Parent = btn
             
-            -- Alinhar texto para esquerda e dar margem
+            -- Alinhar texto para esquerda e dar margem maior
             btn.TextXAlignment = Enum.TextXAlignment.Left
             local pad = Instance.new("UIPadding")
-            pad.PaddingLeft = UDim.new(0, 25) -- Espaço para o ícone
+            pad.PaddingLeft = UDim.new(0, 30) -- Aumentado para 30 para o texto não ficar em cima do ícone
             pad.Parent = btn
+        end
+        
+        if name == "📣 Atualizações 📣" then 
+            btn.LayoutOrder = 1 
+            -- REMOVIDO: Limpeza de ícones e padding para Atualizações
+            if btn:FindFirstChild("CategoryIcon") then btn.CategoryIcon:Destroy() end
+            if btn:FindFirstChild("UIPadding") then btn.UIPadding:Destroy() end
+            btn.TextXAlignment = Enum.TextXAlignment.Center
         end
 
         btn.MouseButton1Click:Connect(function()
@@ -971,12 +972,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Novo ícone de mira", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "adicionado nos jogos.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Auto-seleção de updates.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Atualizações selecionadas", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "automaticamente ao entrar.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Ícones alinhados.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
