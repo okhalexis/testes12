@@ -1,10 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.1
-    -- MODIFICAÇÕES:
-    -- 1. Tamanho reduzido para 450px (Horizontalmente mais compacto).
-    -- 2. Asset de digital atualizado para o ID solicitado.
-    -- 3. Layout: Estrela na esquerda da digital, Digital na direita.
+    -- Khalexis Hub - Versão Final v3.2
+    -- MODIFICAÇÃO: 
+    -- 1. ID da digital atualizado para: rbxassetid://3120636251
+    -- 2. Mantido tamanho compacto (450px).
 
 --]]
 
@@ -297,7 +296,7 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    -- [[ REDIMENSIONAMENTO: LARGURA 450 (Mais compacto), ALTURA 340 ]]
+    -- [[ REDIMENSIONAMENTO: LARGURA 450 (15% menor), ALTURA 340 ]]
     animationContainer.Size = UDim2.new(0, 450, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -900,7 +899,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
@@ -1000,7 +999,7 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     local grandPieceOnlineScripts = {
-        {Name = "SWITCHHUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a7a8e715b8e.lua"))() end},
+        {Name = "SWITCHHUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a8e715b8e.lua"))() end},
         {Name = "KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
         {Name = "DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
         {Name = "MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
