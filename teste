@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.2 (Correção de Layout)
+    -- Khalexis Hub - Versão Final v4.3 (Correção de Layout)
     -- 1. CLEANUP: Remove interfaces antigas.
     -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
-    -- 3. ALINHAMENTO: Texto das categorias alinhado à esquerda com margem mínima (6px).
+    -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
 
 --]]
@@ -909,12 +909,10 @@ local function createHub()
             
             -- [CORREÇÃO VISUAL SOLICITADA]
             -- 1. Remover Asset (Crosshair deletado)
-            -- 2. Reposicionar Texto (Esquerda, sem padding exagerado)
+            -- 2. Reposicionar Texto (CENTRALIZADO)
             
-            btn.TextXAlignment = Enum.TextXAlignment.Left
-            local pad = Instance.new("UIPadding")
-            pad.PaddingLeft = UDim.new(0, 6) -- Margem pequena para não colar na borda
-            pad.Parent = btn
+            btn.TextXAlignment = Enum.TextXAlignment.Center
+            -- Padding removido para garantir centralização total
         end
         
         if name == "📣 Atualizações 📣" then 
@@ -948,12 +946,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V4.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V4.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Layout corrigido:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
         {Text = "Crosshair removido e", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "texto alinhado.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "texto centralizado.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
