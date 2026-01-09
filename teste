@@ -1,13 +1,12 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.1 (Auto-Game Detector)
+    -- Khalexis Hub - Versão Final v2.2 (Favoritos Fixo)
 
-    -- Funcionalidades Novas:
-    -- 1. Auto-Detecção de Jogo: Se o jogador entrar no Blox Fruits, a categoria sobe para o topo.
-    -- 2. Indicador visual na categoria do jogo atual.
-
-    -- Funcionalidades Mantidas:
-    -- Favoritos, Key System, Drag System, etc.
+    -- Mudanças:
+    -- 1. Aba Favoritos removida da lista de rolagem.
+    -- 2. Botão "Favoritos" fixado abaixo da barra de pesquisa.
+    -- 3. Design do botão Favoritos igual ao da barra de pesquisa.
+    -- 4. Ajuste de layout da lista de categorias.
     
 --]]
 
@@ -27,49 +26,25 @@ local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
 -- BANCO DE DADOS DE IDS (AUTO DETECT)
--- Coloque aqui o ID do jogo e o Nome Exato da Categoria
 -- ==========================================
 local GameID_Database = {
-    -- Blox Fruits (Sea 1, 2, 3)
     [2753915549] = "Blox Fruits",
     [4442272183] = "Blox Fruits",
     [7449423635] = "Blox Fruits",
-    
-    -- King Legacy
     [4520749081] = "King Legacy",
     [6377160089] = "King Legacy",
-    
-    -- Brookhaven
     [4924922222] = "Brookhaven",
-    
-    -- Doors
     [6516141723] = "Doors",
     [6839171747] = "Doors",
-    
-    -- Murder Mystery 2
     [142823291] = "Murder Mystery",
-    
-    -- Natural Disaster Survival
     [189707] = "Natural Disaster",
-    
-    -- Rivals
     [17625359962] = "Rivals",
-    
-    -- Fisch (Pegue o Peixe)
     [16732694052] = "Pegue O Peixe",
-    
-    -- The Forge
     [16347316744] = "The Forge",
-    
-    -- Blade Ball (Exemplo genérico se tiver)
-    [13772394625] = "Blade Ball",
-    
-    -- Adicione mais IDs aqui conforme necessário
-    -- [ID_DO_JOGO] = "Nome Da Categoria",
 }
 
 local CurrentPlaceId = game.PlaceId
-local DetectedGameCategory = GameID_Database[CurrentPlaceId] -- Verifica se o jogo atual está na lista
+local DetectedGameCategory = GameID_Database[CurrentPlaceId]
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
@@ -387,83 +362,111 @@ local function createHub()
     closeButton.MouseLeave:Connect(function() TweenService:Create(closeButton, closeTweenInfo, {BackgroundTransparency = 1}):Play() end)
     closeButton.MouseButton1Click:Connect(function() closeHubWithAnimation(animationContainer) end)
 
-    local searchBox=Instance.new("TextBox")
-    searchBox.Name="CategorySearchBox"
-    searchBox.Size=UDim2.new(0,120,0,22)
-    searchBox.Position=UDim2.new(0,5,0,50)
-    searchBox.BackgroundColor3=Color3.fromRGB(40,40,40)
-    searchBox.TextColor3=COLOR_TEXT
-    searchBox.PlaceholderText="🔍 Pesquisar..."
-    searchBox.PlaceholderColor3=Color3.fromRGB(150,150,150)
-    searchBox.Text=""
-    searchBox.Font=Enum.Font.Gotham
-    searchBox.TextSize=11
-    searchBox.ClearTextOnFocus=false
-    searchBox.Parent=frame
-    applyRoundedCorners(searchBox,8)
+    -- === BARRA DE PESQUISA ===
+    local searchBox = Instance.new("TextBox")
+    searchBox.Name = "CategorySearchBox"
+    searchBox.Size = UDim2.new(0, 120, 0, 22)
+    searchBox.Position = UDim2.new(0, 5, 0, 50) -- Topo
+    searchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    searchBox.TextColor3 = COLOR_TEXT
+    searchBox.PlaceholderText = "🔍 Pesquisar..."
+    searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    searchBox.Text = ""
+    searchBox.Font = Enum.Font.Gotham
+    searchBox.TextSize = 11
+    searchBox.ClearTextOnFocus = false
+    searchBox.Parent = frame
+    applyRoundedCorners(searchBox, 8)
 
-    local searchBoxBorder=Instance.new("UIStroke")
-    searchBoxBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
-    searchBoxBorder.Thickness=1.5
-    searchBoxBorder.LineJoinMode=Enum.LineJoinMode.Round
-    searchBoxBorder.Parent=searchBox
+    local searchBoxBorder = Instance.new("UIStroke")
+    searchBoxBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    searchBoxBorder.Thickness = 1.5
+    searchBoxBorder.LineJoinMode = Enum.LineJoinMode.Round
+    searchBoxBorder.Parent = searchBox
 
-    local searchBoxGradient=Instance.new("UIGradient")
-    searchBoxGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
-    searchBoxGradient.Rotation=90
-    searchBoxGradient.Parent=searchBoxBorder
+    local searchBoxGradient = Instance.new("UIGradient")
+    searchBoxGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
+    searchBoxGradient.Rotation = 90
+    searchBoxGradient.Parent = searchBoxBorder
 
-    local categoryFrame=Instance.new("ScrollingFrame")
-    categoryFrame.Name="CategoryFrame"
-    categoryFrame.Size=UDim2.new(0, 120, 0, 168)
-    categoryFrame.Position=UDim2.new(0, 5, 0, 77)
-    categoryFrame.BackgroundColor3=COLOR_CATEGORY_BG
-    categoryFrame.BorderSizePixel=0
-    categoryFrame.ScrollBarThickness=4
-    categoryFrame.ScrollBarImageColor3=Color3.fromRGB(255, 140, 0)
-    categoryFrame.CanvasSize=UDim2.new(0, 0, 0, 0)
-    categoryFrame.Parent=frame
-    applyRoundedCorners(categoryFrame,12)
+    -- === BOTÃO DE FAVORITOS (FIXO) ===
+    local favFixedBtn = Instance.new("TextButton")
+    favFixedBtn.Name = "FixedFavoritesButton"
+    favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
+    favFixedBtn.Position = UDim2.new(0, 5, 0, 78) -- Logo abaixo do SearchBox (50 + 22 + 6px gap)
+    favFixedBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Mesmo fundo do SearchBox
+    favFixedBtn.TextColor3 = Color3.fromRGB(220, 220, 220) -- Cor normal
+    favFixedBtn.Text = "⭐ Favoritos"
+    favFixedBtn.Font = Enum.Font.GothamBold
+    favFixedBtn.TextSize = 11
+    favFixedBtn.Parent = frame
+    applyRoundedCorners(favFixedBtn, 8)
 
-    local categoryFrameBorder=Instance.new("UIStroke")
-    categoryFrameBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
-    categoryFrameBorder.Thickness=1.5
-    categoryFrameBorder.LineJoinMode=Enum.LineJoinMode.Round
-    categoryFrameBorder.Parent=categoryFrame
+    local favBorder = Instance.new("UIStroke")
+    favBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    favBorder.Thickness = 1.5
+    favBorder.LineJoinMode = Enum.LineJoinMode.Round
+    favBorder.Parent = favFixedBtn
 
-    local categoryFrameGradient=Instance.new("UIGradient")
-    categoryFrameGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,140,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(220,100,0))})
-    categoryFrameGradient.Rotation=90
-    categoryFrameGradient.Parent=categoryFrameBorder
+    local favGradient = Instance.new("UIGradient")
+    favGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
+    favGradient.Rotation = 90
+    favGradient.Parent = favBorder
+    -- ===================================
 
-    local categoryContainer=Instance.new("Frame")
-    categoryContainer.Name="CategoryContainer"
-    categoryContainer.Size=UDim2.new(1,-10,0,0)
-    categoryContainer.Position=UDim2.new(0,5,0,5)
-    categoryContainer.BackgroundTransparency=1
-    categoryContainer.Parent=categoryFrame
-    categoryContainer.ClipsDescendants=false
+    -- === LISTA DE CATEGORIAS ===
+    local categoryFrame = Instance.new("ScrollingFrame")
+    categoryFrame.Name = "CategoryFrame"
+    -- Ajustado posição e tamanho para acomodar o botão de Favoritos
+    categoryFrame.Size = UDim2.new(0, 120, 0, 137) 
+    categoryFrame.Position = UDim2.new(0, 5, 0, 106) -- Abaixo do botão Favoritos
+    categoryFrame.BackgroundColor3 = COLOR_CATEGORY_BG
+    categoryFrame.BorderSizePixel = 0
+    categoryFrame.ScrollBarThickness = 4
+    categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 140, 0)
+    categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    categoryFrame.Parent = frame
+    applyRoundedCorners(categoryFrame, 12)
 
-    local layoutCategory=Instance.new("UIListLayout")
-    layoutCategory.Padding=UDim.new(0,8)
-    layoutCategory.SortOrder=Enum.SortOrder.LayoutOrder
-    layoutCategory.FillDirection=Enum.FillDirection.Vertical
-    layoutCategory.HorizontalAlignment=Enum.HorizontalAlignment.Center
-    layoutCategory.Parent=categoryContainer
+    local categoryFrameBorder = Instance.new("UIStroke")
+    categoryFrameBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    categoryFrameBorder.Thickness = 1.5
+    categoryFrameBorder.LineJoinMode = Enum.LineJoinMode.Round
+    categoryFrameBorder.Parent = categoryFrame
+
+    local categoryFrameGradient = Instance.new("UIGradient")
+    categoryFrameGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 100, 0))})
+    categoryFrameGradient.Rotation = 90
+    categoryFrameGradient.Parent = categoryFrameBorder
+
+    local categoryContainer = Instance.new("Frame")
+    categoryContainer.Name = "CategoryContainer"
+    categoryContainer.Size = UDim2.new(1, -10, 0, 0)
+    categoryContainer.Position = UDim2.new(0, 5, 0, 5)
+    categoryContainer.BackgroundTransparency = 1
+    categoryContainer.Parent = categoryFrame
+    categoryContainer.ClipsDescendants = false
+
+    local layoutCategory = Instance.new("UIListLayout")
+    layoutCategory.Padding = UDim.new(0, 8)
+    layoutCategory.SortOrder = Enum.SortOrder.LayoutOrder
+    layoutCategory.FillDirection = Enum.FillDirection.Vertical
+    layoutCategory.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layoutCategory.Parent = categoryContainer
 
     layoutCategory:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        categoryContainer.Size=UDim2.new(1,-10,0,layoutCategory.AbsoluteContentSize.Y)
+        categoryContainer.Size = UDim2.new(1, -10, 0, layoutCategory.AbsoluteContentSize.Y)
         local requiredHeight = layoutCategory.AbsoluteContentSize.Y + 10
         local extraSpace = 100
         categoryFrame.CanvasSize = UDim2.new(0, 0, 0, math.max(requiredHeight + extraSpace, 200))
     end)
 
     searchBox:GetPropertyChangedSignal("Text"):Connect(function() 
-        local s=searchBox.Text:lower(); 
-        for _,b in ipairs(categoryContainer:GetChildren()) do 
+        local s = searchBox.Text:lower(); 
+        for _, b in ipairs(categoryContainer:GetChildren()) do 
             if b:IsA("TextButton") then 
-                local n=b.Text:lower(); 
-                b.Visible = (string.find(n,s,1,true) ~= nil)
+                local n = b.Text:lower(); 
+                b.Visible = (string.find(n, s, 1, true) ~= nil)
             end 
         end 
     end)
@@ -733,6 +736,36 @@ local function createHub()
         end
     end
 
+    -- FUNÇÃO PARA O BOTÃO DE FAVORITOS (CLIQUE)
+    local function onFavoritesClick()
+        clearScripts()
+        
+        -- Destaque visual
+        SmoothTween(favFixedBtn, 0.3, {TextColor3 = Color3.fromRGB(255, 215, 0)})
+        
+        -- Remove destaque dos outros botões
+        for _, otherBtn in pairs(categoryContainer:GetChildren()) do
+            if otherBtn:IsA("TextButton") then
+                otherBtn.TextColor3 = Color3.fromRGB(230, 230, 230)
+            end
+        end
+
+        -- Lógica de exibição
+        local hasFav = false
+        for _, scriptData in ipairs(AllScriptsGlobal) do
+            if Favorites[scriptData.Name] then
+                createScriptButton(scriptData.Name, scriptData.Func)
+                hasFav = true
+            end
+        end
+        if not hasFav then
+            createUpdateLabel("Você não tem favoritos ainda!", Color3.fromRGB(150, 150, 150))
+            createUpdateLabel("Clique na estrela ao lado dos scripts.", Color3.fromRGB(150, 150, 150))
+        end
+    end
+    
+    favFixedBtn.MouseButton1Click:Connect(onFavoritesClick)
+
     local function createCategoryButton(name, contents, defaultOrder)
         local btn = Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
@@ -763,12 +796,9 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
 
-        -- LÓGICA DE DETECÇÃO DE JOGO
-        -- Se o nome da categoria bater com o jogo detectado, sobe a prioridade
         if DetectedGameCategory and name == DetectedGameCategory then
-            btn.LayoutOrder = 2 -- Logo abaixo de Favoritos e Updates
+            btn.LayoutOrder = 0 -- Topo da lista
             
-            -- Adiciona estrela visual no botão da categoria
             local gameIcon = Instance.new("TextLabel")
             gameIcon.Text = "★"
             gameIcon.TextColor3 = COLOR_STAR_ON
@@ -779,69 +809,49 @@ local function createHub()
             gameIcon.Font = Enum.Font.GothamBold
             gameIcon.Parent = btn
             
-            -- Opcional: Destacar a cor da borda
-            border.Color = COLOR_STAR_ON
-            gradient:Destroy() -- Remove gradiente padrão para ficar amarelo sólido se quiser
             border.Color = Color3.fromRGB(255, 215, 0)
         else
-            -- Se não for o jogo detectado, usa a ordem padrão + 10 para ficar lá embaixo
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
             end
         end
         
-        -- Mantém Favoritos e Updates no topo absoluto
-        if name == "⭐ Favoritos" then btn.LayoutOrder = 0 end
         if name == "📣 Atualizações 📣" then btn.LayoutOrder = 1 end
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
             
-            if name == "⭐ Favoritos" then
-                 SmoothTween(btn, 0.3, {TextColor3 = Color3.fromRGB(255, 215, 0)})
-            else
-                 btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+            -- Remove destaque do botão Favoritos (Fixo)
+            favFixedBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+            
+            -- Remove destaque de outros botões
+            for _, otherBtn in pairs(categoryContainer:GetChildren()) do
+                if otherBtn:IsA("TextButton") then
+                     otherBtn.TextColor3 = Color3.fromRGB(230, 230, 230)
+                end
             end
             
-            if name == "⭐ Favoritos" then
-                local hasFav = false
-                for _, scriptData in ipairs(AllScriptsGlobal) do
-                    if Favorites[scriptData.Name] then
-                        createScriptButton(scriptData.Name, scriptData.Func)
-                        hasFav = true
-                    end
-                end
-                if not hasFav then
-                    createUpdateLabel("Você não tem favoritos ainda!", Color3.fromRGB(150, 150, 150))
-                    createUpdateLabel("Clique na estrela ao lado dos scripts.", Color3.fromRGB(150, 150, 150))
-                end
+            -- Destaque deste botão
+            btn.TextColor3 = Color3.fromRGB(255, 215, 0) -- Amarelo
 
-            elseif name == "📣 Atualizações 📣" then
+            if name == "📣 Atualizações 📣" then
                 displayUpdates()
             elseif typeof(contents)=="table" then
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
         end)
-        
-        for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-            if otherBtn:IsA("TextButton") and otherBtn ~= btn then
-                otherBtn.MouseButton1Click:Connect(function()
-                     btn.TextColor3 = Color3.fromRGB(230, 230, 230)
-                end)
-            end
-        end
 
         return btn
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "--- AUTO DETECT ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V2.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- NOVO LAYOUT ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Jogo Detectado!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
-        {Text = "A categoria do seu jogo atual", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "agora aparece no topo da lista", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "marcada com uma estrela ★", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Botão de Favoritos Fixo!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
+        {Text = "Agora os favoritos ficam", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "logo abaixo da barra de pesquisa", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "para acesso rápido.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -947,10 +957,6 @@ local function createHub()
         {Name = "SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
     }
 
-    -- Criação dos Botões de Categoria
-    -- A ordem padrão é 0 para favoritos, 1 para updates, e os outros começam em 2 (mas no script eu somo +10 para jogar eles lá pra baixo, dando espaço pro jogo detectado assumir a posição 2)
-    
-    createCategoryButton("⭐ Favoritos", nil, 0)
     createCategoryButton("📣 Atualizações 📣", nil, 1)
     
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
@@ -987,7 +993,7 @@ local function createHub()
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
     createCategoryButton("AFS: Infinity", afsInfinityScripts, 35)
 
-    -- Se detectou um jogo, clica nele automaticamente, senão clica em Favoritos
+    -- Se detectou um jogo, clica nele automaticamente
     local autoClickBtn = nil
     if DetectedGameCategory then
         autoClickBtn = categoryContainer:FindFirstChild(DetectedGameCategory:gsub("%s+", ""))
@@ -996,8 +1002,8 @@ local function createHub()
     if autoClickBtn then
         autoClickBtn:MouseButton1Click()
     else
-        local favBtn = categoryContainer:FindFirstChild("⭐Favoritos")
-        if favBtn then favBtn:MouseButton1Click() end
+        -- Se não detectar jogo, abre na aba Favoritos
+        onFavoritesClick()
     end
 
     return animationContainer
