@@ -1,22 +1,19 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.6 (Nova Fonte + Auto Detect)
+    -- Khalexis Hub - Versão Final v2.7 (Ajuste Visual Favoritos + Clean UI)
 
-    -- Mudanças Visuais:
-    -- 1. Fonte alterada para 'FredokaOne' (Estilo Rubik/Bold/Moderno).
-    -- 2. Variável 'HUB_FONT' criada no topo para fácil edição.
+    -- Mudanças:
+    -- 1. Estrela de favoritos movida para a esquerda e texto aproximado.
+    -- 2. Removido destaque visual (fundo/borda) do "Jogo Identificado".
+    -- 3. Fonte FredokaOne mantida.
     
-    -- Funcionalidades:
-    -- Auto-Detect (The Forge e outros), Favoritos Fixos, Key System.
-
 --]]
 
 -- ==========================================
 -- CONFIGURAÇÃO VISUAL (FONTE)
 -- ==========================================
--- Você pode trocar 'FredokaOne' por: 'GothamBlack', 'LuckiestGuy', 'Sarpanch', etc.
 local HUB_FONT = Enum.Font.FredokaOne 
-local HUB_TEXT_SIZE = 14 -- Tamanho padrão ajustado para essa fonte
+local HUB_TEXT_SIZE = 14 
 
 local function applyRoundedCorners(guiObject, radius)
     local corner = Instance.new("UICorner")
@@ -695,10 +692,16 @@ local function createHub()
         btn.TextColor3 = COLOR_TEXT
         btn.Font = HUB_FONT
         btn.TextSize = 12
-        btn.Text = "       " .. name:upper()
+        -- Removido espaços excessivos e configurado para alinhar com o Padding
+        btn.Text = name:upper()
         btn.TextXAlignment = Enum.TextXAlignment.Left
         btn.Parent = scriptContainer
         applyRoundedCorners(btn, 10)
+
+        -- Adiciona Padding para o texto não ficar em cima da estrela (que agora está na esquerda)
+        local btnPad = Instance.new("UIPadding")
+        btnPad.PaddingLeft = UDim.new(0, 28) -- Espaço para a estrela
+        btnPad.Parent = btn
 
         local border = Instance.new("UIStroke")
         border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -715,8 +718,9 @@ local function createHub()
         starBtn.Name = "StarButton"
         starBtn.Text = "★"
         starBtn.BackgroundTransparency = 1
-        starBtn.Size = UDim2.new(0, 30, 1, 0)
-        starBtn.Position = UDim2.new(1, -30, 0, 0)
+        -- POSIÇÃO ALTERADA: Agora na Esquerda
+        starBtn.Size = UDim2.new(0, 25, 1, 0)
+        starBtn.Position = UDim2.new(0, 0, 0, 0) 
         starBtn.Font = HUB_FONT
         starBtn.TextSize = 18
         starBtn.ZIndex = 2
@@ -738,7 +742,7 @@ local function createHub()
         end)
 
         btn.MouseButton1Click:Connect(function()
-            btn.Text = "       EXECUTANDO..."
+            btn.Text = "EXECUTANDO..."
             btn.Active = false
             spawn(function()
                 local success, errorMessage = pcall(func)
@@ -749,7 +753,7 @@ local function createHub()
                     wait(1)
                     closeHubWithAnimation(animationContainer)
                 end
-                btn.Text = "       " .. name:upper()
+                btn.Text = name:upper()
                 btn.Active = true
             end)
         end)
@@ -853,19 +857,8 @@ local function createHub()
         gradient.Parent = border
 
         if DetectedGameCategory and name == DetectedGameCategory then
+            -- Manteve a lógica de ordenação (top 2), mas removeu o visual personalizado
             btn.LayoutOrder = 2
-            
-            local gameIcon = Instance.new("TextLabel")
-            gameIcon.Text = "★"
-            gameIcon.TextColor3 = COLOR_STAR_ON
-            gameIcon.BackgroundTransparency = 1
-            gameIcon.TextSize = 14
-            gameIcon.Size = UDim2.new(0, 15, 1, 0)
-            gameIcon.Position = UDim2.new(1, -15, 0, 0)
-            gameIcon.Font = HUB_FONT
-            gameIcon.Parent = btn
-            
-            border.Color = Color3.fromRGB(255, 215, 0)
         else
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
@@ -898,12 +891,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
-        {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "--- NOVA UI ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Fonte Fredoka One adicionada", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "para um visual mais limpo.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Favoritos ajustados!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Estrela movida para esquerda.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "UI Limpa.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
