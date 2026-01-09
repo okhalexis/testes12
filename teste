@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.2
+    -- Khalexis Hub - Versão Final v3.3
     -- MODIFICAÇÃO: 
-    -- 1. ID da digital atualizado para: rbxassetid://3120636251
-    -- 2. Mantido tamanho compacto (450px).
+    -- 1. Ícone da digital atualizado para o Texture ID: 9728118892.
+    -- 2. Mantido layout compacto (450px) e posicionamento das estrelas.
 
 --]]
 
@@ -713,7 +713,7 @@ local function createHub()
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
         fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) -- No canto direito
         fingerIcon.BackgroundTransparency = 1
-        fingerIcon.Image = "rbxassetid://3120636251" -- ID CORRIGIDO
+        fingerIcon.Image = "rbxassetid://9728118892" -- ID DE TEXTURA ATUALIZADO
         fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) -- Cor cinza escuro
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
@@ -899,7 +899,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
