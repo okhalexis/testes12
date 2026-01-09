@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.1 (Prototipagem de Layout)
-    -- 1. CLEANUP: Remove interfaces antigas antes de criar.
-    -- 2. LAYOUT: Texto alinhado à ESQUERDA com margem.
-    -- 3. ÍCONE: Crosshair movido para a esquerda (antes do texto).
+    -- Khalexis Hub - Versão Final v4.2 (Correção de Layout)
+    -- 1. CLEANUP: Remove interfaces antigas.
+    -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
+    -- 3. ALINHAMENTO: Texto das categorias alinhado à esquerda com margem mínima (6px).
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
 
 --]]
@@ -908,28 +908,18 @@ local function createHub()
             end
             
             -- [CORREÇÃO VISUAL SOLICITADA]
-            -- 1. Ícone movido para a extrema esquerda (5px de margem)
-            local icon = Instance.new("ImageLabel")
-            icon.Name = "CategoryIcon"
-            icon.Size = UDim2.new(0, 14, 0, 14)
-            icon.AnchorPoint = Vector2.new(0, 0.5) -- Pivô no centro vertical, esquerda horizontal
-            icon.Position = UDim2.new(0, 5, 0.5, 0) -- 5px da borda esquerda (extremamente à esquerda)
-            icon.BackgroundTransparency = 1
-            icon.Image = "rbxassetid://4483345998"
-            icon.ImageColor3 = Color3.fromRGB(180, 180, 180) 
-            icon.Parent = btn
+            -- 1. Remover Asset (Crosshair deletado)
+            -- 2. Reposicionar Texto (Esquerda, sem padding exagerado)
             
-            -- 2. Texto alinhado à esquerda com margem (Padding) para ficar APÓS o ícone
             btn.TextXAlignment = Enum.TextXAlignment.Left
             local pad = Instance.new("UIPadding")
-            pad.PaddingLeft = UDim.new(0, 28) -- Empurra o texto para começar DEPOIS do ícone
+            pad.PaddingLeft = UDim.new(0, 6) -- Margem pequena para não colar na borda
             pad.Parent = btn
         end
         
         if name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
-            -- Garante que atualização não tenha ícone/padding extra
-            if btn:FindFirstChild("CategoryIcon") then btn.CategoryIcon:Destroy() end
+            -- Garante que atualização não tenha padding extra (centralizado)
             if btn:FindFirstChild("UIPadding") then btn.UIPadding:Destroy() end
             btn.TextXAlignment = Enum.TextXAlignment.Center
         end
@@ -958,11 +948,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V4.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V4.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Layout corrigido:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Ícone na esquerda e", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Crosshair removido e", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "texto alinhado.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
