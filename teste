@@ -1,10 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.6 (Correção Visual e Auto-Select)
+    -- Khalexis Hub - Versão Final v3.7 (Novo Ícone e Ajustes Visuais)
     -- 1. IDs dos jogos atualizados.
     -- 2. AUTO-SELECT: Entra direto na aba "Atualizações" ao abrir.
-    -- 3. VISUAL: Ícone adicionado ao lado esquerdo das categorias (exceto jogo atual).
-    -- 4. FORMATAÇÃO: Ajuste de alinhamento de texto para acomodar o ícone.
+    -- 3. VISUAL: Ícone de Mira (ID 4483345998) adicionado nas categorias de jogos.
+    -- 4. EXCEÇÕES: Atualizações, Favoritos e Pesquisa NÃO recebem o ícone.
 
 --]]
 
@@ -438,7 +438,7 @@ local function createHub()
     closeButton.MouseLeave:Connect(function() TweenService:Create(closeButton, closeTweenInfo, {BackgroundTransparency = 1}):Play() end)
     closeButton.MouseButton1Click:Connect(function() closeHubWithAnimation(animationContainer) end)
 
-    -- === BARRA DE PESQUISA ===
+    -- === BARRA DE PESQUISA (SEM ÍCONE EXTRA, APENAS O PLACEHOLDER) ===
     local searchBox = Instance.new("TextBox")
     searchBox.Name = "CategorySearchBox"
     searchBox.Size = UDim2.new(0, 120, 0, 22)
@@ -468,7 +468,7 @@ local function createHub()
     searchBoxGradient.Rotation = 90
     searchBoxGradient.Parent = searchBoxBorder
 
-    -- === BOTÃO DE FAVORITOS ===
+    -- === BOTÃO DE FAVORITOS (SEM ÍCONE EXTRA) ===
     local favFixedBtn = Instance.new("TextButton")
     favFixedBtn.Name = "FixedFavoritesButton"
     favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
@@ -914,22 +914,30 @@ local function createHub()
         gradient.Rotation = 90
         gradient.Parent = border
 
-        if DetectedGameCategory and name == DetectedGameCategory then
+        -- Lógica de Layout e Ícones
+        if name == "📣 Atualizações 📣" then 
+            btn.LayoutOrder = 1 
+            btn.TextXAlignment = Enum.TextXAlignment.Center
+            -- SEM ÍCONE AQUI (Texto centralizado com Emojis)
+        elseif DetectedGameCategory and name == DetectedGameCategory then
             btn.LayoutOrder = 2
             btn.Text = '<font color="#FFD700">★</font> ' .. name
             btn.TextXAlignment = Enum.TextXAlignment.Center
+            -- SEM ÍCONE AQUI (Estrela Dourada)
         else
+            -- Categorias Comuns (Jogos)
             if defaultOrder then
                 btn.LayoutOrder = defaultOrder + 10
             end
             
-            -- LÓGICA DO ÍCONE E ALINHAMENTO
+            -- ÍCONE DE MIRA (CROSSHAIR)
             local icon = Instance.new("ImageLabel")
             icon.Name = "CategoryIcon"
             icon.Size = UDim2.new(0, 14, 0, 14)
             icon.Position = UDim2.new(0, 6, 0.5, -7)
             icon.BackgroundTransparency = 1
-            icon.Image = "rbxassetid://12614416526"
+            icon.Image = "rbxassetid://4483345998" -- Novo ID (Mira)
+            icon.ImageColor3 = Color3.fromRGB(180, 180, 180) -- Cor cinza suave
             icon.Parent = btn
             
             -- Alinhar texto para esquerda e dar margem
@@ -937,10 +945,6 @@ local function createHub()
             local pad = Instance.new("UIPadding")
             pad.PaddingLeft = UDim.new(0, 25) -- Espaço para o ícone
             pad.Parent = btn
-        end
-        
-        if name == "📣 Atualizações 📣" then 
-            btn.LayoutOrder = 1 
         end
 
         btn.MouseButton1Click:Connect(function()
@@ -967,12 +971,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Atualizações selecionadas", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "automaticamente ao entrar.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Ícones adicionados.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Novo ícone de mira", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "adicionado nos jogos.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Auto-seleção de updates.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
@@ -1114,16 +1118,14 @@ local function createHub()
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
     createCategoryButton("Anime Fighting Simulator: Endless", afsInfinityScripts, 35)
 
-    -- [CORRIGIDO] Lógica de entrada direta garantida
+    -- [MANTER] Lógica de entrada direta garantida na aba de Atualizações
     if updatesButtonInstance then
-        -- Simula o visual de clicado
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
             if otherBtn:IsA("TextButton") then
                 otherBtn.TextColor3 = COLOR_TEXT_DIM
             end
         end
         updatesButtonInstance.TextColor3 = COLOR_STAR_ON
-        -- Mostra o conteúdo
         displayUpdates()
     end
 
