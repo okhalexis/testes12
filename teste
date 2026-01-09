@@ -1,11 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v2.3 (Auto-Detect Refinado + Fix Animação)
+    -- Khalexis Hub - Versão Final v2.4 (Ordem de Seleção + Fix ID)
 
     -- Mudanças:
-    -- 1. Jogo Detectado vai para LayoutOrder 2 (Abaixo de Atualizações).
-    -- 2. Correção: Texto "Favoritos" apaga ao clicar em outra categoria.
-    -- 3. Estrela fixa adicionada ao jogo detectado.
+    -- 1. Favoritos agora aparecem na ORDEM que foram adicionados (Lista).
+    -- 2. Atualizado ID do The Forge.
+    -- 3. Correção: Scripts são registrados na memória ao abrir o Hub para garantir que os favoritos funcionem.
     
 --]]
 
@@ -39,7 +39,8 @@ local GameID_Database = {
     [189707] = "Natural Disaster",
     [17625359962] = "Rivals",
     [16732694052] = "Pegue O Peixe",
-    [16347316744] = "The Forge", -- ID do The Forge
+    [76558904092080] = "The Forge", -- ID Atualizado
+    [16347316744] = "The Forge", -- Mantendo o antigo por precaução
 }
 
 local CurrentPlaceId = game.PlaceId
@@ -62,7 +63,7 @@ local COLOR_CATEGORY_BTN = Color3.fromRGB(90, 90, 90)
 local COLOR_SCRIPT_BTN = Color3.fromRGB(70, 70, 70)
 local COLOR_TITLEBAR = themes.normal.title_bar
 local COLOR_TEXT = Color3.fromRGB(220, 220, 220)
-local COLOR_TEXT_DIM = Color3.fromRGB(220, 220, 220) -- Cor texto normal
+local COLOR_TEXT_DIM = Color3.fromRGB(220, 220, 220)
 local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
 local COLOR_FOOTER_TEXT = Color3.fromRGB(170, 170, 170)
 local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) -- Amarelo Ouro
@@ -80,28 +81,57 @@ local HasShownWelcome = false
 
 -- Configurações de Salvamento
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
-local FAV_FILE_NAME = "KhalexisHub_Favorites.json"
+local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json" -- Mudado nome para não conflitar com formato antigo
 
 -- ==========================================
--- SISTEMA DE FAVORITOS (LOGICA)
+-- SISTEMA DE FAVORITOS (LISTA ORDENADA)
 -- ==========================================
-local Favorites = {}
+local FavoritesList = {} -- Agora é uma Lista (Array) para manter ordem
 local AllScriptsGlobal = {}
 
+-- Carregar Favoritos
 if isfile(FAV_FILE_NAME) then
     pcall(function()
         local content = readfile(FAV_FILE_NAME)
-        Favorites = HttpService:JSONDecode(content)
+        local data = HttpService:JSONDecode(content)
+        if typeof(data) == "table" then
+            FavoritesList = data
+        end
     end)
 else
-    Favorites = {}
+    FavoritesList = {}
 end
 
 local function SaveFavorites()
     pcall(function()
-        local json = HttpService:JSONEncode(Favorites)
+        local json = HttpService:JSONEncode(FavoritesList)
         writefile(FAV_FILE_NAME, json)
     end)
+end
+
+-- Verifica se está na lista
+local function IsFavorited(name)
+    for _, v in ipairs(FavoritesList) do
+        if v == name then return true end
+    end
+    return false
+end
+
+-- Adiciona ou Remove (Toggle)
+local function ToggleFavorite(name)
+    if IsFavorited(name) then
+        -- Remove mantendo a ordem dos outros
+        for i, v in ipairs(FavoritesList) do
+            if v == name then
+                table.remove(FavoritesList, i)
+                break
+            end
+        end
+    else
+        -- Adiciona no final
+        table.insert(FavoritesList, name)
+    end
+    SaveFavorites()
 end
 
 local function RegisterScript(name, func)
@@ -676,21 +706,19 @@ local function createHub()
         starBtn.ZIndex = 2
         starBtn.Parent = btn
         
-        if Favorites[name] then
+        if IsFavorited(name) then
             starBtn.TextColor3 = COLOR_STAR_ON
         else
             starBtn.TextColor3 = COLOR_STAR_OFF
         end
         
         starBtn.MouseButton1Click:Connect(function()
-            if Favorites[name] then
-                Favorites[name] = nil
-                SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
-            else
-                Favorites[name] = true
+            ToggleFavorite(name)
+            if IsFavorited(name) then
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+            else
+                SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
             end
-            SaveFavorites()
         end)
 
         btn.MouseButton1Click:Connect(function()
@@ -746,12 +774,23 @@ local function createHub()
         end
 
         local hasFav = false
-        for _, scriptData in ipairs(AllScriptsGlobal) do
-            if Favorites[scriptData.Name] then
+        -- Iterar sobre a lista de favoritos (Array) para manter a ordem
+        for _, favName in ipairs(FavoritesList) do
+            -- Busca os dados do script no global
+            local scriptData = nil
+            for _, s in ipairs(AllScriptsGlobal) do
+                if s.Name == favName then
+                    scriptData = s
+                    break
+                end
+            end
+
+            if scriptData then
                 createScriptButton(scriptData.Name, scriptData.Func)
                 hasFav = true
             end
         end
+        
         if not hasFav then
             createUpdateLabel("Você não tem favoritos ainda!", Color3.fromRGB(150, 150, 150))
             createUpdateLabel("Clique na estrela ao lado dos scripts.", Color3.fromRGB(150, 150, 150))
@@ -761,6 +800,13 @@ local function createHub()
     favFixedBtn.MouseButton1Click:Connect(onFavoritesClick)
 
     local function createCategoryButton(name, contents, defaultOrder)
+        -- Registra imediatamente os scripts na memória global
+        if typeof(contents) == "table" then
+            for _, s in ipairs(contents) do
+                RegisterScript(s.Name, s.Func)
+            end
+        end
+
         local btn = Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
         btn.Size = UDim2.new(1, 0, 0, 22)
@@ -791,7 +837,7 @@ local function createHub()
         gradient.Parent = border
 
         if DetectedGameCategory and name == DetectedGameCategory then
-            btn.LayoutOrder = 2 -- Ordem 2 (Abaixo de Atualizações que é 1)
+            btn.LayoutOrder = 2
             
             local gameIcon = Instance.new("TextLabel")
             gameIcon.Text = "★"
@@ -810,12 +856,11 @@ local function createHub()
             end
         end
         
-        if name == "📣 Atualizações 📣" then btn.LayoutOrder = 1 end -- Garante topo
+        if name == "📣 Atualizações 📣" then btn.LayoutOrder = 1 end
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
             
-            -- Reseta animação do botão Favoritos
             TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
             
             for _, otherBtn in pairs(categoryContainer:GetChildren()) do
@@ -837,12 +882,13 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
-        {Text = "--- NOVO LAYOUT ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
+        {Text = "📣 Khalexis Hub V2.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBold},
+        {Text = "--- ORDEM CORRIGIDA ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Auto Detect Aprimorado!", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
-        {Text = "Seu jogo atual sobe para o", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "topo da lista automaticamente.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Favoritos por Ordem", Color = Color3.fromRGB(255, 215, 0), Font = Enum.Font.GothamBold},
+        {Text = "Seus favoritos agora aparecem", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "exatamente na ordem que você", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "os selecionou!", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
