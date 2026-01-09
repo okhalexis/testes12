@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.9 (Alinhamento Preciso)
-    -- 1. Ícone de Mira (ID 4483345998) colado na borda esquerda (5px).
-    -- 2. Texto alinhado logo após o ícone usando UIPadding.
-    -- 3. Auto-Select na aba Atualizações mantido.
+    -- Khalexis Hub - Versão Final v4.0 (Posicionamento Preciso)
+    -- 1. Ícone de Mira (ID 4483345998) fixado na extrema esquerda.
+    -- 2. Texto com margem (Padding) para começar DEPOIS do ícone.
+    -- 3. Auto-Select "Atualizações" mantido.
 
 --]]
 
@@ -904,7 +904,7 @@ local function createHub()
                 btn.LayoutOrder = defaultOrder + 10
             end
             
-            -- [NOVO] Ícone ajustado
+            -- [NOVO] Ícone ajustado com AnchorPoint para a esquerda exata
             local icon = Instance.new("ImageLabel")
             icon.Name = "CategoryIcon"
             icon.Size = UDim2.new(0, 14, 0, 14)
@@ -915,10 +915,10 @@ local function createHub()
             icon.ImageColor3 = Color3.fromRGB(180, 180, 180) 
             icon.Parent = btn
             
-            -- [NOVO] Texto alinhado após o ícone
+            -- [NOVO] Texto alinhado após o ícone com padding
             btn.TextXAlignment = Enum.TextXAlignment.Left
             local pad = Instance.new("UIPadding")
-            pad.PaddingLeft = UDim.new(0, 25) -- Espaço para o texto não encostar
+            pad.PaddingLeft = UDim.new(0, 30) -- Empurra o texto para começar após o ícone
             pad.Parent = btn
         end
         
@@ -954,11 +954,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V4.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Ícones perfeitamente", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "alinhados à esquerda.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Ícones alinhados", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "perfeitamente à esquerda.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Texto ajustado.", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     local stealScripts = {
