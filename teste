@@ -697,10 +697,9 @@ local function createHub()
         {Text = "--- ATUALIZAÇÃO ---", Color = Color3.fromRGB(220, 220, 220), Font = Enum.Font.GothamBold},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Novos Scripts Adicionados", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
-        {Text = "+4 Grand Piece Online", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+3 Anime Fighting: Endlass", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 The Forge", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Fisch", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Grand Piece Online ( FRUIT NOTIFIER & MANDY )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Fisch ( NO ROLE ASSIGNED )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Anime Fighting: Infinity ( SHADOW HUB )", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Melhorias Gerais", Color = Color3.fromRGB(255, 140, 0), Font = Enum.Font.GothamBold},
         {Text = "Melhoria no Carregamento", Color = Color3.fromRGB(220, 220, 220)},
@@ -713,9 +712,9 @@ local function createHub()
     }
 
     local stealScripts = {
-        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end},
-        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end},
-        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, 
+        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, -- Removido ( NOVO )
+        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, -- Removido ( NOVO )
+        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, -- Removido ( NOVO )
         {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
         {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
     }
@@ -792,10 +791,8 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
-        {Name = "( NOVO ) SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
-        {Name = "( NOVO ) NOVA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/luareflection/public-novahub/refs/heads/main/forge/loader.luau"))() end},
-        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end},
-        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end},
+        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end}, -- Removido ( NOVO )
+        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end}, -- Removido ( NOVO )
         {Name = "LAZY HUB", Func = function() getgenv().mobileMode = false; repeat wait() until game:IsLoaded(); loadstring(game:HttpGet("https://raw.githubusercontent.com/LioK251/RbScripts/refs/heads/main/lazyuhub_theforge.lua"))() end},
         {Name = "UB HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua"))() end},
         {Name = "VEX HUB", Func = function() loadstring(game:HttpGet("https://ry-zen.studio/raw/VexHub/Hub.lua?key=U2VjdXJlQXV0aEtleQ"))() end},
@@ -804,14 +801,10 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     local grandPieceOnlineScripts = {
-        {Name = "( NOVO ) SWITCHHUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a7a8e715b8e.lua"))() end},
-        {Name = "( NOVO ) KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
         {Name = "( NOVO ) DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
         {Name = "( NOVO ) MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
     }
     local afsInfinityScripts = {
-        {Name = "( NOVO ) NSHUB ( key )", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end}
-        {Name = "( NOVO ) SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end}
         {Name = "( NOVO ) SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
     }
 
@@ -848,7 +841,7 @@ local function createHub()
     createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
     createCategoryButton("The Forge", theForgeScripts, 32)
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
-    createCategoryButton("Anime Fighting Simulator: Endlass", afsInfinityScripts, 35)
+    createCategoryButton("Anime Fighting Simulator: Infinity", afsInfinityScripts, 35)
 
     local firstCategoryButton = categoryContainer:FindFirstChildOfClass("TextButton")
     if firstCategoryButton then firstCategoryButton:MouseButton1Click() end
