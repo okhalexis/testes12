@@ -1,9 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v3.3
-    -- MODIFICAÇÃO: 
-    -- 1. Ícone da digital atualizado para o Texture ID: 9728118892.
-    -- 2. Mantido layout compacto (450px) e posicionamento das estrelas.
+    -- Khalexis Hub - Versão Final v3.2
+    -- MODIFICAÇÕES RECENTES:
+    -- 1. Tamanho reduzido para 450px (Horizontalmente mais compacto).
+    -- 2. Asset de digital atualizado para o ID da textura: 12333784627.
+    -- 3. Layout: Estrela na esquerda da digital, Digital na direita.
 
 --]]
 
@@ -296,7 +297,7 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    -- [[ REDIMENSIONAMENTO: LARGURA 450 (15% menor), ALTURA 340 ]]
+    -- [[ REDIMENSIONAMENTO: LARGURA 450 (Mais compacto), ALTURA 340 ]]
     animationContainer.Size = UDim2.new(0, 450, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -713,7 +714,8 @@ local function createHub()
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
         fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) -- No canto direito
         fingerIcon.BackgroundTransparency = 1
-        fingerIcon.Image = "rbxassetid://9728118892" -- ID DE TEXTURA ATUALIZADO
+        -- ALTERAÇÃO DO ID AQUI:
+        fingerIcon.Image = "rbxassetid://12333784627" -- Novo ID da Textura
         fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) -- Cor cinza escuro
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
@@ -899,7 +901,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V3.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V3.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- NOVA FONTE ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Visual Moderno!", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
@@ -999,7 +1001,7 @@ local function createHub()
         {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
     }
     local grandPieceOnlineScripts = {
-        {Name = "SWITCHHUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a8e715b8e.lua"))() end},
+        {Name = "SWITCHHUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a7a8e715b8e.lua"))() end},
         {Name = "KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
         {Name = "DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
         {Name = "MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
