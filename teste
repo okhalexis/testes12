@@ -1,7 +1,7 @@
-
 --[[
 
     -- Khalexis Hub - Versão Final v2.6 (Nova Fonte + Auto Detect)
+    -- MODIFICAÇÃO: Redimensionamento Horizontal (Estilo Wide/Print)
 
     -- Mudanças Visuais:
     -- 1. Fonte alterada para 'FredokaOne' (Estilo Rubik/Bold/Moderno).
@@ -302,7 +302,8 @@ end
 local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
-    animationContainer.Size = UDim2.new(0, 350, 0, 280)
+    -- [[ REDIMENSIONAMENTO: AUMENTADO PARA 620x340 PARA FICAR LARGO IGUAL A PRINT ]]
+    animationContainer.Size = UDim2.new(0, 620, 0, 340)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
     animationContainer.BackgroundTransparency = 1
@@ -463,7 +464,8 @@ local function createHub()
     -- === LISTA DE CATEGORIAS ===
     local categoryFrame = Instance.new("ScrollingFrame")
     categoryFrame.Name = "CategoryFrame"
-    categoryFrame.Size = UDim2.new(0, 120, 0, 137) 
+    -- AJUSTADO A ALTURA PARA PREENCHER O NOVO TAMANHO VERTICAL
+    categoryFrame.Size = UDim2.new(0, 120, 0, 190) 
     categoryFrame.Position = UDim2.new(0, 5, 0, 106)
     categoryFrame.BackgroundColor3 = COLOR_CATEGORY_BG
     categoryFrame.BorderSizePixel = 0
@@ -518,7 +520,8 @@ local function createHub()
 
     local scriptFrame=Instance.new("ScrollingFrame")
     scriptFrame.Name="ScriptFrame"
-    scriptFrame.Size=UDim2.new(1,-135,0,195)
+    -- AJUSTADO A ALTURA E MANTIDO O WIDGET DINAMICO PARA LARGURA
+    scriptFrame.Size=UDim2.new(1,-135,0,250)
     scriptFrame.Position=UDim2.new(0,130,0,40)
     scriptFrame.BackgroundColor3=COLOR_BLACK
     scriptFrame.BorderSizePixel=0
