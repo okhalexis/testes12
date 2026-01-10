@@ -1,11 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.4 (Atualizado com Link Fixo)
+    -- Khalexis Hub - Versão Final v4.5 (Link Atualizado)
     -- 1. CLEANUP: Remove interfaces antigas.
     -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
     -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
-    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker.
+    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (RG8TS).
 
 --]]
 
@@ -1375,7 +1375,7 @@ local function CreateKeyUI()
 
     -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
-        local link = "https://linkunlocker.com/pegue-sua-key-y5oIQ?share=true"
+        local link = "https://linkunlocker.com/key-1-RG8TS?share=true"
         
         if setclipboard then
             setclipboard(link)
