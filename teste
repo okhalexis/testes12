@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.6 (Design Atualizado - Texto Branco e Novos Ícones)
-    -- 1. VISUAL: Texto dos botões da Key agora são brancos.
-    -- 2. ICONS: Novos ícones para Discord, Premium e Pegar Key.
-    -- 3. LAYOUT: Mantido o layout ajustado da versão anterior.
+    -- Khalexis Hub - Versão Final v4.7 (Ajuste de Mensagens e Posição)
+    -- 1. UX: Mensagem de status movida levemente para cima.
+    -- 2. UX: Texto de feedback do botão Premium atualizado.
+    -- 3. VISUAL: Mantidos ícones e cores da v4.6.
 
 --]]
 
@@ -1357,7 +1357,7 @@ local function CreateKeyUI()
         Name = "StatusLabel",
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, 0, 0.95, 0),
+        Position = UDim2.new(0.5, 0, 0.91, 0), -- [MODIFICAÇÃO] Movido para cima (era 0.95)
         Size = UDim2.new(0, 280, 0, 20),
         Font = HUB_FONT,
         Text = "",
@@ -1476,7 +1476,8 @@ local function CreateKeyUI()
         local premiumUrl = "https://discord.gg/uv7njazH8b"
         if setclipboard then
             setclipboard(premiumUrl)
-            ShowStatusMessage("Link Premium copiado!", Color3.fromRGB(255, 215, 0))
+            -- [MODIFICAÇÃO] Mensagem de texto atualizada
+            ShowStatusMessage("Link para compra copiado! Cole no navegador!", Color3.fromRGB(255, 215, 0))
         else
             ShowStatusMessage("Link: " .. premiumUrl, Color3.fromRGB(255, 215, 0))
         end
