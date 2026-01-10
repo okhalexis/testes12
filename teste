@@ -1,11 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.4 (Atualizado com Link Fixo)
+    -- Khalexis Hub - Versão Final v4.5 (Atualizado com Modificações de Design na Key)
     -- 1. CLEANUP: Remove interfaces antigas.
-    -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
-    -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
-    -- 4. AUTO-SELECT: Entra direto em Atualizações.
-    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker.
+    -- 2. KEY SYSTEM: Adicionados ícones nos botões (Discord, Get Key, Verify).
+    -- 3. KEY SYSTEM: Adicionado botão "Compre a Key Premium" (Amarelo).
+    -- 4. LAYOUT: Janela de Key redimensionada para acomodar novos elementos.
+    -- 5. AUTO-SELECT: Entra direto em Atualizações.
 
 --]]
 
@@ -908,17 +908,11 @@ local function createHub()
                 btn.LayoutOrder = defaultOrder + 10
             end
             
-            -- [CORREÇÃO VISUAL SOLICITADA]
-            -- 1. Remover Asset (Crosshair deletado)
-            -- 2. Reposicionar Texto (CENTRALIZADO)
-            
             btn.TextXAlignment = Enum.TextXAlignment.Center
-            -- Padding removido para garantir centralização total
         end
         
         if name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
-            -- Garante que atualização não tenha padding extra (centralizado)
             if btn:FindFirstChild("UIPadding") then btn.UIPadding:Destroy() end
             btn.TextXAlignment = Enum.TextXAlignment.Center
         end
@@ -1196,6 +1190,7 @@ local function CreateKeyUI()
         DisplayOrder = 999
     })
 
+    -- [MODIFICAÇÃO] Tamanho aumentado para 330 para caber o novo botão
     local MainKeyFrame = CreateObject("Frame", {
         Name = "MainFrame",
         Parent = KeyGui,
@@ -1204,7 +1199,7 @@ local function CreateKeyUI()
         BorderSizePixel = 2,
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 270), 
+        Size = UDim2.new(0, 350, 0, 330), 
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
@@ -1247,13 +1242,14 @@ local function CreateKeyUI()
         AnchorPoint = Vector2.new(0.5, 0.5)
     })
 
+    -- [MODIFICAÇÃO] Posição ajustada levemente
     local KeyInput = CreateObject("TextBox", {
         Name = "KeyInput",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.InputField,
         Text = "",
         PlaceholderText = "Cole sua key aqui...",
-        Position = UDim2.new(0.5, 0, 0.35, 0), 
+        Position = UDim2.new(0.5, 0, 0.32, 0), 
         Size = UDim2.new(0, 280, 0, 35),
         Font = HUB_FONT,
         TextSize = 14,
@@ -1276,47 +1272,65 @@ local function CreateKeyUI()
         PaddingLeft = UDim.new(0, 10)
     })
 
+    -- Função para adicionar ícones facilmente
+    local function AddIcon(parent, id)
+        local icon = Instance.new("ImageLabel")
+        icon.Size = UDim2.new(0, 20, 0, 20)
+        icon.Position = UDim2.new(0, 5, 0.5, -10) -- Esquerda centralizado
+        icon.BackgroundTransparency = 1
+        icon.Image = "rbxassetid://" .. id
+        icon.Parent = parent
+        return icon
+    end
+
+    -- [MODIFICAÇÃO] Adicionado ícone e ajustada posição
     local SubmitButton = CreateObject("TextButton", {
         Name = "ValidateButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.Button,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 1,
-        Position = UDim2.new(0.3, 0, 0.58, 0),
+        Position = UDim2.new(0.3, 0, 0.52, 0),
         Size = UDim2.new(0, 110, 0, 32),
-        Text = "Verificar Key",
+        Text = "     Verificar Key", -- Espaço para o ícone
         Font = HUB_FONT,
-        TextSize = 14,
+        TextSize = 12,
         TextColor3 = KeySystemData.Colors.Title, 
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = SubmitButton})
+    -- Adicionando Ícone Verificar (Checkmark - Texture ID)
+    AddIcon(SubmitButton, "12690727184")
 
+    -- [MODIFICAÇÃO] Adicionado ícone e ajustada posição
     local GetKeyButton = CreateObject("TextButton", {
         Name = "GetKeyButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.Button,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 1,
-        Position = UDim2.new(0.7, 0, 0.58, 0),
+        Position = UDim2.new(0.7, 0, 0.52, 0),
         Size = UDim2.new(0, 110, 0, 32),
-        Text = "Pegar Key",
+        Text = "    Pegar Key", -- Espaço para o ícone
         Font = HUB_FONT,
-        TextSize = 14,
+        TextSize = 12,
         TextColor3 = KeySystemData.Colors.Title, 
         AutoButtonColor = false,
         AnchorPoint = Vector2.new(0.5, 0)
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = GetKeyButton})
+    -- Adicionando Ícone Chave (KeyIcon - Asset ID)
+    AddIcon(GetKeyButton, "10871266127")
 
+    -- [MODIFICAÇÃO] Adicionado ícone e ajustada posição
     local DiscordButton = CreateObject("TextButton", {
         Name = "DiscordButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.Discord,
-        Position = UDim2.new(0.5, 0, 0.77, 0),
+        Position = UDim2.new(0.5, 0, 0.68, 0),
         Size = UDim2.new(0, 220, 0, 32),
-        Text = "Entrar no Discord",
+        Text = "     Entrar no Discord", -- Espaço para o ícone
         Font = HUB_FONT,
         TextSize = 14,
         TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -1324,12 +1338,32 @@ local function CreateKeyUI()
         AnchorPoint = Vector2.new(0.5, 0)
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = DiscordButton})
+    -- Adicionando Ícone Discord (Asset ID)
+    AddIcon(DiscordButton, "110769239384778")
+
+    -- [NOVO] Botão Key Premium (Amarelo)
+    local PremiumButton = CreateObject("TextButton", {
+        Name = "PremiumButton",
+        Parent = MainKeyFrame,
+        BackgroundColor3 = Color3.fromRGB(255, 215, 0), -- Fundo Amarelo
+        Position = UDim2.new(0.5, 0, 0.82, 0), -- Abaixo do discord
+        Size = UDim2.new(0, 220, 0, 32),
+        Text = "      Compre a Key Premium", -- Espaço para o ícone
+        Font = HUB_FONT,
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(20, 20, 20), -- Texto escuro para contraste no amarelo
+        AutoButtonColor = false,
+        AnchorPoint = Vector2.new(0.5, 0)
+    })
+    CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = PremiumButton})
+    -- Adicionando Ícone Chave Premium (KeyIcon - Asset ID)
+    AddIcon(PremiumButton, "10871266127")
 
     local StatusLabel = CreateObject("TextLabel", {
         Name = "StatusLabel",
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, 0, 0.92, 0),
+        Position = UDim2.new(0.5, 0, 0.95, 0),
         Size = UDim2.new(0, 280, 0, 20),
         Font = HUB_FONT,
         Text = "",
@@ -1353,17 +1387,21 @@ local function CreateKeyUI()
         end)
     end
 
-    local function AddHoverEffect(button)
+    local function AddHoverEffect(button, originalColor)
         button.MouseEnter:Connect(function()
-            SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.ButtonHover})
+            -- Escurece levemente a cor original
+            local h, s, v = originalColor:ToHSV()
+            local hoverColor = Color3.fromHSV(h, s, math.max(v - 0.1, 0))
+            SmoothTween(button, 0.2, {BackgroundColor3 = hoverColor})
         end)
         button.MouseLeave:Connect(function()
-            SmoothTween(button, 0.2, {BackgroundColor3 = KeySystemData.Colors.Button})
+            SmoothTween(button, 0.2, {BackgroundColor3 = originalColor})
         end)
     end
 
-    AddHoverEffect(SubmitButton)
-    AddHoverEffect(GetKeyButton)
+    AddHoverEffect(SubmitButton, KeySystemData.Colors.Button)
+    AddHoverEffect(GetKeyButton, KeySystemData.Colors.Button)
+    AddHoverEffect(PremiumButton, Color3.fromRGB(255, 215, 0)) -- Hover para o botão amarelo
 
     KeyInput.Focused:Connect(function()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.Title, Transparency = 0.3})
@@ -1373,10 +1411,8 @@ local function CreateKeyUI()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
     end)
 
-    -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
         local link = "https://linkunlocker.com/pegue-sua-key-y5oIQ?share=true"
-        
         if setclipboard then
             setclipboard(link)
             ShowStatusMessage("Link copiado para a área de transferência!", KeySystemData.Colors.Success)
@@ -1441,13 +1477,24 @@ local function CreateKeyUI()
             ShowStatusMessage("Convite: " .. discordUrl, Color3.fromRGB(123, 48, 220))
         end
     end)
+
+    -- [NOVO] Função do Botão Premium
+    PremiumButton.MouseButton1Click:Connect(function()
+        local premiumUrl = "https://discord.gg/uv7njazH8b"
+        if setclipboard then
+            setclipboard(premiumUrl)
+            ShowStatusMessage("Link Premium copiado!", Color3.fromRGB(255, 215, 0))
+        else
+            ShowStatusMessage("Link: " .. premiumUrl, Color3.fromRGB(255, 215, 0))
+        end
+    end)
     
     -- Animação de Entrada
     MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
     SmoothTween(MainKeyFrame, 0.5, {
-        Size = UDim2.new(0, 350, 0, 270), 
+        Size = UDim2.new(0, 350, 0, 330), -- Tamanho final aumentado
         Position = UDim2.new(0.5, 0, 0.5, 0),
         BackgroundTransparency = 0
     })
