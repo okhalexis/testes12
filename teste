@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.8 (Ajustes de Ícones e Legibilidade)
-    -- 1. ICONS: Ícones do Discord e Premium aumentados e reposicionados (mais próximos do texto).
-    -- 2. ASSETS: Ícone da Key Premium atualizado.
-    -- 3. VISUAL: Adicionado contorno (Stroke) preto nos textos dos botões largos para leitura fácil.
+    -- Khalexis Hub - Versão Final v4.9 (Refinamento Visual)
+    -- 1. ICONS: Ícone do Discord movido para esquerda (alinhado com o da key).
+    -- 2. ASSETS: Ícone da Key Premium trocado para o novo ID.
+    -- 3. VISUAL: Contorno (Stroke) dos textos reduzido para 0.8 (mais fino e leve).
 
 --]]
 
@@ -1340,10 +1340,10 @@ local function CreateKeyUI()
     discordStroke.Parent = DiscordButton
     discordStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
     discordStroke.Color = Color3.new(0,0,0)
-    discordStroke.Thickness = 1.5
+    discordStroke.Thickness = 0.8 -- [MODIFICADO] Mais fino
 
-    -- Ícone Discord Maior e Mais para Direita
-    AddIcon(DiscordButton, "84828491431270", UDim2.new(0, 28, 0, 28), UDim2.new(0, 45, 0.5, -14))
+    -- Ícone Discord Maior e Mais para ESQUERDA (Alinhado)
+    AddIcon(DiscordButton, "84828491431270", UDim2.new(0, 28, 0, 28), UDim2.new(0, 12, 0.5, -14))
 
     -- [BOTÃO] KEY PREMIUM (Com outline no texto)
     local PremiumButton = CreateObject("TextButton", {
@@ -1366,10 +1366,10 @@ local function CreateKeyUI()
     premiumStroke.Parent = PremiumButton
     premiumStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
     premiumStroke.Color = Color3.new(0,0,0)
-    premiumStroke.Thickness = 1.5
+    premiumStroke.Thickness = 0.8 -- [MODIFICADO] Mais fino
 
-    -- Ícone Premium Maior, Novo Asset e Mais para Direita
-    AddIcon(PremiumButton, "139676874086504", UDim2.new(0, 28, 0, 28), UDim2.new(0, 25, 0.5, -14))
+    -- Ícone Premium Maior, Novo Asset e Mais para ESQUERDA (Alinhado)
+    AddIcon(PremiumButton, "96505908559687", UDim2.new(0, 28, 0, 28), UDim2.new(0, 12, 0.5, -14))
 
     local StatusLabel = CreateObject("TextLabel", {
         Name = "StatusLabel",
