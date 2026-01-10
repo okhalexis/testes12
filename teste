@@ -1,10 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.3 (Correção de Layout)
+    -- Khalexis Hub - Versão Final v4.4 (Atualizado com Link Fixo)
     -- 1. CLEANUP: Remove interfaces antigas.
     -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
     -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
+    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker.
 
 --]]
 
@@ -1372,18 +1373,15 @@ local function CreateKeyUI()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
     end)
 
+    -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
-        local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
-        local link = JunkieKeySystem.getLink(Config.api, Config.provider, Config.service)
-        if link then
-            if setclipboard then
-                setclipboard(link)
-                ShowStatusMessage("Link de verificação copiado!", KeySystemData.Colors.Success)
-            else
-                ShowStatusMessage("Link: " .. link, KeySystemData.Colors.Success)
-            end
+        local link = "https://linkunlocker.com/pegue-sua-key-y5oIQ?share=true"
+        
+        if setclipboard then
+            setclipboard(link)
+            ShowStatusMessage("Link copiado para a área de transferência!", KeySystemData.Colors.Success)
         else
-            ShowStatusMessage("Erro ao gerar link", KeySystemData.Colors.Error)
+            ShowStatusMessage("Link: " .. link, KeySystemData.Colors.Success)
         end
     end
 
