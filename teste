@@ -15,8 +15,8 @@ WindUI.Services.junkiedev = {
 
         local function ValidateKey(key)
             if not key or key == "" then
-                print("❌ Nenhuma key fornecida!")
-                game.Players.LocalPlayer:Kick("Nenhuma key fornecida. Porfavor pegue a sua key.")
+                print("❌ No key provided!")
+                game.Players.LocalPlayer:Kick("No key provided. Please get a key.")
                 return false
             end
 
@@ -28,7 +28,7 @@ WindUI.Services.junkiedev = {
 
             local result = JunkieProtected.ValidateKey({ Key = key })
             if result == "valid" then
-                print("Key Válida! Iniciando Khalexis Hub...")
+                print("Key is valid! Starting script...")
                 load()
                 
                 if _G.JD_IsPremium then
@@ -40,7 +40,7 @@ WindUI.Services.junkiedev = {
                 return true
             else
                 local keyLink = JunkieProtected.GetKeyLink()
-                print("❌ Key Inválida!")
+                print("❌ Invalid key!")
                 game.Players.LocalPlayer:Kick("Invalid key. Get one from: " .. keyLink)
                 return false
             end
@@ -64,10 +64,10 @@ WindUI.Services.junkiedev = {
 --//CONTIUNE HERE!!
 
 local Window = WindUI:CreateWindow({
-    Title = "Khalexis Hub - Sistema de Key",
+    Title = "My Super Hub",
     Icon = "door-open",
     Author = "by .ftgs and .ftgs",
-    Folder = "KhalexisHub",
+    Folder = "MySuperHub",
     Size = UDim2.fromOffset(580, 460),
     MinSize = Vector2.new(560, 350),
     MaxSize = Vector2.new(850, 560),
