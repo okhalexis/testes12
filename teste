@@ -7,11 +7,11 @@ local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/rel
 WindUI.Services.junkiedev = {
     Name = "Junkie Development",
     Icon = "bug-off",
-    Args = { "ServiceId", "ApiKey", "Provider" },
+    Args = { "Khalexis Hub - Key", "ApiKey", "Khalexis Hub - Key" },
     New = function(ServiceId, ApiKey, Provider)
-        JunkieProtected.API_KEY = ApiKey
-        JunkieProtected.PROVIDER = Provider
-        JunkieProtected.SERVICE_ID = ServiceId
+        JunkieProtected.API_KEY = e696e91d-0ba0-4693-a6a5-91145ead6ed1
+        JunkieProtected.PROVIDER = Khalexis Hub - Key
+        JunkieProtected.SERVICE_ID = Khalexis Hub - Key
 
         local function ValidateKey(key)
             if not key or key == "" then
@@ -95,4 +95,3 @@ local Tab = Window:Tab({
     Icon = "bird", 
     Locked = false,
 })
-
