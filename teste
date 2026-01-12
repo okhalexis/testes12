@@ -1,7 +1,3 @@
-function load()
-print("leave this blank or put anything")
-warn("made by uerd with ❤")    
-end
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 --dont change anything until you know what you do
 WindUI.Services.junkiedev = {
