@@ -1,32 +1,33 @@
 -- ==========================================
--- CONFIGURAÇÃO DO JUNKIE KEY SYSTEM
+-- CONFIGURAÇÃO DO JUNKIE KEY SYSTEM (SEUS DADOS)
 -- ==========================================
 local JunkieConfig = {
     Service = "Khalexis Hub - Key",
     API = "e696e91d-0ba0-4693-a6a5-91145ead6ed1"
 }
 
--- Carregando SDK do Junkie
+-- Carregando SDK do Junkie Key System
 local JunkieLib = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
 
 -- ==========================================
--- INICIANDO A UI (STARLIGHT)
+-- INICIANDO STARLIGHT LIBRARY
 -- ==========================================
 local Starlight = loadstring(game:HttpGet("https://raw.nebulasoftworks.xyz/starlight"))()
 local NebulaIcons = Starlight.NebulaIcons
 
+-- Criação da Janela (Estilo KillSwitch)
 local Window = Starlight:CreateWindow({
-    Name = "Khalexis Hub",
-    Subtitle = "v2.0",
-    Icon = 10618644218, -- Ícone de exemplo
+    Name = "KillSwitch",
+    Subtitle = "v2.0 - loader",
+    Icon = 10618644218, -- Ícone genérico de roblox head
 
     LoadingSettings = {
-        Title = "Khalexis Hub",
-        Subtitle = "Carregando sistema...",
+        Title = "KillSwitch Loader",
+        Subtitle = "Verificando integridade...",
     },
 
     FileSettings = {
-        ConfigFolder = "KhalexisConfig",
+        ConfigFolder = "KillSwitch_Config",
         Config = "AutoLoad"
     },
 })
@@ -34,121 +35,117 @@ local Window = Starlight:CreateWindow({
 -- ==========================================
 -- 1. DASHBOARD (HOME TAB)
 -- ==========================================
--- Isso cria a aba inicial igual à imagem "Dashboard"
+-- Réplica visual do dashboard da imagem
 Window:CreateHomeTab({
     SupportedExecutors = {"Synapse X", "Script-Ware", "Krampus"}, 
-    UnsupportedExecutors = {"Solara"},
+    UnsupportedExecutors = {"Solara", "JJSploit"},
 
-    DiscordInvite = "discord", -- Coloque o código do convite aqui
-    Backdrop = 0, 
+    DiscordInvite = "discord", -- Coloque apenas o código (ex: "gg/abc")
+    Backdrop = 0, -- 0 usa a thumbnail do jogo
     IconStyle = 1,
 
     Changelog = {
         {
-            Title = "Integração Junkie",
-            Date = os.date("%d/%m/%y"),
-            Description = "Novo sistema de Key integrado com Junkie Development.",
+            Title = "v2.0 - Junkie Integration",
+            Date = "January 25, 2025",
+            Description = "• Integrated Junkie Key System\n• Added Customization Tab",
         },
         {
-            Title = "UI Update",
-            Date = os.date("%d/%m/%y"),
-            Description = "Interface atualizada para Starlight Library.",
+            Title = "v1.5 - Beta Release",
+            Date = "January 20, 2025",
+            Description = "Initial public testing.",
         }  
     }
 })
 
 -- ==========================================
--- 2. MAIN FEATURES SECTION
+-- 2. CRIAÇÃO DAS SEÇÕES LATERAIS
 -- ==========================================
-local MainSection = Window:CreateTabSection("Main Features")
+-- Isso cria o texto "Main Features" na barra lateral
+local MainFeatures = Window:CreateTabSection("Main Features")
 
 -- ==========================================
--- 3. KEY SYSTEM TAB
+-- 3. ABA DE SISTEMA DE KEY (Igual ao pedido)
 -- ==========================================
-local KeyTab = MainSection:CreateTab({
+local KeyTab = MainFeatures:CreateTab({
     Name = "Key System",
     Icon = NebulaIcons:GetIcon('vpn_key', 'Material'),
     Columns = 1, 
-}, "KeySystemTab")
+}, "KeyTabID")
 
 local KeyGroup = KeyTab:CreateGroupbox({
     Name = "Validação de Licença",
     Column = 1,
-}, "KeyGroupMain")
+}, "KeyGroupID")
 
--- Variável para armazenar o input do usuário
+-- Variável para armazenar a key digitada
 local InputKey = ""
+local KeyFile = "Khalexis_License.txt"
 
--- Tentar ler key salva
-if isfile("Khalexis_Key.txt") then
-    InputKey = readfile("Khalexis_Key.txt")
+-- Tenta ler a key salva se existir
+if isfile(KeyFile) then
+    InputKey = readfile(KeyFile)
 end
 
--- Campo de Texto (Input)
-local KeyInputObject = KeyGroup:CreateInput({
+-- Input da Key
+local KeyInput = KeyGroup:CreateInput({
     Name = "Insira sua Key",
     Icon = NebulaIcons:GetIcon('key', 'Lucide'),
-    CurrentValue = InputKey, -- Já preenche se tiver salvo
-    PlaceholderText = "Cole a key aqui...",
+    CurrentValue = InputKey,
+    PlaceholderText = "Cole sua key aqui...",
     RemoveTextAfterFocusLost = false,
     Callback = function(Text)
         InputKey = Text
     end,
-}, "KeyInputField")
+}, "KeyInputID")
 
 -- Botão: Pegar Key (Get Key)
 KeyGroup:CreateButton({
     Name = "Pegar Key (Copiar Link)",
     Icon = NebulaIcons:GetIcon('link', 'Material'),
     Callback = function()
-        -- Usa a função nativa do Junkie para gerar o link
+        -- Gera o link usando o SDK do Junkie
         local Link = JunkieLib.getKeyURL(JunkieConfig.API, JunkieConfig.Service)
         
         if setclipboard then
             setclipboard(Link)
             Starlight:Notification({
                 Title = "Link Copiado!",
-                Content = "Cole no seu navegador para pegar a key.",
+                Content = "Link do Junkie Key System copiado para a área de transferência.",
                 Icon = NebulaIcons:GetIcon('content_copy', 'Material'),
                 Duration = 5
             })
         else
-            Starlight:Notification({
-                Title = "Erro",
-                Content = "Seu executor não suporta setclipboard.",
-                Icon = NebulaIcons:GetIcon('error', 'Material'),
+            -- Fallback se não suportar setclipboard
+            Starlight:Window:PromptDialog({
+                Name = "Link da Key",
+                Content = Link,
+                Type = 1,
+                Actions = {{ Name = "OK", Callback = function() end }}
             })
         end
     end,
-}, "BtnGetKey")
+}, "GetKeyBtn")
 
--- Botão: Verificar Key (Check Key)
+-- Botão: Verificar Key (Verify Key)
 KeyGroup:CreateButton({
-    Name = "Verificar Key",
+    Name = "Verificar Acesso",
     Icon = NebulaIcons:GetIcon('check_circle', 'Material'),
     Callback = function()
         if InputKey == "" then
-            Starlight:Notification({
-                Title = "Aviso",
-                Content = "O campo de key está vazio.",
-                Duration = 3
-            })
+            Starlight:Notification({ Title = "Erro", Content = "O campo da key está vazio.", Duration = 3 })
             return
         end
 
-        Starlight:Notification({
-            Title = "Verificando...",
-            Content = "Validando sua key com o servidor...",
-            Duration = 2
-        })
+        Starlight:Notification({ Title = "Verificando...", Content = "Validando key com o servidor...", Duration = 2 })
 
-        -- Lógica do Junkie
+        -- LÓGICA DO JUNKIE
         local isValid = JunkieLib.verifyKey(JunkieConfig.API, InputKey, JunkieConfig.Service)
 
         if isValid then
-            -- Salvar a key se for válida
+            -- Salva a key válida
             if writefile then
-                writefile("Khalexis_Key.txt", InputKey)
+                writefile(KeyFile, InputKey)
             end
 
             Starlight:Notification({
@@ -158,30 +155,43 @@ KeyGroup:CreateButton({
                 Duration = 5
             })
             
-            -- [[ AQUI VOCÊ PODE DESBLOQUEAR OUTRAS ABAS OU FUNÇÕES ]]
-            print("Junkie System: Key Aprovada")
+            -- Aqui você desbloqueia o resto do script
+            print("KEY VÁLIDA - ABRINDO SCRIPT")
         else
             Starlight:Notification({
-                Title = "Negado",
-                Content = "A key inserida é inválida ou expirou.",
+                Title = "Acesso Negado",
+                Content = "Key inválida ou expirada.",
                 Icon = NebulaIcons:GetIcon('dangerous', 'Material'),
-                Duration = 5
+                Duration = 4
             })
         end
     end,
-}, "BtnVerifyKey")
+}, "VerifyBtn")
+
+-- ==========================================
+-- 4. Customization Tab (Para completar o visual)
+-- ==========================================
+local CustomizationSection = Window:CreateTabSection("Customization")
+local ThemeTab = CustomizationSection:CreateTab({
+    Name = "Customization",
+    Icon = NebulaIcons:GetIcon('palette', 'Material'),
+    Columns = 1,
+}, "ThemeTabID")
+
+-- Constrói o seletor de temas automaticamente
+ThemeTab:BuildThemeGroupbox(1)
 
 -- ==========================================
 -- FINALIZAÇÃO
 -- ==========================================
--- Verifica automaticamente ao abrir se já tiver uma key salva válida
+-- Verifica key salva ao iniciar (Auto-Login)
 task.spawn(function()
     if InputKey ~= "" then
         local autoCheck = JunkieLib.verifyKey(JunkieConfig.API, InputKey, JunkieConfig.Service)
         if autoCheck then
             Starlight:Notification({
-                Title = "Bem-vindo de volta",
-                Content = "Key salva validada automaticamente.",
+                Title = "Bem-vindo",
+                Content = "Sua key salva foi validada automaticamente.",
                 Icon = NebulaIcons:GetIcon('waving_hand', 'Material'),
                 Duration = 5
             })
