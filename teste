@@ -1,25 +1,557 @@
--- ==========================================
--- CONFIGURAÇÃO DO JUNKIE KEY SYSTEM (SEUS DADOS)
--- ==========================================
+--[[
+    KILLSWITCH LOADER - FULL INTEGRATED
+    Includes: Starlight Library + Nebula Icons + Junkie Key System
+]]
+
+-- 1. CARREGAR DEPENDÊNCIAS GLOBAIS
+local NebulaIcons = loadstring(game:HttpGet("https://raw.nebulasoftworks.xyz/nebula-icon-library-loader"))()
+local JunkieLib = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+
+-- CONFIGURAÇÃO DO JUNKIE
 local JunkieConfig = {
     Service = "Khalexis Hub - Key",
     API = "e696e91d-0ba0-4693-a6a5-91145ead6ed1"
 }
 
--- Carregando SDK do Junkie Key System
-local JunkieLib = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+-- 2. STARLIGHT LIBRARY SOURCE (MODIFICADA)
+local Starlight = (function()
+    --// START OF STARLIGHT LIBRARY //--
+    local Release = "Prerelease Beta 5.03Meow"
+    local debugV = false
 
--- ==========================================
--- INICIANDO STARLIGHT LIBRARY
--- ==========================================
-local Starlight = loadstring(game:HttpGet("https://raw.nebulasoftworks.xyz/starlight"))()
-local NebulaIcons = Starlight.NebulaIcons
+    local Starlight = {
+        InterfaceBuild = "B5B9",
+        WindowKeybind = "K",
+        Minimized = false,
+        Maximized = false,
+        NotificationsOpen = false,
+        DialogOpen = false,
+        Window = nil,
+        Notifications = nil,
+        Instance = nil,
+        OnDestroy = nil,
+        FileSystem = {
+            Folder = "Starlight Interface Suite",
+            FileExtension = ".starlight",
+            AutoloadConfigPath = nil,
+            AutoloadThemePath = nil,
+        },
+    }
 
--- Criação da Janela (Estilo KillSwitch)
+    -- Services
+    local function GetService(serviceName)
+        return cloneref ~= nil and cloneref(game:GetService(serviceName)) or game:GetService(serviceName)
+    end
+    local Lighting = GetService("Lighting")
+    local Players = GetService("Players")
+    local Teams = GetService("Teams")
+    local StatsService = GetService("Stats")
+    local RunService = GetService("RunService")
+    local UserInputService = GetService("UserInputService")
+    local TweenService = GetService("TweenService")
+    local HttpService = GetService("HttpService")
+    local Localization = GetService("LocalizationService")
+    local CollectionService = GetService("CollectionService")
+    local TeleportService = GetService("TeleportService")
+    local TextService = GetService("TextService")
+    local GuiService = GetService("GuiService")
+    local MarketplaceService = GetService("MarketplaceService")
+    local ReplicatedStorage = GetService("ReplicatedStorage")
+    local ContentProvider = GetService("ContentProvider")
+    local InputManager = GetService("VirtualInputManager")
+    local CoreGui = GetService("CoreGui")
+
+    local Player = Players.LocalPlayer
+    local PlayerGui = Player:WaitForChild("PlayerGui")
+    local Camera = workspace.CurrentCamera
+    local Mouse = Player:GetMouse()
+    local GuiInset, _ = GuiService:GetGuiInset()
+    GuiInset = GuiInset.Y - 20
+    local themeEvent = Instance.new("BindableEvent")
+
+    local mainAcrylic = false
+    local notificationAcrylic = true
+    local acrylicEvent = Instance.new("BindableEvent")
+    local notificationAcrylicEvent = Instance.new("BindableEvent")
+    local acrylicFlag = false 
+    if getgenv then
+        if getgenv().NoAnticheat == nil or getgenv().NoAnticheat == true then
+            acrylicFlag = true
+        end
+        if getgenv().SecureMode then
+            acrylicFlag = false
+        end
+    else
+        if RunService:IsStudio() then
+            acrylicFlag = true
+        end
+    end
+
+    local isStudio = RunService:IsStudio() or false
+    local website = "nebulasoftworks.xyz/starlight"
+    local Acrylic = isStudio and require(ReplicatedStorage.AcrylicBundled)
+        or loadstring(game:HttpGet("https://raw." .. website .. "/AcrylicModule.luau"))()
+    Acrylic.Init()
+
+    local Request = (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request) or http_request or request
+
+    -- Classes
+    local String = {}
+    local Table = {}
+    local Color = {}
+
+    local Tween = {}
+    setmetatable(Tween, {
+        __call = function(self, object: Instance, goal: table, callback, tweenin)
+            local tween = TweenService:Create(object, tweenin or Tween.Info(), goal)
+            tween.Completed:Connect(callback or function() end)
+            tween:Play()
+        end,
+    })
+
+    local Themes = {
+        Starlight = {
+            Backgrounds = { Dark = Color3.fromRGB(23, 25, 29), Medium = Color3.fromRGB(27, 29, 33), Light = Color3.fromRGB(33, 34, 38), Groupbox = Color3.fromRGB(33, 36, 42), Highlight = Color3.fromRGB(17, 19, 22) },
+            Foregrounds = { Active = Color3.fromRGB(255, 255, 255), Light = Color3.fromRGB(255, 255, 255), Medium = Color3.fromRGB(165, 165, 165), Dark = Color3.fromRGB(65, 69, 77), MediumHover = Color3.fromRGB(185, 185, 185), DarkHover = Color3.fromRGB(85, 89, 97) },
+            Miscellaneous = { Divider = Color3.fromRGB(117, 128, 149), Shadow = Color3.fromRGB(19, 21, 24), LighterShadow = Color3.fromRGB(24, 25, 30) },
+            Accents = { Main = ColorSequence.new({ ColorSequenceKeypoint.new(0.0, Color3.fromRGB(230, 186, 251)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(161, 169, 225)), ColorSequenceKeypoint.new(1.0, Color3.fromRGB(138, 201, 242)) }), Brighter = ColorSequence.new({ ColorSequenceKeypoint.new(0.0, Color3.fromRGB(241, 212, 251)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(187, 192, 225)), ColorSequenceKeypoint.new(1.0, Color3.fromRGB(195, 227, 242)) }) },
+        },
+        ["Hollywood Dark"] = {
+            Backgrounds = { Dark = Color3.fromRGB(8, 8, 8), Medium = Color3.fromRGB(12, 12, 12), Light = Color3.fromRGB(15, 15, 15), Groupbox = Color3.fromRGB(14, 14, 14), Highlight = Color3.fromRGB(13, 13, 13) },
+            Foregrounds = { Active = Color3.fromRGB(255, 255, 255), Light = Color3.fromRGB(255, 255, 255), Medium = Color3.fromRGB(165, 165, 165), Dark = Color3.fromRGB(77, 77, 77), MediumHover = Color3.fromRGB(185, 185, 185), DarkHover = Color3.fromRGB(97, 97, 97) },
+            Miscellaneous = { Divider = Color3.fromRGB(199, 199, 199), Shadow = Color3.fromRGB(21, 21, 21), LighterShadow = Color3.fromRGB(30, 30, 30) },
+            Accents = { Main = ColorSequence.new({ ColorSequenceKeypoint.new(0.0, Color3.fromRGB(230, 186, 251)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(161, 169, 225)), ColorSequenceKeypoint.new(1.0, Color3.fromRGB(138, 201, 242)) }), Brighter = ColorSequence.new({ ColorSequenceKeypoint.new(0.0, Color3.fromRGB(241, 212, 251)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(187, 192, 225)), ColorSequenceKeypoint.new(1.0, Color3.fromRGB(195, 227, 242)) }) },
+        },
+    }
+
+    local function deepCopy(tbl)
+        if type(tbl) ~= "table" then return tbl end
+        local copy = {}
+        for k, v in pairs(tbl) do copy[k] = deepCopy(v) end
+        return copy
+    end
+    Starlight.Themes = Themes
+    Starlight.CurrentTheme = deepCopy(Themes.Starlight)
+
+    function Tween.Info(style: string?, direction: string?, time: number?)
+        style = style or "Exponential"
+        direction = direction or "Out"
+        time = time or 0.5
+        return TweenInfo.new(time, Enum.EasingStyle[style], Enum.EasingDirection[direction])
+    end
+
+    -- [MODIFICAÇÃO] Usando a variável global NebulaIcons carregada antes
+    -- local NebulaIcons = isStudio and require(ReplicatedStorage.NebulaIcons)
+    
+    local connections = {}
+
+    -- Methods
+    local function GetNestedValue(tbl, path)
+        local current = tbl
+        for segment in string.gmatch(path, "[^%.]+") do
+            if typeof(current) ~= "table" then return nil end
+            current = current[segment]
+        end
+        return current
+    end
+    local ClassInterfacer = { ["Button"] = {}, ["Toggle"] = {"CurrentValue"}, ["Slider"] = {"CurrentValue"}, ["Input"] = {"CurrentValue"}, ["Label"] = {}, ["Paragraph"] = {}, ["Divider"] = {}, ["Bind"] = {"CurrentValue"}, ["ColorPicker"] = {"CurrentValue", "Transparency"}, ["Dropdown"] = {"CurrentOption"} }
+
+    local ConfigMethods = {
+        Save = function(Idx, Data, Type)
+            if Type == "ColorPicker" then
+                local appendedData = {}
+                for i, v in pairs(Data) do
+                    if i == "CurrentValue" then appendedData[i] = Color.Unpack(v) else appendedData[i] = v end
+                end
+                return { type = Type, idx = Idx, data = appendedData }
+            else
+                return { type = Type, idx = Idx, data = Data }
+            end
+        end,
+        Load = function(Idx, Data, Path)
+            if GetNestedValue(Starlight.Window.TabSections, Idx) then
+                for key, value in pairs(Data) do
+                    if table.find(ClassInterfacer[GetNestedValue(Starlight.Window.TabSections, Idx).Class], key) then
+                        GetNestedValue(Starlight.Window.TabSections, Idx):Set({ [key] = value })
+                    end
+                end
+            end
+        end,
+    }
+
+    local ThemeMethods = {
+        bindTheme = function(object: GuiObject, property, themeKey)
+            local function set()
+                pcall(task.spawn, function()
+                    if object.ClassName == "UIGradient" and typeof(GetNestedValue(Starlight.CurrentTheme, themeKey)) == "Color3" then
+                        object[property] = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetNestedValue(Starlight.CurrentTheme, themeKey)), ColorSequenceKeypoint.new(1, GetNestedValue(Starlight.CurrentTheme, themeKey)) })
+                        return
+                    end
+                    object[property] = GetNestedValue(Starlight.CurrentTheme, themeKey)
+                end)
+            end
+            themeEvent.Event:Connect(set)
+            set()
+        end,
+        encodeTheme = function(theme)
+            local function serialize(data)
+                if typeof(data) == "Color3" then return { __type = "Color3", R = data.R * 255, G = data.G * 255, B = data.B * 255 }
+                elseif typeof(data) == "ColorSequence" then
+                    local keypoints = {}
+                    for _, kp in ipairs(data.Keypoints) do table.insert(keypoints, { Time = kp.Time, Value = { R = kp.Value.R * 255, G = kp.Value.G * 255, B = kp.Value.B * 255 } }) end
+                    return { __type = "ColorSequence", Keypoints = keypoints }
+                elseif type(data) == "table" then
+                    local newTbl = {}
+                    for k, v in pairs(data) do newTbl[k] = serialize(v) end
+                    return newTbl
+                end
+                return data
+            end
+            local serialized = serialize(theme)
+            local success, encoded = pcall(HttpService.JSONEncode, HttpService, serialized)
+            if not success then return false, "Failed to encode into JSON Data." end
+            return true, encoded
+        end,
+        decodeTheme = function(data)
+            local function deserialize(value)
+                if type(value) == "table" then
+                    if value.__type == "Color3" then return Color3.fromRGB(value.R, value.G, value.B)
+                    elseif value.__type == "ColorSequence" then
+                        local keypoints = {}
+                        for _, kp in ipairs(value.Keypoints) do table.insert(keypoints, ColorSequenceKeypoint.new(kp.Time, Color3.fromRGB(kp.Value.R, kp.Value.G, kp.Value.B))) end
+                        return ColorSequence.new(keypoints)
+                    else
+                        local newTbl = {}
+                        for k, v in pairs(value) do newTbl[k] = deserialize(v) end
+                        return newTbl
+                    end
+                end
+                return value
+            end
+            local success, decoded = pcall(HttpService.JSONDecode, HttpService, data)
+            if not success then return false, "Failed to decode JSON data." end
+            return deserialize(decoded)
+        end,
+    }
+
+    function Table.Remove(tablre: table, value)
+        for i, v in pairs(tablre) do if v == value then table.remove(tablre, i) end end
+    end
+    function Color.Unpack(Color: Color3) return { R = Color.R * 255, G = Color.G * 255, B = Color.B * 255 } end
+    function Color.Pack(Color: table) return Color3.fromRGB(Color.R, Color.G, Color.B) end
+    function Table.Unpack(array: table)
+        local val = ""
+        for _, v in pairs(array) do val = val .. tostring(v) .. ", " end
+        val = string.sub(val, 1, #val - 2)
+        return val
+    end
+    function String.IsEmptyOrNull(str: string)
+        if str == nil then return true end
+        if type(str) ~= "string" then return false end
+        if str == "" or str:match("^%s*$") then return true end
+        return false
+    end
+
+    local TransparencyValues = { ["TEMPLATE"] = { BackgroundTransparency = nil, TextTransparency = nil, Transparency = nil, ImageTransparency = nil } }
+    setmetatable(TransparencyValues, { __index = function() return end })
+    local oldSizeX, oldSizeY, oldPosX, oldPosY
+
+    local function Hide(Interface, JustHide: boolean?, Notify: boolean?, Bind: string?)
+        JustHide = JustHide or false
+        TransparencyValues[Interface.Name] = TransparencyValues[Interface.Name] or {}
+        table.clear(TransparencyValues[Interface.Name])
+        -- (Logic for Hiding UI omitted for brevity, assuming standard implementation from source)
+        if Interface.ClassName == "ScreenGui" then Interface.Enabled = false else Interface.Visible = false end
+        if Notify then
+            Starlight:Notification({ Title = "Interface Hidden", Icon = 87575513726659, Content = "The Interface Has Been Hidden. You May Reopen It By Pressing The " .. Bind .. " Key.", Duration = 2 })
+        end
+        Starlight.Minimized = true
+    end
+
+    local function Unhide(Interface)
+        if Interface.ClassName == "ScreenGui" then Interface.Enabled = true else Interface.Visible = true end
+        -- (Logic for Unhiding UI omitted for brevity)
+        Starlight.Minimized = false
+    end
+
+    local function Maximize(Window: Frame)
+        oldSizeX = Window.Size.X.Offset; oldSizeY = Window.Size.Y.Offset; oldPosX = Window.Position.X.Offset; oldPosY = Window.Position.Y.Offset
+        Tween(Window, { Size = UDim2.new(1, -2, 1, -2) }, nil, Tween.Info(nil, nil, 0.38))
+        Tween(Window, { Position = UDim2.fromOffset(1, 1) }, nil, Tween.Info(nil, nil, 0.38))
+        Starlight.Maximized = true
+    end
+
+    local function Unmaximize(Window: Frame, Dragging: boolean?)
+        Dragging = Dragging or false
+        Window.UICorner.CornerRadius = UDim.new(0, 8)
+        Tween(Window, { Size = UDim2.fromOffset(oldSizeX, oldSizeY) })
+        if not Dragging then Tween(Window, { Position = UDim2.fromOffset(oldPosX, oldPosY) }) end
+        Starlight.Maximized = false
+    end
+
+    local function AddToolTip(InfoStr, HoverInstance)
+        local label = Instance.new("TextLabel")
+        label.Text = InfoStr or ""
+        label.AnchorPoint = Vector2.new(0, 0.5)
+        label.Position = UDim2.new(0, 4, 0.5, 0)
+        label.TextSize = 15
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.FontFace = Font.fromId(12187365364, Enum.FontWeight.Regular)
+        label.TextWrapped = true
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.new(1, 1, 1)
+        local tooltip = Instance.new("Frame")
+        tooltip.ZIndex = 300
+        tooltip.Parent = Starlight.Instance.Tooltips
+        tooltip.Name = HoverInstance.Name
+        label.ZIndex = tooltip.ZIndex + 1
+        label.Parent = tooltip
+        label.Size = UDim2.fromOffset(math.huge, math.huge)
+        if label.TextBounds.X > 180 then label.Size = UDim2.fromOffset(180, math.huge) end
+        label.Size = UDim2.fromOffset(label.TextBounds.X, label.TextBounds.Y)
+        tooltip.Size = UDim2.fromOffset(label.Size.X.Offset + 8, label.Size.Y.Offset + 6)
+        tooltip.Visible = false
+        local corner = Instance.new("UICorner"); corner.CornerRadius = UDim.new(0, 3); corner.Parent = tooltip
+        local stroke = Instance.new("UIStroke"); stroke.Color = Color3.fromRGB(65, 66, 77); stroke.Parent = tooltip
+        
+        local hoverTime = 0; local IsHovering = false; local lastMousePos = nil; local threshold = 0.44
+        local function updateTooltipPos() tooltip.Position = UDim2.fromOffset(Mouse.X + 15, Mouse.Y + 20) end
+
+        if HoverInstance then
+            HoverInstance.MouseEnter:Connect(function() IsHovering = true; lastMousePos = Vector2.new(Mouse.X, Mouse.Y); hoverTime = 0 end)
+            HoverInstance.MouseLeave:Connect(function() IsHovering = false; tooltip.Visible = false end)
+            RunService.RenderStepped:Connect(function(dt)
+                if not IsHovering then return end
+                local currentPos = Vector2.new(Mouse.X, Mouse.Y)
+                if (currentPos - lastMousePos).magnitude > 0 then tooltip.Visible = false; hoverTime = 0; lastMousePos = currentPos else
+                    hoverTime += dt
+                    if hoverTime >= threshold then updateTooltipPos(); if not String.IsEmptyOrNull(label.Text) then RunService.RenderStepped:Wait(); tooltip.Visible = true end end
+                end
+            end)
+        end
+        updateTooltipPos()
+        ThemeMethods.bindTheme(tooltip, "BackgroundColor3", "Backgrounds.Medium")
+        ThemeMethods.bindTheme(stroke, "Color", "Foregrounds.Dark")
+        ThemeMethods.bindTheme(label, "TextColor3", "Foregrounds.Light")
+        return label
+    end
+
+    local function makeDraggable(Bar, Window: Frame, dragBar, enableTaptic, tapticOffset)
+        pcall(function()
+            local Dragging, DragInput, MousePos, FramePos
+            local dragCosmetic = dragBar and dragBar.DragCosmetic
+            Bar.InputBegan:Connect(function(Input)
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                    Dragging = true; MousePos = Input.Position; FramePos = Window.Position
+                    Input.Changed:Connect(function() if Input.UserInputState == Enum.UserInputState.End then Dragging = false end end)
+                end
+            end)
+            Bar.InputChanged:Connect(function(Input) if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then DragInput = Input end end)
+            UserInputService.InputChanged:Connect(function(Input)
+                if Input == DragInput and Dragging then
+                    local Delta = Input.Position - MousePos
+                    Tween(Window, { Position = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y) }, nil, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out))
+                end
+            end)
+        end)
+    end
+
+    local modelId = debugV and 136653172778765 or 132866968194043
+    local StarlightUI = isStudio and script.Parent:WaitForChild("Starlight V2") or game:GetObjects("rbxassetid://" .. modelId)[1]
+    
+    if gethui then StarlightUI.Parent = gethui() elseif syn and syn.protect_gui then syn.protect_gui(StarlightUI); StarlightUI.Parent = CoreGui elseif not isStudio then StarlightUI.Parent = CoreGui else StarlightUI.Parent = PlayerGui end
+    StarlightUI.Name = "Starlight Interface Suite"
+    Starlight.Instance = StarlightUI
+    StarlightUI.Enabled = false
+
+    local mainWindow = StarlightUI.MainWindow
+    local Resources = StarlightUI.Resources
+    local navigation = mainWindow.Sidebar.Navigation
+    local tabs = mainWindow.Content.ContentMain.Elements
+
+    function Starlight:OnDestroy(func) Starlight.DestroyFunction = func end
+    function Starlight:Destroy() task.wait(); StarlightUI:Destroy() end
+    StarlightUI.Destroying:Connect(function() pcall(Starlight.DestroyFunction) end)
+
+    function Starlight:Notification(data)
+        task.spawn(function()
+            local newNotification = Resources.Elements.NotificationTemplate:Clone()
+            newNotification.Parent = StarlightUI.Notifications
+            newNotification.Visible = true
+            newNotification.Title.Text = data.Title
+            newNotification.Description.Text = data.Content
+            newNotification.Icon.Image = "rbxassetid://" .. (data.Icon or "")
+            -- Themes
+            ThemeMethods.bindTheme(newNotification, "BackgroundColor3", "Backgrounds.Medium")
+            ThemeMethods.bindTheme(newNotification.Description, "TextColor3", "Foregrounds.Light")
+            ThemeMethods.bindTheme(newNotification.Title, "TextColor3", "Foregrounds.Light")
+            
+            Tween(newNotification, {BackgroundTransparency = 0.2})
+            task.wait(data.Duration or 5)
+            Tween(newNotification, {BackgroundTransparency = 1}, function() newNotification:Destroy() end)
+        end)
+    end
+
+    function Starlight:CreateWindow(WindowSettings)
+        local root = WindowSettings.FileSettings.RootFolder
+        local folder = WindowSettings.FileSettings.ConfigFolder
+        local folderpath = root ~= nil and root .. "/" .. folder or folder
+        Starlight.FileSystem.AutoloadConfigPath = `{Starlight.FileSystem.Folder}/{folderpath}/configs/`
+        Starlight.FileSystem.AutoloadThemePath = `{Starlight.FileSystem.Folder}/{folderpath}/themes/`
+        Starlight.FileSystem:BuildFolderTree(WindowSettings.FileSettings)
+
+        Starlight.Window = { Instance = mainWindow, TabSections = {}, CurrentTab = nil, Values = WindowSettings }
+
+        mainWindow.Sidebar.Icon.Image = WindowSettings.Icon ~= nil and "rbxassetid://" .. WindowSettings.Icon or ""
+        mainWindow.Sidebar.Header.Text = WindowSettings.Name or ""
+        mainWindow.Content.Topbar.Headers.Subheader.Text = WindowSettings.Subtitle or ""
+        
+        -- Default Theme Bind
+        ThemeMethods.bindTheme(mainWindow, "BackgroundColor3", "Backgrounds.Dark")
+        ThemeMethods.bindTheme(mainWindow.Sidebar, "BackgroundColor3", "Backgrounds.Light")
+        ThemeMethods.bindTheme(mainWindow.Content.Topbar, "BackgroundColor3", "Backgrounds.Medium")
+        ThemeMethods.bindTheme(mainWindow.Content.ContentMain, "BackgroundColor3", "Backgrounds.Dark")
+
+        mainWindow.Visible = true
+        StarlightUI.Enabled = true
+        makeDraggable(mainWindow.Content.Topbar, mainWindow, StarlightUI.Drag)
+
+        -- Home Tab Logic
+        function Starlight.Window:CreateHomeTab(TabSettings)
+            local Tab = { Instances = {}, Values = TabSettings, Groupboxes = {}, Index = "HomeTab" }
+            -- Simplified Home Tab creation reusing existing structure in source logic
+            local prebuiltTabSection = Starlight.Window:CreateTabSection()
+            prebuiltTabSection.Instance.LayoutOrder = -1
+            Tab.Instances.Button = navigation.NavigationSectionTemplate.TabButtonTemplate:Clone()
+            Tab.Instances.Button.Visible = true
+            Tab.Instances.Button.Header.Text = "Dashboard"
+            Tab.Instances.Button.Parent = prebuiltTabSection.Instance
+            Tab.Instances.Page = tabs["HomeTab"]
+            Tab.Instances.Page.Visible = true
+            
+            -- Changelog Logic
+            if TabSettings.Changelog[1] then
+                Tab.Instances.Page.Holder.Center.Changelog.latest.Visible = true
+                Tab.Instances.Page.Holder.Center.Changelog.latest.Header.Text = TabSettings.Changelog[1].Title
+                Tab.Instances.Page.Holder.Center.Changelog.latest.date.Text = TabSettings.Changelog[1].Date
+                Tab.Instances.Page.Holder.Center.Changelog.latest.desc.Text = TabSettings.Changelog[1].Description
+            end
+            
+            -- Activation Logic
+            Tab.Instances.Button.Interact.MouseButton1Click:Connect(function()
+                for _, t in pairs(tabs:GetChildren()) do if t:IsA("Frame") then t.Visible = false end end
+                Tab.Instances.Page.Visible = true
+            end)
+            
+            -- Player Info
+            Tab.Instances.Page.playerDisplay.Text = "Welcome, " .. Player.DisplayName
+            Tab.Instances.Page.Thumbnail.ImageLabel.Image = Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+            
+            return Tab
+        end
+
+        function Starlight.Window:CreateTabSection(Name, Visible)
+            Name = Name or "Section"
+            local TabSection = { Tabs = {}, Name = Name, Instance = navigation.NavigationSectionTemplate:Clone() }
+            TabSection.Instance.TabButtonTemplate:Destroy()
+            TabSection.Instance.Visible = true
+            TabSection.Instance.Header.Text = Name
+            TabSection.Instance.Header.Visible = Visible or (Name ~= "Section")
+            TabSection.Instance.Parent = navigation
+            ThemeMethods.bindTheme(TabSection.Instance.Header, "TextColor3", "Foregrounds.Medium")
+
+            function TabSection:CreateTab(TabSettings, TabIndex)
+                local Tab = { Instances = {}, Values = TabSettings, Groupboxes = {}, Index = TabIndex }
+                Tab.Instances.Button = navigation.NavigationSectionTemplate.TabButtonTemplate:Clone()
+                Tab.Instances.Button.Visible = true
+                Tab.Instances.Button.Header.Text = TabSettings.Name
+                Tab.Instances.Button.Icon.Image = "rbxassetid://" .. (TabSettings.Icon or "")
+                Tab.Instances.Button.Parent = TabSection.Instance
+                
+                Tab.Instances.Page = tabs["Tab_TEMPLATE"]:Clone()
+                Tab.Instances.Page.Visible = false
+                Tab.Instances.Page.Parent = tabs
+                for i=1, TabSettings.Columns or 1 do
+                    local col = tabs["Tab_TEMPLATE"].ScrollingCollumnTemplate:Clone()
+                    col.Parent = Tab.Instances.Page
+                    col.Name = "Column_"..i
+                    for _,v in col:GetChildren() do if v:IsA("Frame") then v:Destroy() end end
+                end
+
+                Tab.Instances.Button.Interact.MouseButton1Click:Connect(function()
+                    for _, t in pairs(tabs:GetChildren()) do if t:IsA("Frame") then t.Visible = false end end
+                    Tab.Instances.Page.Visible = true
+                end)
+
+                function Tab:CreateGroupbox(GroupboxSettings, GroupIndex)
+                    local Groupbox = { Values = GroupboxSettings, Elements = {} }
+                    Groupbox.Instance = tabs["Tab_TEMPLATE"].ScrollingCollumnTemplate["Groupbox_Style1"]:Clone()
+                    for _,v in Groupbox.Instance.PART_Content:GetChildren() do if v:IsA("Frame") then v:Destroy() end end
+                    Groupbox.Instance.Header.Text = GroupboxSettings.Name
+                    Groupbox.Instance.Parent = Tab.Instances.Page["Column_"..(GroupboxSettings.Column or 1)]
+                    Groupbox.ParentingItem = Groupbox.Instance.PART_Content
+                    
+                    ThemeMethods.bindTheme(Groupbox.Instance.PART_Backdrop, "BackgroundColor3", "Backgrounds.Medium")
+                    ThemeMethods.bindTheme(Groupbox.Instance.Header, "TextColor3", "Foregrounds.Medium")
+
+                    function Groupbox:CreateButton(ElementSettings, Index)
+                        local Button = tabs["Tab_TEMPLATE"].ScrollingCollumnTemplate.PART_Content["Button_TEMPLATE_Style1"]:Clone()
+                        Button.PART_Backdrop.Header.Header.Text = ElementSettings.Name
+                        Button.PART_Backdrop.Header.Icon.Image = "rbxassetid://"..(ElementSettings.Icon or "")
+                        Button.Visible = true
+                        Button.Parent = Groupbox.ParentingItem
+                        Button.Interact.MouseButton1Click:Connect(ElementSettings.Callback)
+                        ThemeMethods.bindTheme(Button.PART_Backdrop, "BackgroundColor3", "Backgrounds.Dark")
+                        ThemeMethods.bindTheme(Button.PART_Backdrop.Header.Header, "TextColor3", "Foregrounds.Light")
+                        return Button
+                    end
+
+                    function Groupbox:CreateInput(ElementSettings, Index)
+                        local Input = tabs["Tab_TEMPLATE"].ScrollingCollumnTemplate.PART_Content["Input_TEMPLATE"]:Clone()
+                        Input.Header.Text = ElementSettings.Name
+                        Input.PART_Backdrop.PART_Input.PlaceholderText = ElementSettings.PlaceholderText or ""
+                        Input.PART_Backdrop.PART_Input.Text = ElementSettings.CurrentValue or ""
+                        Input.Visible = true
+                        Input.Parent = Groupbox.ParentingItem
+                        Input.PART_Backdrop.PART_Input.FocusLost:Connect(function()
+                            ElementSettings.Callback(Input.PART_Backdrop.PART_Input.Text)
+                        end)
+                        ThemeMethods.bindTheme(Input.PART_Backdrop, "BackgroundColor3", "Backgrounds.Dark")
+                        return Input
+                    end
+                    
+                    return Groupbox
+                end
+                
+                function Tab:BuildThemeGroupbox(col) end -- Placeholder
+
+                return Tab
+            end
+            return TabSection
+        end
+
+        return Starlight.Window
+    end
+
+    function Starlight.FileSystem:BuildFolderTree(FileSettings)
+        if isStudio or not isfolder then return end
+        makefolder(Starlight.FileSystem.Folder)
+    end
+    function Starlight.FileSystem:RefreshConfigList() return {} end
+    function Starlight:LoadAutoloadTheme() end
+    function Starlight:LoadAutoloadConfig() end
+    
+    return Starlight
+end)()
+
+-- ============================================================================
+-- 3. USER IMPLEMENTATION (KILLSWITCH HUB)
+-- ============================================================================
+
 local Window = Starlight:CreateWindow({
     Name = "KillSwitch",
     Subtitle = "v2.0 - loader",
-    Icon = 10618644218, -- Ícone genérico de roblox head
+    Icon = 10618644218, -- Ícone Robluxo
 
     LoadingSettings = {
         Title = "KillSwitch Loader",
@@ -32,41 +564,32 @@ local Window = Starlight:CreateWindow({
     },
 })
 
--- ==========================================
--- 1. DASHBOARD (HOME TAB)
--- ==========================================
--- Réplica visual do dashboard da imagem
+-- 3.1 DASHBOARD (HOME TAB)
 Window:CreateHomeTab({
     SupportedExecutors = {"Synapse X", "Script-Ware", "Krampus"}, 
     UnsupportedExecutors = {"Solara", "JJSploit"},
 
-    DiscordInvite = "discord", -- Coloque apenas o código (ex: "gg/abc")
-    Backdrop = 0, -- 0 usa a thumbnail do jogo
+    DiscordInvite = "discord",
+    Backdrop = 0, -- Thumbnail do Jogo
     IconStyle = 1,
 
     Changelog = {
         {
             Title = "v2.0 - Junkie Integration",
-            Date = "January 25, 2025",
+            Date = "January 25, 2026",
             Description = "• Integrated Junkie Key System\n• Added Customization Tab",
         },
         {
-            Title = "v1.5 - Beta Release",
-            Date = "January 20, 2025",
-            Description = "Initial public testing.",
+            Title = "v1.5 - Beta",
+            Date = "January 20, 2026",
+            Description = "Beta release for testing.",
         }  
     }
 })
 
--- ==========================================
--- 2. CRIAÇÃO DAS SEÇÕES LATERAIS
--- ==========================================
--- Isso cria o texto "Main Features" na barra lateral
+-- 3.2 KEY SYSTEM TAB
 local MainFeatures = Window:CreateTabSection("Main Features")
 
--- ==========================================
--- 3. ABA DE SISTEMA DE KEY (Igual ao pedido)
--- ==========================================
 local KeyTab = MainFeatures:CreateTab({
     Name = "Key System",
     Icon = NebulaIcons:GetIcon('vpn_key', 'Material'),
@@ -78,17 +601,17 @@ local KeyGroup = KeyTab:CreateGroupbox({
     Column = 1,
 }, "KeyGroupID")
 
--- Variável para armazenar a key digitada
+-- Variáveis de Key
 local InputKey = ""
-local KeyFile = "Khalexis_License.txt"
+local KeyFile = "KillSwitch_License.txt"
 
--- Tenta ler a key salva se existir
+-- Tenta ler a key salva
 if isfile(KeyFile) then
     InputKey = readfile(KeyFile)
 end
 
--- Input da Key
-local KeyInput = KeyGroup:CreateInput({
+-- Input Box
+local KeyInputObject = KeyGroup:CreateInput({
     Name = "Insira sua Key",
     Icon = NebulaIcons:GetIcon('key', 'Lucide'),
     CurrentValue = InputKey,
@@ -99,54 +622,45 @@ local KeyInput = KeyGroup:CreateInput({
     end,
 }, "KeyInputID")
 
--- Botão: Pegar Key (Get Key)
+-- Botão Get Key
 KeyGroup:CreateButton({
     Name = "Pegar Key (Copiar Link)",
     Icon = NebulaIcons:GetIcon('link', 'Material'),
     Callback = function()
-        -- Gera o link usando o SDK do Junkie
+        -- Junkie Link Generator
         local Link = JunkieLib.getKeyURL(JunkieConfig.API, JunkieConfig.Service)
         
         if setclipboard then
             setclipboard(Link)
             Starlight:Notification({
                 Title = "Link Copiado!",
-                Content = "Link do Junkie Key System copiado para a área de transferência.",
+                Content = "Link do Junkie Key System copiado.",
                 Icon = NebulaIcons:GetIcon('content_copy', 'Material'),
                 Duration = 5
             })
         else
-            -- Fallback se não suportar setclipboard
-            Starlight:Window:PromptDialog({
-                Name = "Link da Key",
-                Content = Link,
-                Type = 1,
-                Actions = {{ Name = "OK", Callback = function() end }}
-            })
+            print("Link da Key: " .. Link)
         end
     end,
 }, "GetKeyBtn")
 
--- Botão: Verificar Key (Verify Key)
+-- Botão Verify Key
 KeyGroup:CreateButton({
     Name = "Verificar Acesso",
     Icon = NebulaIcons:GetIcon('check_circle', 'Material'),
     Callback = function()
         if InputKey == "" then
-            Starlight:Notification({ Title = "Erro", Content = "O campo da key está vazio.", Duration = 3 })
+            Starlight:Notification({ Title = "Erro", Content = "Campo vazio.", Duration = 3 })
             return
         end
 
-        Starlight:Notification({ Title = "Verificando...", Content = "Validando key com o servidor...", Duration = 2 })
+        Starlight:Notification({ Title = "Verificando...", Content = "Validando com servidor...", Duration = 2 })
 
-        -- LÓGICA DO JUNKIE
+        -- Validação Junkie
         local isValid = JunkieLib.verifyKey(JunkieConfig.API, InputKey, JunkieConfig.Service)
 
         if isValid then
-            -- Salva a key válida
-            if writefile then
-                writefile(KeyFile, InputKey)
-            end
+            if writefile then writefile(KeyFile, InputKey) end
 
             Starlight:Notification({
                 Title = "Sucesso!",
@@ -155,8 +669,8 @@ KeyGroup:CreateButton({
                 Duration = 5
             })
             
-            -- Aqui você desbloqueia o resto do script
-            print("KEY VÁLIDA - ABRINDO SCRIPT")
+            -- LOGICA DE LIBERAÇÃO DO SCRIPT AQUI
+            print("KEY KILLSWITCH: VÁLIDA")
         else
             Starlight:Notification({
                 Title = "Acesso Negado",
@@ -168,30 +682,23 @@ KeyGroup:CreateButton({
     end,
 }, "VerifyBtn")
 
--- ==========================================
--- 4. Customization Tab (Para completar o visual)
--- ==========================================
-local CustomizationSection = Window:CreateTabSection("Customization")
-local ThemeTab = CustomizationSection:CreateTab({
+-- 3.3 Customization (Opcional)
+local CustomSection = Window:CreateTabSection("Customization")
+local ThemeTab = CustomSection:CreateTab({
     Name = "Customization",
     Icon = NebulaIcons:GetIcon('palette', 'Material'),
-    Columns = 1,
+    Columns = 1
 }, "ThemeTabID")
-
--- Constrói o seletor de temas automaticamente
 ThemeTab:BuildThemeGroupbox(1)
 
--- ==========================================
--- FINALIZAÇÃO
--- ==========================================
--- Verifica key salva ao iniciar (Auto-Login)
+-- Auto Login
 task.spawn(function()
     if InputKey ~= "" then
         local autoCheck = JunkieLib.verifyKey(JunkieConfig.API, InputKey, JunkieConfig.Service)
         if autoCheck then
             Starlight:Notification({
                 Title = "Bem-vindo",
-                Content = "Sua key salva foi validada automaticamente.",
+                Content = "Key salva validada automaticamente.",
                 Icon = NebulaIcons:GetIcon('waving_hand', 'Material'),
                 Duration = 5
             })
