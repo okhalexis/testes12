@@ -5,7 +5,7 @@
     -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
     -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
-    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (RG8TS).
+    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (zwSs9).
     -- 6. NOVO: Categoria Blade Ball e +20 novos scripts adicionados.
 
 --]]
@@ -942,7 +942,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V4.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Atualização:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
@@ -952,6 +952,7 @@ local function createHub()
         {Text = "+2 Scripts 99 Nights in the Florest", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 Scripts Blade Ball", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+1 Script Weak Legacy 2", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Script Blox Fruits", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVA CATEGORIA BLADE BALL", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Hub mais leve", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Bugs Corrigidos", Color = Color3.fromRGB(220, 220, 220)},
@@ -996,7 +997,7 @@ local function createHub()
         {Name = "( NOVO ) UB HUB ( key )", Func = function() loadstring(game:HttpGet("https://gitlab.com/r_soft/main/-/raw/main/LoadUB.lua"))() end},
         {Name = "( NOVO ) ASHLABS HUB ( key )", Func = function() loadstring(game:HttpGet("https://ashlabs.me/api/game?name=fish-it.lua", true))() end},
         {Name = "( NOVO ) RYZEN HUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/178c353fa8240cbf61835f4c6f76112e.lua"))() end},
-        {Name = "( NOVO ) SPEED HUB X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
+        {Name = "( NOVO ) SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
         {Name = "( NOVO ) KENNIEL HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Kenniel123/Universal-Loader/refs/heads/main/MultiGame"))() end},
         {Name = "727EXE HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/arcadeisreal/717exe---Fish-It/refs/heads/main/loader.lua"))() end},
         {Name = "Seraphin Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nniellx/SeraphinHub/main/SeraphinMain.lua"))() end},
@@ -1395,7 +1396,7 @@ local function CreateKeyUI()
 
     -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
-        local link = "https://linkunlocker.com/key-1-RG8TS?share=true"
+        local link = "https://linkunlocker.com/key-1-zwSs9?share=true"
         
         if setclipboard then
             setclipboard(link)
