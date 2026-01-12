@@ -1053,8 +1053,7 @@ local function createHub()
         {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
     }
     local theForgeScripts = {
-        {Name = "( NOVO ) ZENITH HUB ( key )", Func = function() script_key="LQieOngTuTWRNxVwfcxpCJRZtYAGKoQT";
-loadstring(game:HttpGet("https://zenithhub.cloud/panel/script"))() end},
+        {Name = "( NOVO ) ZENITH HUB ( key )", Func = function() loadstring(game:HttpGet("https://zenithhub.cloud/panel/script"))() end},
         {Name = "( NOVO ) NOUSIGI HUB ( key )", Func = function() loadstring(game:HttpGet("https://nousigi.com/loader.lua"))() end},
         {Name = "( NOVO ) AIRFLOW HUB ( key )", Func = function() loadstring(game:HttpGet("https://airflowscript.com/loader"))() end},
         {Name = "( NOVO ) CHIYO HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua"))() end},
@@ -1077,10 +1076,8 @@ loadstring(game:HttpGet("https://zenithhub.cloud/panel/script"))() end},
         {Name = "MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
     }
     local afsInfinityScripts = {
-        {Name = "( NOVO ) YUTO HUB ( key )", Func = repeat wait() until game:IsLoaded()
-loadstring(game:HttpGet(('https://raw.githubusercontent.com/Binintrozza/yutv2e/main/Yutohub')))() end},
-        {Name = "( NOVO ) IMP HUB ( key )", Func = function() script_key = "";
-loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba5e5e39c7c2d6d7fdfe.lua"))() end},
+        {Name = "( NOVO ) YUTO HUB ( key )", Func = repeat wait() loadstring(game:HttpGet(('https://raw.githubusercontent.com/Binintrozza/yutv2e/main/Yutohub')))() end},
+        {Name = "( NOVO ) IMP HUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba5e5e39c7c2d6d7fdfe.lua"))() end},
         {Name = "NSHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OhhMyGehlee/sh/refs/heads/main/a"))() end},
         {Name = "SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end},
         {Name = "SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
