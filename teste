@@ -1,98 +1,123 @@
-function load()
-print("leave this blank or put anything")
-warn("made by uerd with ❤")    
-end
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/eeea3871e0458b7626f446121fbe58eb61689229/src/components/KeySystem.lua"))()
---dont change anything until you know what you do
-WindUI.Services.junkiedev = {
-    Name = "Junkie Development",
-    Icon = "bug-off",
-    Args = { "ServiceId", "ApiKey", "Provider" },
-    New = function(ServiceId, ApiKey, Provider)
-        JunkieProtected.API_KEY = ApiKey
-        JunkieProtected.PROVIDER = Provider
-        JunkieProtected.SERVICE_ID = ServiceId
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/raw/main/dist/main.lua"))()
 
-        local function ValidateKey(key)
-            if not key or key == "" then
-                print("❌ No key provided!")
-                game.Players.LocalPlayer:Kick("No key provided. Please get a key.")
-                return false
+--[[ 
+    ====================================================================
+    PARTE 1: REGISTRANDO O SERVIÇO 'JUNKIE' NO WINDUI
+    ====================================================================
+]]
+
+WindUI.Services.junkie = {
+    Name = "Junkie API",
+    Icon = "key", -- Ícone da biblioteca interna do WindUI
+    
+    -- Definimos os argumentos que vamos passar na tabela da Window
+    Args = { "ApiKey", "ServiceName" },
+    
+    New = function(ApiKey, ServiceName)
+        -- Carrega o SDK oficial do Junkie
+        local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
+        
+        -- Configura as credenciais com os argumentos passados
+        Junkie.identifier = ApiKey
+        Junkie.service = ServiceName
+        Junkie.provider = ServiceName
+
+        -- Função de validação exigida pelo WindUI
+        local function validateKey(key)
+            if not key or key == "" then 
+                return false, "A key não pode estar vazia!" 
             end
 
-            local keylessCheck = JunkieProtected.IsKeylessMode()
-            if keylessCheck and keylessCheck.keyless_mode then
-                print("Keyless mode enabled - Starting script...")
-                return true
+            -- Verifica a key usando a API do Junkie
+            local result = Junkie.check_key(key)
+
+            if not result then
+                return false, "Erro de conexão com o servidor Junkie."
             end
 
-            local result = JunkieProtected.ValidateKey({ Key = key })
-            if result == "valid" then
-                print("Key is valid! Starting script...")
-                load()
-                
-                if _G.JD_IsPremium then
-                    print("🌟 Premium user detected!")
-                else
-                    print("📝 Standard user")
-                end
-                
-                return true
+            if result.valid then
+                return true, "Acesso Concedido!"
             else
-                local keyLink = JunkieProtected.GetKeyLink()
-                print("❌ Invalid key!")
-                game.Players.LocalPlayer:Kick("Invalid key. Get one from: " .. keyLink)
-                return false
+                -- Retorna a mensagem de erro da API ou uma genérica
+                return false, result.message or "Key inválida ou expirada."
             end
         end
-
+        
+        -- Função de copiar link exigida pelo WindUI
         local function copyLink()
-            local link = JunkieProtected.GetKeyLink()
-            print("Get your key: " .. link)
-            if setclipboard then
-                setclipboard(link)
-            end
+            local link = Junkie.get_key_link()
+            setclipboard(link)
+            -- O WindUI gerencia a notificação visual de "Copiado"
         end
-
+        
+        -- Retorna a tabela de funções para o WindUI usar
         return {
-            Verify = ValidateKey,
+            Verify = validateKey,
             Copy = copyLink
         }
     end
 }
 
---//CONTIUNE HERE!!
+--[[ 
+    ====================================================================
+    PARTE 2: CRIANDO A JANELA COM SUA CONFIGURAÇÃO
+    ====================================================================
+]]
 
 local Window = WindUI:CreateWindow({
-    Title = "My Super Hub",
-    Icon = "door-open",
-    Author = "by .ftgs and .ftgs",
-    Folder = "MySuperHub",
-    Size = UDim2.fromOffset(580, 460),
-    MinSize = Vector2.new(560, 350),
-    MaxSize = Vector2.new(850, 560),
+    Title = "Khalexis Hub",
+    Icon = "rbxassetid://74512062724325", -- Seu ícone novo
+    Author = "Khalexis Team",
+    Folder = "KhalexisHub", -- Pasta onde a key será salva
     Transparent = true,
-    Theme = "Dark",
-    Resizable = true,
-    SideBarWidth = 200,
-    BackgroundImageTransparency = 0.42,
-    HideSearchBar = true,
-    ScrollBarEnabled = false,
-    KeySystem = {                                                               
-        Note = "hi, im uerd.",                     
-        API = {                                                       
-            { 
-                Type = "junkiedev",
-                ServiceId = "realuerd",
-                ApiKey = "e2abcc15-fba3-467e-936a-73aac882af2d",
-                Provider = "tutorial",
-            }    
-        }
-    }
-})
-local Tab = Window:Tab({
-    Title = "Tab Title",
-    Icon = "bird", 
-    Locked = false,
+    Theme = "Dark", 
+
+    -- Configuração do Sistema de Key
+    KeySystem = {
+        Note = "Sistema de verificação Khalexis Hub", -- Rodapé
+        SaveKey = true, -- O WindUI salvará a key automaticamente em arquivo
+        
+        API = {
+            {
+                -- Chamamos o serviço que criamos acima
+                Type = "junkie", 
+                
+                -- SUAS CREDENCIAIS AQUI
+                ApiKey = "e696e91d-0ba0-4693-a6a5-91145ead6ed1",
+                ServiceName = "Khalexis Hub - Sistema de Key",
+                
+                -- Visual da tela de Key
+                Title = "Autenticação Khalexis",
+                Desc = "Copie o link para gerar sua key de acesso.",
+                Icon = "rbxassetid://74512062724325", -- Ícone na tela de login
+            },
+        },
+    },
 })
 
+--[[ 
+    ====================================================================
+    PARTE 3: O SCRIPT SÓ CARREGA SE PASSAR DA KEY
+    ====================================================================
+]]
+
+local HomeTab = Window:Tab({
+    Title = "Início",
+    Icon = "home"
+})
+
+HomeTab:Section("Bem-vindo ao Khalexis Hub")
+
+HomeTab:Notify({
+    Title = "Sucesso",
+    Content = "Você está autenticado no sistema!",
+    Duration = 5
+})
+
+-- Exemplo de botão
+HomeTab:Button({
+    Title = "Imprimir Teste",
+    Callback = function()
+        print("Khalexis Hub funcionando!")
+    end
+})
