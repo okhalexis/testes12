@@ -39,4 +39,3 @@ SentinelUI.Initialize({
 while not getgenv().SCRIPT_KEY do
     task.wait(0.1)
 end
-    
