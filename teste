@@ -998,6 +998,7 @@ local function createHub()
     local inkGameScripts = {{Name = "Revive Hub", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Have3165/Reviv3-Hub/refs/heads/main/InkGame'))() end}}
     local naturalDisasterScripts = {{Name = "BaconJJScript", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/MAnXu0qv"))() end}}
     local forsakenScripts = {{Name = "SNT HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Snowt69/SNT-HUB/refs/heads/main/Forsaken"))() end}}
+    }
     local pegueOPeixeScripts = {
         {Name = "( NOVO ) UB HUB ( key )", Func = function() loadstring(game:HttpGet("https://gitlab.com/r_soft/main/-/raw/main/LoadUB.lua"))() end},
         {Name = "( NOVO ) ASHLABS HUB ( key )", Func = function() loadstring(game:HttpGet("https://ashlabs.me/api/game?name=fish-it.lua", true))() end},
@@ -1084,7 +1085,7 @@ local function createHub()
     }
     local BladeBallScripts = {
         {Name = "( NOVO ) NOTHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/lightymysterious-oss/DAHEN-HUB/refs/heads/main/BladeBall.lua"))() end},
-        {Name = "( NOVO ) PROJECT TREVOUS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotRox1/Trevous-Hub/refs/heads/main/blade-ball.lua"))() end},
+        {Name = "( NOVO ) PROJECT TREVOUS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotRox1/Trevous-Hub/refs/heads/main/blade-ball.lua"))() end}
     }
 
     local updatesButtonInstance = createCategoryButton("📣 Atualizações 📣", nil, 1)
