@@ -1,13 +1,12 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.6 (Atualizado com Ícone Personalizado)
+    -- Khalexis Hub - Versão Final v4.5 (Atualizado com Blade Ball e Novos Scripts)
     -- 1. CLEANUP: Remove interfaces antigas.
     -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
     -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
-    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (zwSs9).
+    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (dS7uj).
     -- 6. NOVO: Categoria Blade Ball e +20 novos scripts adicionados.
-    -- 7. VISUAL: Toggle Button agora é um ÍCONE personalizado com sistema de arrastar.
 
 --]]
 
@@ -1397,7 +1396,7 @@ local function CreateKeyUI()
 
     -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
-        local link = "https://linkunlocker.com/key-1-zwSs9?share=true"
+        local link = "https://linkunlocker.com/key-1-dS7uj?share=true"
         
         if setclipboard then
             setclipboard(link)
@@ -1475,63 +1474,55 @@ local function CreateKeyUI()
     })
 end
 
--- ==========================================
--- CRIAÇÃO DO TOGGLE BUTTON (COM ÍCONE E DRAG)
--- ==========================================
-ToggleButton = Instance.new("ImageButton")
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 45, 0, 45) -- Tamanho ajustado para o ícone
-ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Fundo escuro sutil
-ToggleButton.Image = "rbxassetid://127980026027779" -- SEU ID DO ASSET
-ToggleButton.Parent = ScreenGui
+-- CRIAÇÃO DO TOGGLE BUTTON (INICIALMENTE OCULTO)
+ToggleButton=Instance.new("TextButton")
+ToggleButton.Name="ToggleButton"
+ToggleButton.Size=UDim2.new(0,35,0,35)
+ToggleButton.Position=UDim2.new(0,10,0,10)
+ToggleButton.BackgroundColor3=Color3.new(0,0,0)
+ToggleButton.TextColor3=Color3.new(1,1,1)
+ToggleButton.Text="K"
+ToggleButton.Font=HUB_FONT
+ToggleButton.TextSize=24
+ToggleButton.Parent=ScreenGui
 ToggleButton.Visible = false
-applyRoundedCorners(ToggleButton, 12) -- Bordas arredondadas
+applyRoundedCorners(ToggleButton,10)
 
--- Lógica de Arrastar (Drag System) aprimorada
-local draggingToggle = false
-local dragInputToggle, dragStartToggle, startPosToggle
+local draggingToggle=false
+local dragStartToggle,startPosToggle
+local currentInputObjectToggle = nil
 
 ToggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        draggingToggle = true
-        dragStartToggle = input.Position
-        startPosToggle = ToggleButton.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                draggingToggle = false
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+        draggingToggle=true
+        dragStartToggle=input.Position
+        startPosToggle=ToggleButton.Position
+        currentInputObjectToggle = input
+        local connection
+        connection=input.Changed:Connect(function()
+            if input.UserInputState==Enum.UserInputState.Ended then
+                draggingToggle=false
+                currentInputObjectToggle = nil
+                connection:Disconnect()
             end
         end)
     end
 end)
 
-ToggleButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInputToggle = input
-    end
-end)
-
 UserInputService.InputChanged:Connect(function(input)
-    if draggingToggle and input == dragInputToggle then
-        local delta = input.Position - dragStartToggle
-        ToggleButton.Position = UDim2.new(
-            startPosToggle.X.Scale, 
-            startPosToggle.X.Offset + delta.X, 
-            startPosToggle.Y.Scale, 
-            startPosToggle.Y.Offset + delta.Y
-        )
+    if draggingToggle and currentInputObjectToggle == input and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+        local delta=input.Position-dragStartToggle
+        ToggleButton.Position=UDim2.new(startPosToggle.X.Scale,startPosToggle.X.Offset+delta.X,startPosToggle.Y.Scale,startPosToggle.Y.Offset+delta.Y)
     end
 end)
 
--- Evento de Clique para abrir/fechar o Hub
 ToggleButton.MouseButton1Click:Connect(function()
     if HubOpen then
         if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
     else
         if HasShownWelcome then
-            MainFrameContainer = createHub()
-            HubOpen = true
+            MainFrameContainer=createHub()
+            HubOpen=true
             ToggleButton.Visible = false
         else
             showLoadingAndOpenHub()
@@ -1539,7 +1530,7 @@ ToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Inicialização com Check de Key Salva
+-- Inicialização com Check de Key Salva (Correção de Bug)
 local function startKeySystem()
     local alreadyValid = false
     
