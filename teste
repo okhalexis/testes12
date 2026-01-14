@@ -1,11 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão v5.1 (DASHBOARD + UPDATES)
-    -- 1. NOTIFICAÇÕES: Reposicionadas para baixo e adicionadas aos favoritos.
-    -- 2. DASHBOARD: Nova aba estilo "Home" com status do jogador/jogo.
-    -- 3. TOGGLE: Botão redondo arrastável.
+    -- Khalexis Hub - Versão Final v5.3 (CORRIGIDA)
+    -- 1. CORES: Revertidas para o padrão original (Dark/Orange).
+    -- 2. DASHBOARD: Limpa (sem emojis), com status em tempo real.
+    -- 3. NOTIFICAÇÕES: Posicionadas EMBAIXO, estilo Toast.
     -- 4. KEY SYSTEM: LinkUnlocker integrado.
-    -- 5. SCRIPTS: Todos preservados.
 
 --]]
 
@@ -22,24 +21,29 @@ end
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
--- CONFIGURAÇÃO VISUAL
+-- CONFIGURAÇÃO VISUAL (CORES ORIGINAIS)
 -- ==========================================
 local HUB_FONT = Enum.Font.FredokaOne 
 local HUB_TEXT_SIZE = 14 
 
-local Colors = {
-    Main = Color3.fromRGB(15, 15, 15),
-    Secondary = Color3.fromRGB(25, 25, 25),
-    Stroke = Color3.fromRGB(60, 60, 60),
-    Accent = Color3.fromRGB(255, 140, 0), -- Laranja
-    Text = Color3.fromRGB(240, 240, 240),
-    TextDim = Color3.fromRGB(180, 180, 180),
-    Success = Color3.fromRGB(40, 200, 64),
-    Error = Color3.fromRGB(245, 70, 90),
-    Warning = Color3.fromRGB(254, 188, 46),
-    Info = Color3.fromRGB(59, 130, 246)
-}
+-- Paleta Original
+local COLOR_BLACK = Color3.fromRGB(15, 15, 15)
+local COLOR_CATEGORY_BG = Color3.fromRGB(25, 25, 25)
+local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
+local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
+local COLOR_TITLEBAR = Color3.fromRGB(20, 20, 20)
 
+local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
+local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
+local COLOR_ACCENT = Color3.fromRGB(255, 140, 0) -- Laranja Original
+local COLOR_SUCCESS = Color3.fromRGB(40, 200, 64)
+local COLOR_ERROR = Color3.fromRGB(245, 70, 90)
+local COLOR_WARNING = Color3.fromRGB(254, 188, 46)
+
+local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) 
+local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
+
+-- Ícones
 local Icons = {
     Logo = "rbxassetid://101462084575687",
     Success = "rbxassetid://119783053916823",
@@ -47,7 +51,6 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    Dashboard = "rbxassetid://10709752906", -- Ícone Home
     Clock = "rbxassetid://10709752254",
     Signal = "rbxassetid://10709752535"
 }
@@ -61,7 +64,7 @@ end
 local function ApplyStroke(instance, color, thickness, transparency)
     local stroke = Instance.new("UIStroke")
     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    stroke.Color = color or Colors.Stroke
+    stroke.Color = color or Color3.fromRGB(60, 60, 60)
     stroke.Thickness = thickness or 1
     stroke.Transparency = transparency or 0
     stroke.Parent = instance
@@ -124,18 +127,6 @@ ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Cores Originais (Compatibilidade)
-local COLOR_BLACK = Color3.fromRGB(15, 15, 15)
-local COLOR_CATEGORY_BG = Color3.fromRGB(25, 25, 25)
-local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
-local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
-local COLOR_TITLEBAR = Color3.fromRGB(20, 20, 20)
-local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
-local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
-local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) 
-local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
-local COLOR_FOOTER_TEXT = Color3.fromRGB(150, 150, 150)
-
 local userId = player.UserId
 local userName = player.Name
 
@@ -144,7 +135,7 @@ local LoadingScreen, StopLoadingAnim
 local HubOpen = false
 local ToggleButton 
 local HasShownWelcome = false
-local dashboardConnection = nil -- Para limpar o RenderStepped do Dashboard
+local dashboardConnection = nil 
 
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
@@ -218,13 +209,13 @@ local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
         Background = COLOR_BLACK, 
-        Title = Color3.fromRGB(255, 140, 0),
+        Title = COLOR_ACCENT,
         InputField = COLOR_CATEGORY_BG,
         InputFieldBorder = Color3.fromRGB(60, 60, 60), 
         Button = COLOR_CATEGORY_BG,
         ButtonHover = Color3.fromRGB(45, 45, 45),
-        Error = Color3.fromRGB(220, 50, 50),
-        Success = Color3.fromRGB(80, 200, 80),
+        Error = COLOR_ERROR,
+        Success = COLOR_SUCCESS,
         Discord = Color3.fromRGB(88, 101, 242)
     },
     Service = "redexecutor",
@@ -257,7 +248,7 @@ end
 local NotificationHolder = Instance.new("Frame")
 NotificationHolder.Name = "NotificationHolder"
 NotificationHolder.Size = UDim2.new(0, 320, 1, 0)
--- [ALTERAÇÃO SOLICITADA] Posicionado mais embaixo
+-- Posição inferior
 NotificationHolder.Position = UDim2.new(0.5, -160, 0.85, -20) 
 NotificationHolder.BackgroundTransparency = 1
 NotificationHolder.Parent = ScreenGui
@@ -267,21 +258,21 @@ local NotifList = Instance.new("UIListLayout")
 NotifList.Parent = NotificationHolder
 NotifList.SortOrder = Enum.SortOrder.LayoutOrder
 NotifList.Padding = UDim.new(0, 8)
-NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Cresce de baixo pra cima ou mantem em baixo
+NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom 
 NotifList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 function KhalexisToast(title, text, type, duration)
-    local color = Colors.Accent
+    local color = COLOR_ACCENT
     local icon = Icons.Info
     
-    if type == "Success" then color = Colors.Success; icon = Icons.Success
-    elseif type == "Error" then color = Colors.Error; icon = Icons.Error
-    elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
+    if type == "Success" then color = COLOR_SUCCESS; icon = Icons.Success
+    elseif type == "Error" then color = COLOR_ERROR; icon = Icons.Error
+    elseif type == "Warning" then color = COLOR_WARNING; icon = Icons.Warning end
 
     local Toast = Instance.new("Frame")
     Toast.Name = "Toast"
     Toast.Size = UDim2.new(0, 300, 0, 50)
-    Toast.BackgroundColor3 = Colors.Main
+    Toast.BackgroundColor3 = COLOR_BLACK
     Toast.BackgroundTransparency = 0.1
     Toast.Parent = NotificationHolder
     applyRoundedCorners(Toast, 10)
@@ -317,7 +308,7 @@ function KhalexisToast(title, text, type, duration)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Text = title
     TitleLabel.Font = HUB_FONT
-    TitleLabel.TextColor3 = Colors.Text
+    TitleLabel.TextColor3 = COLOR_TEXT
     TitleLabel.TextSize = 14
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = Toast
@@ -328,7 +319,7 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
     DescLabel.Font = Enum.Font.GothamMedium
-    DescLabel.TextColor3 = Colors.TextDim
+    DescLabel.TextColor3 = COLOR_TEXT_DIM
     DescLabel.TextSize = 11
     DescLabel.TextXAlignment = Enum.TextXAlignment.Left
     DescLabel.TextWrapped = true
@@ -429,7 +420,7 @@ local function showLoadingScreen()
     local orangeBall = Instance.new("Frame")
     orangeBall.Size = UDim2.new(0, 50, 0, 50)
     orangeBall.Position = UDim2.new(0, 0, 0, 0)
-    orangeBall.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+    orangeBall.BackgroundColor3 = COLOR_ACCENT
     applyRoundedCorners(orangeBall, 25)
     orangeBall.Parent = spinner
 
@@ -802,10 +793,10 @@ local function createHub()
             local added = ToggleFavorite(name)
             if added then
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
-                KhalexisToast("Favoritos", name .. " adicionado!", "Success", 2)
+                KhalexisToast("Favoritos", "[+] Adicionado: " .. name, "Success", 2)
             else
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
-                KhalexisToast("Favoritos", name .. " removido.", "Warning", 2)
+                KhalexisToast("Favoritos", "[-] Removido: " .. name, "Warning", 2)
             end
         end)
 
@@ -830,7 +821,7 @@ local function createHub()
     end
 
     -- ==========================================
-    -- NOVO SISTEMA: DASHBOARD
+    -- NOVO SISTEMA: DASHBOARD (SEM EMOJIS)
     -- ==========================================
     local function displayDashboard()
         clearScripts()
@@ -854,7 +845,7 @@ local function createHub()
         ProfileCard.LayoutOrder = 1
         ProfileCard.Parent = DashContainer
         applyRoundedCorners(ProfileCard, 10)
-        ApplyStroke(ProfileCard, Colors.Accent, 1, 0.5)
+        ApplyStroke(ProfileCard, COLOR_ACCENT, 1, 0.5)
 
         local ProfileImg = Instance.new("ImageLabel")
         ProfileImg.Size = UDim2.new(0, 50, 0, 50)
@@ -877,7 +868,7 @@ local function createHub()
         GreetLabel.Text = greetingText
         GreetLabel.Font = Enum.Font.Gotham
         GreetLabel.TextSize = 12
-        GreetLabel.TextColor3 = Colors.TextDim
+        GreetLabel.TextColor3 = COLOR_TEXT_DIM
         GreetLabel.TextXAlignment = Enum.TextXAlignment.Left
         GreetLabel.Parent = ProfileCard
 
@@ -888,7 +879,7 @@ local function createHub()
         UserLabel.Text = player.DisplayName
         UserLabel.Font = HUB_FONT
         UserLabel.TextSize = 18
-        UserLabel.TextColor3 = Colors.Text
+        UserLabel.TextColor3 = COLOR_TEXT
         UserLabel.TextXAlignment = Enum.TextXAlignment.Left
         UserLabel.Parent = ProfileCard
 
@@ -917,7 +908,7 @@ local function createHub()
             Ico.Position = UDim2.new(0, 10, 0, 10)
             Ico.BackgroundTransparency = 1
             Ico.Image = icon
-            Ico.ImageColor3 = Colors.Accent
+            Ico.ImageColor3 = COLOR_ACCENT
             Ico.Parent = Box
 
             local Tit = Instance.new("TextLabel")
@@ -926,7 +917,7 @@ local function createHub()
             Tit.BackgroundTransparency = 1
             Tit.Text = title
             Tit.Font = Enum.Font.GothamBold
-            Tit.TextColor3 = Colors.TextDim
+            Tit.TextColor3 = COLOR_TEXT_DIM
             Tit.TextSize = 11
             Tit.TextXAlignment = Enum.TextXAlignment.Left
             Tit.Parent = Box
@@ -938,7 +929,7 @@ local function createHub()
             Val.BackgroundTransparency = 1
             Val.Text = "..."
             Val.Font = HUB_FONT
-            Val.TextColor3 = Colors.Text
+            Val.TextColor3 = COLOR_TEXT
             Val.TextSize = 18
             Val.TextXAlignment = Enum.TextXAlignment.Left
             Val.Parent = Box
@@ -965,7 +956,7 @@ local function createHub()
         InfoText.TextYAlignment = Enum.TextYAlignment.Top
         InfoText.TextXAlignment = Enum.TextXAlignment.Left
         InfoText.Font = Enum.Font.GothamMedium
-        InfoText.TextColor3 = Colors.TextDim
+        InfoText.TextColor3 = COLOR_TEXT_DIM
         InfoText.TextSize = 12
         InfoText.Text = "Executor: <font color='#FF8C00'>"..execName.."</font>\n"..
                         "Jogo ID: <font color='#FF8C00'>"..game.PlaceId.."</font>\n"..
@@ -1071,7 +1062,7 @@ local function createHub()
         
         if isDashboard then 
             btn.LayoutOrder = 0 
-            btn.Text = "🏠 Dashboard"
+            btn.Text = "Dashboard" -- SEM EMOJI
         elseif name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
         end
@@ -1098,12 +1089,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVIDADES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
         {Text = "- Nova aba DASHBOARD com status em tempo real.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Notificações reposicionadas.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Sistema de Favoritos agora avisa.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Notificações reposicionadas EMBAIXO.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- CORES: Revertidas para o original.", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Atualização de Scripts:", Color = Color3.fromRGB(255, 140, 0), Font = HUB_FONT},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
@@ -1351,7 +1342,7 @@ local function CreateKeyUI()
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
-    ApplyStroke(MainKeyFrame, Colors.Accent, 2)
+    ApplyStroke(MainKeyFrame, COLOR_ACCENT, 2)
 
     local TitleBar = CreateObject("Frame", {
         Name = "TitleBar",
@@ -1587,7 +1578,7 @@ corner.Parent = ToggleButton
 
 local stroke = Instance.new("UIStroke")
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.Color = Color3.fromRGB(255, 140, 0) 
+stroke.Color = COLOR_ACCENT
 stroke.Thickness = 2
 stroke.Parent = ToggleButton
 
