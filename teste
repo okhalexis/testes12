@@ -1,12 +1,13 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.5 (Atualizado com Blade Ball e Novos Scripts)
+    -- Khalexis Hub - Versão Final v4.6 (Correção de Bugs)
     -- 1. CLEANUP: Remove interfaces antigas.
     -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
     -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
     -- 4. AUTO-SELECT: Entra direto em Atualizações.
     -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (dS7uj).
     -- 6. NOVO: Categoria Blade Ball e +20 novos scripts adicionados.
+    -- 7. FIX: Erros de sintaxe (vírgulas e nomes de variáveis) corrigidos.
 
 --]]
 
@@ -19,6 +20,9 @@ end
 if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
     game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
+
+-- Resetar verificação de execução única para permitir re-execução em caso de falha
+getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
 -- CONFIGURAÇÃO VISUAL (FONTE)
@@ -1006,7 +1010,7 @@ local function createHub()
         {Name = "VinzHub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Vinzyy13/VinzHub/refs/heads/main/Fish-It"))() end}
     }
     local murderMysteryScripts = {
-        {Name = "( NOVO ) FOURHUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/MM2.lua",true))() end}
+        {Name = "( NOVO ) FOURHUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/MM2.lua",true))() end},
         {Name = "THUNDER HUB", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Roman34296589/SnapSanixHUB/refs/heads/main/SnapSanixHUB.lua'))() end},
         {Name = "VERTEX-HUB", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/vertex-peak/vertex/refs/heads/main/loadstring'))() end}
     }
@@ -1092,7 +1096,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
         {Name = "( NOVO ) IWASHERE67", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/donthackmeblud-lab/Tinkering/refs/heads/Escape-Tsunami-For-Brainrots!/Escape%20Tsunami%20For%20Brainrots!", false))() end}
     }
-    local Escape DevilHunterScripts = {   
+    local DevilHunterScripts = {   
         {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end}
     }
 
