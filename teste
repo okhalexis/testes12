@@ -1,15 +1,16 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.7 (DARK MODE + NOTIFICAÇÕES TOPO)
-    -- 1. NOTIFICAÇÕES: Movidas para o TOPO (com margem) e descendo.
-    -- 2. CORES: "Dark Mode" real. Fundos cinzas alterados para preto profundo.
-    -- 3. UI: Ícone Home mantido, Título centralizado.
-    -- 4. GERAL: Key System e Scripts mantidos.
+    -- Khalexis Hub - Versão Final v5.0 (INTEGRADA)
+    -- 1. CLEANUP: Remove interfaces antigas.
+    -- 2. NOTIFICAÇÕES: Sistema Toast integrado substituindo mensagens antigas.
+    -- 3. TOGGLE: Botão redondo arrastável (ícone Roblox).
+    -- 4. KEY SYSTEM: LinkUnlocker integrado.
+    -- 5. SCRIPTS: TODOS os scripts originais preservados.
 
 --]]
 
 -- ==========================================
--- LIMPEZA DE GUI ANTIGA
+-- LIMPEZA DE GUI ANTIGA (Importante para atualizar)
 -- ==========================================
 if game.CoreGui:FindFirstChild("KhalexisHub") then
     game.CoreGui:FindFirstChild("KhalexisHub"):Destroy()
@@ -18,56 +19,35 @@ if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
     game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
 
+-- Resetar verificação de execução única para permitir re-execução em caso de falha
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
--- CONFIGURAÇÃO VISUAL (DARK MODE PURO)
+-- CONFIGURAÇÃO VISUAL (FONTE & CORES NOVAS)
 -- ==========================================
 local HUB_FONT = Enum.Font.FredokaOne 
 local HUB_TEXT_SIZE = 14 
 
--- Paleta Dark Mode (Preto Profundo)
 local Colors = {
-    Main = Color3.fromRGB(10, 10, 10),       -- Fundo Principal (Preto quase absoluto)
-    Secondary = Color3.fromRGB(15, 15, 15),  -- Fundo de Categorias (Preto suave)
-    Stroke = Color3.fromRGB(40, 40, 40),     -- Bordas mais sutis
-    Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
-    Text = Color3.fromRGB(245, 245, 245),    -- Texto Branco
-    TextDim = Color3.fromRGB(180, 180, 180), -- Texto Secundário
+    Main = Color3.fromRGB(15, 15, 15),
+    Secondary = Color3.fromRGB(25, 25, 25),
+    Stroke = Color3.fromRGB(60, 60, 60),
+    Accent = Color3.fromRGB(255, 140, 0), -- Laranja
+    Text = Color3.fromRGB(240, 240, 240),
+    TextDim = Color3.fromRGB(180, 180, 180),
     Success = Color3.fromRGB(40, 200, 64),
     Error = Color3.fromRGB(245, 70, 90),
     Warning = Color3.fromRGB(254, 188, 46),
     Info = Color3.fromRGB(59, 130, 246)
 }
 
--- Variáveis de Componentes (Ajustadas para ficarem Pretas)
-local COLOR_BLACK = Colors.Main
-local COLOR_CATEGORY_BG = Colors.Secondary -- Agora é preto (15,15,15)
-local COLOR_CATEGORY_BTN = Color3.fromRGB(20, 20, 20) -- Botões muito escuros
-local COLOR_SCRIPT_BTN = Color3.fromRGB(18, 18, 18)   -- Botões de script pretos
-local COLOR_TITLEBAR = Color3.fromRGB(12, 12, 12)     -- Barra de título preta
-
-local COLOR_TEXT = Colors.Text
-local COLOR_TEXT_DIM = Colors.TextDim
-local COLOR_ACCENT = Colors.Accent
-local COLOR_SUCCESS = Colors.Success
-local COLOR_ERROR = Colors.Error
-local COLOR_WARNING = Colors.Warning
-
-local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) 
-local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
-
--- Ícones
 local Icons = {
     Logo = "rbxassetid://101462084575687",
     Success = "rbxassetid://119783053916823",
     Error = "rbxassetid://113312905787220",
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
-    Finger = "rbxassetid://12333784627",
-    Home = "rbxassetid://96417357606847", 
-    Clock = "rbxassetid://10709752254",
-    Signal = "rbxassetid://10709752535"
+    Finger = "rbxassetid://12333784627"
 }
 
 local function applyRoundedCorners(guiObject, radius)
@@ -93,10 +73,9 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
-local StatsService = game:GetService("Stats")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS
+-- BANCO DE DADOS DE IDS (ATUALIZADO)
 -- ==========================================
 local GameID_Database = {
     [109983668079237] = "Steal A Brainrot",
@@ -131,7 +110,7 @@ local GameID_Database = {
     [130247632398296] = "Anime Fighting Simulator: Endless", 
     [16347316744] = "The Forge", 
     [76558904092080] = "The Forge",
-    [13772394625] = "Blade Ball",
+    [13772394625] = "Blade Ball", -- ID Adicionado
 }
 
 local CurrentPlaceId = game.PlaceId
@@ -142,6 +121,30 @@ ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
+-- Paletas de Cores Originais (Compatibilidade)
+local themes = {
+    normal = {
+        main_bg = Color3.fromRGB(15, 15, 15),       
+        category_bg = Color3.fromRGB(25, 25, 25),   
+        title_bar = Color3.fromRGB(20, 20, 20),     
+        script_frame_bg = Color3.fromRGB(15, 15, 15), 
+        transparency = 0
+    },
+}
+
+local COLOR_BLACK = themes.normal.main_bg
+local COLOR_CATEGORY_BG = themes.normal.category_bg
+local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
+local COLOR_SCRIPT_BTN = Color3.fromRGB(30, 30, 30)
+local COLOR_TITLEBAR = themes.normal.title_bar
+
+local COLOR_TEXT = Color3.fromRGB(240, 240, 240)      
+local COLOR_TEXT_DIM = Color3.fromRGB(180, 180, 180)
+local COLOR_ERROR = Color3.fromRGB(255, 85, 85)
+local COLOR_FOOTER_TEXT = Color3.fromRGB(150, 150, 150)
+local COLOR_STAR_ON = Color3.fromRGB(255, 215, 0) 
+local COLOR_STAR_OFF = Color3.fromRGB(80, 80, 80)
+
 local userId = player.UserId
 local userName = player.Name
 
@@ -150,7 +153,6 @@ local LoadingScreen, StopLoadingAnim
 local HubOpen = false
 local ToggleButton 
 local HasShownWelcome = false
-local dashboardConnection = nil 
 
 local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
 local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
@@ -185,8 +187,7 @@ local function IsFavorited(name)
 end
 
 local function ToggleFavorite(name)
-    local wasFav = IsFavorited(name)
-    if wasFav then
+    if IsFavorited(name) then
         for i, v in ipairs(FavoritesList) do
             if v == name then
                 table.remove(FavoritesList, i)
@@ -197,7 +198,6 @@ local function ToggleFavorite(name)
         table.insert(FavoritesList, name)
     end
     SaveFavorites()
-    return not wasFav
 end
 
 local function RegisterScript(name, func)
@@ -224,13 +224,13 @@ local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
         Background = COLOR_BLACK, 
-        Title = COLOR_ACCENT,
+        Title = Color3.fromRGB(255, 140, 0),
         InputField = COLOR_CATEGORY_BG,
         InputFieldBorder = Color3.fromRGB(60, 60, 60), 
         Button = COLOR_CATEGORY_BG,
         ButtonHover = Color3.fromRGB(45, 45, 45),
-        Error = COLOR_ERROR,
-        Success = COLOR_SUCCESS,
+        Error = Color3.fromRGB(220, 50, 50),
+        Success = Color3.fromRGB(80, 200, 80),
         Discord = Color3.fromRGB(88, 101, 242)
     },
     Service = "redexecutor",
@@ -258,13 +258,12 @@ local function SmoothTween(obj, time, properties)
 end
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (TOPO)
+-- SISTEMA DE NOTIFICAÇÃO (TOAST)
 -- ==========================================
 local NotificationHolder = Instance.new("Frame")
 NotificationHolder.Name = "NotificationHolder"
-NotificationHolder.Size = UDim2.new(0, 320, 0.5, 0)
--- Posição alterada para o TOPO (0.08)
-NotificationHolder.Position = UDim2.new(0.5, -160, 0.08, 0) 
+NotificationHolder.Size = UDim2.new(0, 320, 1, 0)
+NotificationHolder.Position = UDim2.new(0.5, -160, 0, 10) -- Topo Central
 NotificationHolder.BackgroundTransparency = 1
 NotificationHolder.Parent = ScreenGui
 NotificationHolder.ZIndex = 2000
@@ -273,33 +272,36 @@ local NotifList = Instance.new("UIListLayout")
 NotifList.Parent = NotificationHolder
 NotifList.SortOrder = Enum.SortOrder.LayoutOrder
 NotifList.Padding = UDim.new(0, 8)
-NotifList.VerticalAlignment = Enum.VerticalAlignment.Top -- Desce do topo
 NotifList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 function KhalexisToast(title, text, type, duration)
-    local color = COLOR_ACCENT
+    local color = Colors.Accent
     local icon = Icons.Info
     
-    if type == "Success" then color = COLOR_SUCCESS; icon = Icons.Success
-    elseif type == "Error" then color = COLOR_ERROR; icon = Icons.Error
-    elseif type == "Warning" then color = COLOR_WARNING; icon = Icons.Warning end
+    if type == "Success" then color = Colors.Success; icon = Icons.Success
+    elseif type == "Error" then color = Colors.Error; icon = Icons.Error
+    elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
 
     local Toast = Instance.new("Frame")
     Toast.Name = "Toast"
     Toast.Size = UDim2.new(0, 300, 0, 50)
-    Toast.BackgroundColor3 = COLOR_BLACK
+    Toast.BackgroundColor3 = Colors.Main
     Toast.BackgroundTransparency = 0.1
     Toast.Parent = NotificationHolder
     applyRoundedCorners(Toast, 10)
     
     local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
     
+    -- Icon Container
     local IconFrame = Instance.new("Frame")
     IconFrame.Size = UDim2.new(0, 50, 1, 0)
     IconFrame.BackgroundColor3 = color
     IconFrame.BackgroundTransparency = 0.85
     IconFrame.Parent = Toast
-    applyRoundedCorners(IconFrame, 10)
+    
+    local IconCorner = Instance.new("UICorner")
+    IconCorner.CornerRadius = UDim.new(0, 10)
+    IconCorner.Parent = IconFrame
     
     local FixCorner = Instance.new("Frame")
     FixCorner.Size = UDim2.new(0, 10, 1, 0)
@@ -317,13 +319,14 @@ function KhalexisToast(title, text, type, duration)
     IconImg.ImageColor3 = color
     IconImg.Parent = IconFrame
 
+    -- Textos
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -60, 0, 20)
     TitleLabel.Position = UDim2.new(0, 60, 0, 5)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Text = title
     TitleLabel.Font = HUB_FONT
-    TitleLabel.TextColor3 = COLOR_TEXT
+    TitleLabel.TextColor3 = Colors.Text
     TitleLabel.TextSize = 14
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = Toast
@@ -334,13 +337,13 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
     DescLabel.Font = Enum.Font.GothamMedium
-    DescLabel.TextColor3 = COLOR_TEXT_DIM
+    DescLabel.TextColor3 = Colors.TextDim
     DescLabel.TextSize = 11
     DescLabel.TextXAlignment = Enum.TextXAlignment.Left
     DescLabel.TextWrapped = true
     DescLabel.Parent = Toast
 
-    -- Animação Entrada (Descer)
+    -- Animação Entrada
     Toast.BackgroundTransparency = 1
     TitleLabel.TextTransparency = 1
     DescLabel.TextTransparency = 1
@@ -356,6 +359,7 @@ function KhalexisToast(title, text, type, duration)
     TweenService:Create(TitleLabel, tInfo, {TextTransparency = 0}):Play()
     TweenService:Create(DescLabel, tInfo, {TextTransparency = 0}):Play()
 
+    -- Remover
     task.delay(duration or 4, function()
         if Toast and Toast.Parent then
             local tOut = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
@@ -373,6 +377,7 @@ function KhalexisToast(title, text, type, duration)
     end)
 end
 
+-- Substituir função antiga
 _G.showAutoMessage = function(msg)
     KhalexisToast("Aviso", msg, "Warning", 4)
 end
@@ -382,7 +387,6 @@ end
 -- ==========================================
 
 local function closeHubWithAnimation(container)
-    if dashboardConnection then dashboardConnection:Disconnect() dashboardConnection = nil end
     if not (container and container.Parent) then return end
     local uiScaler = container:FindFirstChildOfClass("UIScale")
     if not uiScaler then container:Destroy(); return end
@@ -409,7 +413,7 @@ local function showLoadingScreen()
 
     local border = Instance.new("UIStroke")
     border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    border.Color = Colors.Stroke
+    border.Color = Color3.fromRGB(60, 60, 60)
     border.Thickness = 2
     border.Parent = frame
 
@@ -435,7 +439,7 @@ local function showLoadingScreen()
     local orangeBall = Instance.new("Frame")
     orangeBall.Size = UDim2.new(0, 50, 0, 50)
     orangeBall.Position = UDim2.new(0, 0, 0, 0)
-    orangeBall.BackgroundColor3 = COLOR_ACCENT
+    orangeBall.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
     applyRoundedCorners(orangeBall, 25)
     orangeBall.Parent = spinner
 
@@ -547,32 +551,17 @@ local function createHub()
     titleBarGradient.Rotation=90
     titleBarGradient.Parent=titleBarBorder
 
-    -- TÍTULO CENTRALIZADO
     local titleLabel=Instance.new("TextLabel")
     titleLabel.Name="Title"
-    titleLabel.Size=UDim2.new(1,0,1,0) 
-    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.Size=UDim2.new(1,0,1,0)
     titleLabel.BackgroundTransparency=1
     titleLabel.Text="Khalexis Hub"
     titleLabel.TextColor3=COLOR_TEXT
     titleLabel.Font=HUB_FONT
     titleLabel.TextSize=18
-    titleLabel.TextXAlignment=Enum.TextXAlignment.Center 
+    titleLabel.TextXAlignment=Enum.TextXAlignment.Center
     titleLabel.TextYAlignment=Enum.TextYAlignment.Center
     titleLabel.Parent=titleBar
-
-    -- ÍCONE HOME
-    local homeButton = Instance.new("ImageButton")
-    homeButton.Name = "HomeButton"
-    homeButton.Size = UDim2.new(0, 20, 0, 20)
-    homeButton.Position = UDim2.new(0, 8, 0.5, -10)
-    homeButton.BackgroundTransparency = 1
-    homeButton.Image = Icons.Home
-    homeButton.ImageColor3 = COLOR_TEXT
-    homeButton.Parent = titleBar
-
-    homeButton.MouseEnter:Connect(function() SmoothTween(homeButton, 0.2, {ImageColor3 = Colors.Accent}) end)
-    homeButton.MouseLeave:Connect(function() SmoothTween(homeButton, 0.2, {ImageColor3 = COLOR_TEXT}) end)
 
     local closeButton = Instance.new("TextButton")
     closeButton.Name = "CloseButton"
@@ -607,7 +596,19 @@ local function createHub()
     searchBox.Parent = frame
     applyRoundedCorners(searchBox, 8)
 
-    ApplyStroke(searchBox, nil, 1.5)
+    local searchBoxBorder = Instance.new("UIStroke")
+    searchBoxBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    searchBoxBorder.Thickness = 1.5
+    searchBoxBorder.LineJoinMode = Enum.LineJoinMode.Round
+    searchBoxBorder.Parent = searchBox
+
+    local searchBoxGradient = Instance.new("UIGradient")
+    searchBoxGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
+    })
+    searchBoxGradient.Rotation = 90
+    searchBoxGradient.Parent = searchBoxBorder
 
     local favFixedBtn = Instance.new("TextButton")
     favFixedBtn.Name = "FixedFavoritesButton"
@@ -620,7 +621,20 @@ local function createHub()
     favFixedBtn.TextSize = 12
     favFixedBtn.Parent = frame
     applyRoundedCorners(favFixedBtn, 8)
-    ApplyStroke(favFixedBtn, nil, 1.5)
+
+    local favBorder = Instance.new("UIStroke")
+    favBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    favBorder.Thickness = 1.5
+    favBorder.LineJoinMode = Enum.LineJoinMode.Round
+    favBorder.Parent = favFixedBtn
+
+    local favGradient = Instance.new("UIGradient")
+    favGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
+    })
+    favGradient.Rotation = 90
+    favGradient.Parent = favBorder
 
     local categoryFrame = Instance.new("ScrollingFrame")
     categoryFrame.Name = "CategoryFrame"
@@ -633,7 +647,20 @@ local function createHub()
     categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     categoryFrame.Parent = frame
     applyRoundedCorners(categoryFrame, 12)
-    ApplyStroke(categoryFrame, nil, 1.5)
+
+    local categoryFrameBorder = Instance.new("UIStroke")
+    categoryFrameBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    categoryFrameBorder.Thickness = 1.5
+    categoryFrameBorder.LineJoinMode = Enum.LineJoinMode.Round
+    categoryFrameBorder.Parent = categoryFrame
+
+    local categoryFrameGradient = Instance.new("UIGradient")
+    categoryFrameGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
+    })
+    categoryFrameGradient.Rotation = 90
+    categoryFrameGradient.Parent = categoryFrameBorder
 
     local categoryContainer = Instance.new("Frame")
     categoryContainer.Name = "CategoryContainer"
@@ -652,7 +679,9 @@ local function createHub()
 
     layoutCategory:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         categoryContainer.Size = UDim2.new(1, -10, 0, layoutCategory.AbsoluteContentSize.Y)
-        categoryFrame.CanvasSize = UDim2.new(0, 0, 0, layoutCategory.AbsoluteContentSize.Y + 10)
+        local requiredHeight = layoutCategory.AbsoluteContentSize.Y + 10
+        local extraSpace = 100
+        categoryFrame.CanvasSize = UDim2.new(0, 0, 0, math.max(requiredHeight + extraSpace, 200))
     end)
 
     searchBox:GetPropertyChangedSignal("Text"):Connect(function() 
@@ -675,7 +704,20 @@ local function createHub()
     scriptFrame.ScrollBarImageColor3=Color3.fromRGB(100, 100, 100)
     scriptFrame.Parent=frame
     applyRoundedCorners(scriptFrame,16)
-    ApplyStroke(scriptFrame, nil, 1.5)
+
+    local scriptFrameBorder=Instance.new("UIStroke")
+    scriptFrameBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+    scriptFrameBorder.Thickness=1.5
+    scriptFrameBorder.LineJoinMode=Enum.LineJoinMode.Round
+    scriptFrameBorder.Parent=scriptFrame
+
+    local scriptFrameGradient=Instance.new("UIGradient")
+    scriptFrameGradient.Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
+        ColorSequenceKeypoint.new(1,Color3.fromRGB(60,60,60))
+    })
+    scriptFrameGradient.Rotation=90
+    scriptFrameGradient.Parent=scriptFrameBorder
 
     local scriptContainer=Instance.new("Frame")
     scriptContainer.Name="ScriptContainer"
@@ -694,10 +736,10 @@ local function createHub()
 
     layoutScript:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         scriptContainer.Size=UDim2.new(1,-20,0,layoutScript.AbsoluteContentSize.Y)
-        scriptFrame.CanvasSize = UDim2.new(0, 0, 0, layoutScript.AbsoluteContentSize.Y + 20)
+        local requiredHeight = layoutScript.AbsoluteContentSize.Y + 50 
+        scriptFrame.CanvasSize = UDim2.new(0, 0, 0, requiredHeight)
     end)
 
-    -- FOOTER
     local footerBackground=Instance.new("Frame")
     footerBackground.Name="FooterBackground"
     footerBackground.Size=UDim2.new(1,-10,0,40)
@@ -707,26 +749,54 @@ local function createHub()
     footerBackground.BorderSizePixel=0
     footerBackground.Parent=frame
     applyRoundedCorners(footerBackground,10)
-    ApplyStroke(footerBackground, nil, 1.5)
+
+    local footerBorder=Instance.new("UIStroke")
+    footerBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+    footerBorder.Thickness=1.5
+    footerBorder.LineJoinMode=Enum.LineJoinMode.Round
+    footerBorder.Parent=footerBackground
+
+    local footerGradient=Instance.new("UIGradient")
+    footerGradient.Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0,Color3.fromRGB(80,80,80)),
+        ColorSequenceKeypoint.new(1,Color3.fromRGB(50,50,50))
+    })
+    footerGradient.Rotation=90
+    footerGradient.Parent=footerBorder
+
+    local footerText=Instance.new("TextLabel")
+    footerText.Name="FooterText"
+    footerText.Text="By Khalexis"
+    footerText.Font=HUB_FONT
+    footerText.TextSize=10
+    footerText.TextColor3=COLOR_FOOTER_TEXT
+    footerText.BackgroundTransparency=1
+    footerText.Size=UDim2.new(1, 0, 1, 0)
+    footerText.Position=UDim2.new(0, 5, 0, 5)
+    footerText.TextYAlignment = Enum.TextYAlignment.Top
+    footerText.Parent=footerBackground
 
     local footerRightContainer = Instance.new("Frame")
+    footerRightContainer.Name = "FooterRightContainer"
     footerRightContainer.Size = UDim2.new(0.5, 0, 1, 0)
     footerRightContainer.Position = UDim2.new(0.5, 0, 0, 0)
     footerRightContainer.BackgroundTransparency = 1
     footerRightContainer.Parent=footerBackground
 
+    local footerContainerPadding = Instance.new("UIPadding")
+    footerContainerPadding.PaddingRight = UDim.new(0, 8)
+    footerContainerPadding.Parent = footerRightContainer
+
     local footerTextLayout = Instance.new("UIListLayout")
     footerTextLayout.FillDirection = Enum.FillDirection.Vertical
     footerTextLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     footerTextLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    footerTextLayout.SortOrder = Enum.SortOrder.LayoutOrder
     footerTextLayout.Padding = UDim.new(0, 1)
     footerTextLayout.Parent = footerRightContainer
 
-    local pad = Instance.new("UIPadding")
-    pad.PaddingRight = UDim.new(0, 8)
-    pad.Parent = footerRightContainer
-
     local ytLabel=Instance.new("TextLabel")
+    ytLabel.Name="YouTubeLabel"
     ytLabel.Text="Youtube: Khalexis"
     ytLabel.Font=HUB_FONT
     ytLabel.TextSize=9
@@ -734,9 +804,11 @@ local function createHub()
     ytLabel.BackgroundTransparency=1
     ytLabel.Size=UDim2.new(1, 0, 0, 10)
     ytLabel.TextXAlignment=Enum.TextXAlignment.Right
+    ytLabel.LayoutOrder = 1
     ytLabel.Parent=footerRightContainer
 
     local discordLabel=Instance.new("TextLabel")
+    discordLabel.Name="DiscordLabel"
     discordLabel.Text="Discord: discord.gg/aNaFpb2Qsb"
     discordLabel.Font=HUB_FONT
     discordLabel.TextSize=9
@@ -744,23 +816,44 @@ local function createHub()
     discordLabel.BackgroundTransparency=1
     discordLabel.Size=UDim2.new(1, 0, 0, 10)
     discordLabel.TextXAlignment=Enum.TextXAlignment.Right
+    discordLabel.LayoutOrder = 2
     discordLabel.Parent=footerRightContainer
 
+    local hintLabel=Instance.new("TextLabel")
+    hintLabel.Name="DudaLabel"
+    hintLabel.Text="Se tiver alguma dúvida entre no Discord!"
+    hintLabel.Font=HUB_FONT
+    hintLabel.TextSize=7
+    hintLabel.TextColor3=Color3.fromRGB(150,150,150)
+    hintLabel.BackgroundTransparency=1
+    hintLabel.Size=UDim2.new(1, 0, 0, 9)
+    hintLabel.TextXAlignment=Enum.TextXAlignment.Right
+    hintLabel.LayoutOrder = 3
+    hintLabel.Parent=footerRightContainer
+
     local playerInfo=Instance.new("Frame")
+    playerInfo.Name="PlayerInfoFrame"
     playerInfo.Size=UDim2.new(0,90,0,25)
     playerInfo.Position=UDim2.new(0,8,0.5,-12)
     playerInfo.BackgroundTransparency=1
     playerInfo.Parent=footerBackground
 
     local avatar=Instance.new("ImageLabel")
+    avatar.Name="AvatarImage"
     avatar.Size=UDim2.new(0,24,0,24)
+    avatar.Position=UDim2.new(0,0,0,0)
     avatar.BackgroundColor3=COLOR_SCRIPT_BTN
+    avatar.BorderSizePixel=0
     avatar.Parent=playerInfo
+    avatar.ScaleType=Enum.ScaleType.Fit
     applyRoundedCorners(avatar,12)
-    local thumbContent,_=Players:GetUserThumbnailAsync(userId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48)
+
+    local thumbType,thumbSize=Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48
+    local thumbContent,_=Players:GetUserThumbnailAsync(userId,thumbType,thumbSize)
     avatar.Image=thumbContent
 
     local playerNameLabel=Instance.new("TextLabel")
+    playerNameLabel.Name="PlayerNameLabel"
     playerNameLabel.Size=UDim2.new(1,-28,1,0)
     playerNameLabel.Position=UDim2.new(0,28,0,0)
     playerNameLabel.BackgroundTransparency=1
@@ -772,7 +865,6 @@ local function createHub()
     playerNameLabel.Parent=playerInfo
 
     local function clearScripts()
-        if dashboardConnection then dashboardConnection:Disconnect() dashboardConnection = nil end
         for _,c in pairs(scriptContainer:GetChildren()) do
             if c:IsA("GuiObject") then c:Destroy() end
         end
@@ -792,18 +884,33 @@ local function createHub()
         btn.TextXAlignment = Enum.TextXAlignment.Left
         btn.Parent = scriptContainer
         applyRoundedCorners(btn, 10)
-        ApplyStroke(btn, nil, 1.5)
+
+        local border = Instance.new("UIStroke")
+        border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        border.Thickness = 1.5
+        border.LineJoinMode = Enum.LineJoinMode.Round
+        border.Parent = btn
+
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
+        })
+        gradient.Rotation = 90
+        gradient.Parent = border
         
         local fingerIcon = Instance.new("ImageLabel")
+        fingerIcon.Name = "FingerprintIcon"
         fingerIcon.Size = UDim2.new(0, 18, 0, 18)
         fingerIcon.Position = UDim2.new(1, -25, 0.5, -9) 
         fingerIcon.BackgroundTransparency = 1
-        fingerIcon.Image = Icons.Finger
+        fingerIcon.Image = "rbxassetid://12333784627" 
         fingerIcon.ImageColor3 = Color3.fromRGB(120, 120, 120) 
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
         local starBtn = Instance.new("TextButton")
+        starBtn.Name = "StarButton"
         starBtn.Text = "★"
         starBtn.BackgroundTransparency = 1
         starBtn.Size = UDim2.new(0, 30, 1, 0)
@@ -820,24 +927,24 @@ local function createHub()
         end
         
         starBtn.MouseButton1Click:Connect(function()
-            local added = ToggleFavorite(name)
-            if added then
+            ToggleFavorite(name)
+            if IsFavorited(name) then
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
-                KhalexisToast("Favoritos", "[+] Adicionado: " .. name, "Success", 2)
             else
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
-                KhalexisToast("Favoritos", "[-] Removido: " .. name, "Warning", 2)
             end
         end)
 
         btn.MouseButton1Click:Connect(function()
-            KhalexisToast("Executando", "Injetando: " .. name, "Info", 3)
+            -- [ALTERAÇÃO: TOAST NO LUGAR DE MSG]
+            KhalexisToast("Executando Script", "Injetando: " .. name, "Info", 3)
+            
             btn.Text = "       EXECUTANDO..."
             btn.Active = false
             spawn(function()
                 local success, errorMessage = pcall(func)
                 if not success then
-                    KhalexisToast("Erro", tostring(errorMessage), "Error", 5)
+                    KhalexisToast("Erro na Execução", tostring(errorMessage), "Error", 5)
                 else
                     KhalexisToast("Sucesso", name .. " executado!", "Success", 3)
                     wait(1)
@@ -848,160 +955,6 @@ local function createHub()
             end)
         end)
         return btn
-    end
-
-    -- ==========================================
-    -- NOVO SISTEMA: DASHBOARD (SEM EMOJIS)
-    -- ==========================================
-    local function displayDashboard()
-        clearScripts()
-        
-        -- Container Principal do Dashboard
-        local DashContainer = Instance.new("Frame")
-        DashContainer.Name = "DashContainer"
-        DashContainer.Size = UDim2.new(1, 0, 1, 0)
-        DashContainer.BackgroundTransparency = 1
-        DashContainer.Parent = scriptContainer
-
-        local layout = Instance.new("UIListLayout")
-        layout.Padding = UDim.new(0, 10)
-        layout.SortOrder = Enum.SortOrder.LayoutOrder
-        layout.Parent = DashContainer
-
-        -- 1. Cartão de Perfil + Saudação
-        local ProfileCard = Instance.new("Frame")
-        ProfileCard.Size = UDim2.new(1, 0, 0, 70)
-        ProfileCard.BackgroundColor3 = COLOR_SCRIPT_BTN
-        ProfileCard.LayoutOrder = 1
-        ProfileCard.Parent = DashContainer
-        applyRoundedCorners(ProfileCard, 10)
-        ApplyStroke(ProfileCard, COLOR_ACCENT, 1, 0.5)
-
-        local ProfileImg = Instance.new("ImageLabel")
-        ProfileImg.Size = UDim2.new(0, 50, 0, 50)
-        ProfileImg.Position = UDim2.new(0, 10, 0.5, -25)
-        ProfileImg.BackgroundColor3 = COLOR_CATEGORY_BG
-        ProfileImg.Image = thumbContent
-        ProfileImg.Parent = ProfileCard
-        applyRoundedCorners(ProfileImg, 25) -- Redondo
-
-        local hour = tonumber(os.date("%H"))
-        local greetingText = "Olá,"
-        if hour < 12 then greetingText = "Bom dia,"
-        elseif hour < 18 then greetingText = "Boa tarde,"
-        else greetingText = "Boa noite," end
-
-        local GreetLabel = Instance.new("TextLabel")
-        GreetLabel.Size = UDim2.new(1, -70, 0, 20)
-        GreetLabel.Position = UDim2.new(0, 70, 0, 15)
-        GreetLabel.BackgroundTransparency = 1
-        GreetLabel.Text = greetingText
-        GreetLabel.Font = Enum.Font.Gotham
-        GreetLabel.TextSize = 12
-        GreetLabel.TextColor3 = COLOR_TEXT_DIM
-        GreetLabel.TextXAlignment = Enum.TextXAlignment.Left
-        GreetLabel.Parent = ProfileCard
-
-        local UserLabel = Instance.new("TextLabel")
-        UserLabel.Size = UDim2.new(1, -70, 0, 25)
-        UserLabel.Position = UDim2.new(0, 70, 0, 32)
-        UserLabel.BackgroundTransparency = 1
-        UserLabel.Text = player.DisplayName
-        UserLabel.Font = HUB_FONT
-        UserLabel.TextSize = 18
-        UserLabel.TextColor3 = COLOR_TEXT
-        UserLabel.TextXAlignment = Enum.TextXAlignment.Left
-        UserLabel.Parent = ProfileCard
-
-        -- 2. Stats Grid
-        local StatsFrame = Instance.new("Frame")
-        StatsFrame.Size = UDim2.new(1, 0, 0, 70)
-        StatsFrame.BackgroundTransparency = 1
-        StatsFrame.LayoutOrder = 2
-        StatsFrame.Parent = DashContainer
-
-        local statsLayout = Instance.new("UIListLayout")
-        statsLayout.FillDirection = Enum.FillDirection.Horizontal
-        statsLayout.Padding = UDim.new(0, 10)
-        statsLayout.Parent = StatsFrame
-
-        local function createStatBox(icon, title, valName)
-            local Box = Instance.new("Frame")
-            Box.Size = UDim2.new(0.5, -5, 1, 0)
-            Box.BackgroundColor3 = COLOR_SCRIPT_BTN
-            Box.Parent = StatsFrame
-            applyRoundedCorners(Box, 10)
-            ApplyStroke(Box, nil, 1)
-
-            local Ico = Instance.new("ImageLabel")
-            Ico.Size = UDim2.new(0, 20, 0, 20)
-            Ico.Position = UDim2.new(0, 10, 0, 10)
-            Ico.BackgroundTransparency = 1
-            Ico.Image = icon
-            Ico.ImageColor3 = COLOR_ACCENT
-            Ico.Parent = Box
-
-            local Tit = Instance.new("TextLabel")
-            Tit.Size = UDim2.new(1, -40, 0, 20)
-            Tit.Position = UDim2.new(0, 35, 0, 10)
-            Tit.BackgroundTransparency = 1
-            Tit.Text = title
-            Tit.Font = Enum.Font.GothamBold
-            Tit.TextColor3 = COLOR_TEXT_DIM
-            Tit.TextSize = 11
-            Tit.TextXAlignment = Enum.TextXAlignment.Left
-            Tit.Parent = Box
-
-            local Val = Instance.new("TextLabel")
-            Val.Name = valName
-            Val.Size = UDim2.new(1, -20, 0, 30)
-            Val.Position = UDim2.new(0, 10, 0, 35)
-            Val.BackgroundTransparency = 1
-            Val.Text = "..."
-            Val.Font = HUB_FONT
-            Val.TextColor3 = COLOR_TEXT
-            Val.TextSize = 18
-            Val.TextXAlignment = Enum.TextXAlignment.Left
-            Val.Parent = Box
-            return Val
-        end
-
-        local fpsLabel = createStatBox(Icons.Clock, "FPS", "FPSLabel")
-        local pingLabel = createStatBox(Icons.Signal, "PING", "PingLabel")
-
-        -- 3. Info Extra (Executor / Data)
-        local InfoFrame = Instance.new("Frame")
-        InfoFrame.Size = UDim2.new(1, 0, 0, 80)
-        InfoFrame.BackgroundColor3 = COLOR_SCRIPT_BTN
-        InfoFrame.LayoutOrder = 3
-        InfoFrame.Parent = DashContainer
-        applyRoundedCorners(InfoFrame, 10)
-        ApplyStroke(InfoFrame, nil, 1)
-
-        local execName = identifyexecutor and identifyexecutor() or "Desconhecido"
-        local InfoText = Instance.new("TextLabel")
-        InfoText.Size = UDim2.new(1, -20, 1, -20)
-        InfoText.Position = UDim2.new(0, 10, 0, 10)
-        InfoText.BackgroundTransparency = 1
-        InfoText.TextYAlignment = Enum.TextYAlignment.Top
-        InfoText.TextXAlignment = Enum.TextXAlignment.Left
-        InfoText.Font = Enum.Font.GothamMedium
-        InfoText.TextColor3 = COLOR_TEXT_DIM
-        InfoText.TextSize = 12
-        InfoText.Text = "Executor: <font color='#FF8C00'>"..execName.."</font>\n"..
-                        "Jogo ID: <font color='#FF8C00'>"..game.PlaceId.."</font>\n"..
-                        "Data: "..os.date("%d/%m/%Y")
-        InfoText.RichText = true
-        InfoText.Parent = InfoFrame
-
-        -- Loop de Atualização
-        dashboardConnection = RunService.RenderStepped:Connect(function(dt)
-            local fps = math.floor(1 / dt)
-            fpsLabel.Text = fps .. " FPS"
-            
-            local ping = math.floor(StatsService.Network.ServerStatsItem["Data Ping"]:GetValue())
-            pingLabel.Text = ping .. " ms"
-        end)
     end
 
     local function createUpdateLabel(text, textColor, font)
@@ -1028,7 +981,9 @@ local function createHub()
 
     local function onFavoritesClick()
         clearScripts()
+        
         SmoothTween(favFixedBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+        
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
             if otherBtn:IsA("TextButton") then
                 otherBtn.TextColor3 = COLOR_TEXT_DIM
@@ -1044,19 +999,22 @@ local function createHub()
                     break
                 end
             end
+
             if scriptData then
                 createScriptButton(scriptData.Name, scriptData.Func)
                 hasFav = true
             end
         end
+        
         if not hasFav then
             createUpdateLabel("Você não tem favoritos ainda!", Color3.fromRGB(150, 150, 150))
+            createUpdateLabel("Clique na estrela ao lado dos scripts.", Color3.fromRGB(150, 150, 150))
         end
     end
     
     favFixedBtn.MouseButton1Click:Connect(onFavoritesClick)
 
-    local function createCategoryButton(name, contents, defaultOrder, isDashboard)
+    local function createCategoryButton(name, contents, defaultOrder)
         if typeof(contents) == "table" then
             for _, s in ipairs(contents) do
                 RegisterScript(s.Name, s.Func)
@@ -1071,46 +1029,65 @@ local function createHub()
         btn.TextColor3 = COLOR_TEXT_DIM
         btn.Font = HUB_FONT
         btn.TextScaled = true 
+        btn.TextWrapped = true
         btn.RichText = true 
         
         local sizeConstraint = Instance.new("UITextSizeConstraint")
-        sizeConstraint.MaxTextSize = 12 
+        sizeConstraint.MaxTextSize = 10 
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
         
         btn.Text = name
         btn.Parent = categoryContainer
         applyRoundedCorners(btn, 8)
-        ApplyStroke(btn, nil, 1.5)
+
+        local border = Instance.new("UIStroke")
+        border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        border.Thickness = 1.5
+        border.LineJoinMode = Enum.LineJoinMode.Round
+        border.Parent = btn
+
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
+        })
+        gradient.Rotation = 90
+        gradient.Parent = border
 
         if DetectedGameCategory and name == DetectedGameCategory then
-            btn.LayoutOrder = 3
+            btn.LayoutOrder = 2
             btn.Text = '<font color="#FFD700">★</font> ' .. name
+            btn.TextXAlignment = Enum.TextXAlignment.Center
         else
-            btn.LayoutOrder = defaultOrder + 10
+            if defaultOrder then
+                btn.LayoutOrder = defaultOrder + 10
+            end
+            btn.TextXAlignment = Enum.TextXAlignment.Center
         end
         
-        if isDashboard then 
-            btn.LayoutOrder = 0 
-            btn.Text = "Dashboard" -- SEM EMOJI
-        elseif name == "📣 Atualizações 📣" then 
+        if name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
+            if btn:FindFirstChild("UIPadding") then btn.UIPadding:Destroy() end
+            btn.TextXAlignment = Enum.TextXAlignment.Center
         end
 
         btn.MouseButton1Click:Connect(function()
-            -- Limpa seleção
+            clearScripts()
+            
             TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
+            
             for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-                if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
+                if otherBtn:IsA("TextButton") then
+                     otherBtn.TextColor3 = COLOR_TEXT_DIM
+                end
             end
+            
             btn.TextColor3 = COLOR_STAR_ON
 
-            if isDashboard then
-                displayDashboard()
-            elseif name == "📣 Atualizações 📣" then
+            if name == "📣 Atualizações 📣" then
                 displayUpdates()
             elseif typeof(contents)=="table" then
-                clearScripts()
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
         end)
@@ -1119,20 +1096,22 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "NOVIDADES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- ÍCONE HOME ADICIONADO na barra de título.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- CORES DARK MODE: Mais escuras e limpas.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Notificações reposicionadas no TOPO.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "Atualização de Scripts:", Color = Color3.fromRGB(255, 140, 0), Font = HUB_FONT},
+        {Text = "Atualização:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 Scripts Anime Fighting: Endless", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Scripts 99 Nights in the Florest", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Scripts Blade Ball", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Script Weak Legacy 2", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Script Blox Fruits", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVA CATEGORIA BLADE BALL", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVO SISTEMA DE NOTIFICAÇÕES (TOAST)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVO TOGGLE ARRASTÁVEL", Color = Color3.fromRGB(220, 220, 220)},
     }
 
-    -- TABELAS DE SCRIPTS (Mantidas do original)
     local stealScripts = {
         {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, 
         {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, 
@@ -1271,8 +1250,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end}
     }
 
-    -- CRIAÇÃO DAS ABAS
-    local dashboardButton = createCategoryButton("Dashboard", nil, 0, true)
     local updatesButtonInstance = createCategoryButton("📣 Atualizações 📣", nil, 1)
     
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
@@ -1312,24 +1289,16 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
     createCategoryButton("Escape Tsunami For Brainrots", EscapeTsunamiForBrainrotsScripts, 37)
     createCategoryButton("Devil Hunter", DevilHunterScripts, 38)
 
-    -- INICIA NO DASHBOARD
-    if dashboardButton then
+    -- [MANTER] Lógica de entrada direta garantida na aba de Atualizações
+    if updatesButtonInstance then
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-            if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
+            if otherBtn:IsA("TextButton") then
+                otherBtn.TextColor3 = COLOR_TEXT_DIM
+            end
         end
-        dashboardButton.TextColor3 = COLOR_STAR_ON
-        displayDashboard()
+        updatesButtonInstance.TextColor3 = COLOR_STAR_ON
+        displayUpdates()
     end
-    
-    -- Home Button Logic
-    homeButton.MouseButton1Click:Connect(function()
-        TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
-        for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-            if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
-        end
-        if dashboardButton then dashboardButton.TextColor3 = COLOR_STAR_ON end
-        displayDashboard()
-    end)
 
     return animationContainer
 end
@@ -1341,6 +1310,7 @@ local function showLoadingAndOpenHub()
     if LoadingScreen and LoadingScreen.Parent then LoadingScreen:Destroy() end
 
     if not HasShownWelcome then
+        -- [NOVO] USANDO TOAST NO LUGAR DO FRAME ANTIGO
         KhalexisToast("Bem Vindo", "Bem vindo " .. player.Name .. " ao Khalexis Hub!", "Success", 5)
         HasShownWelcome = true
     end
@@ -1351,7 +1321,7 @@ local function showLoadingAndOpenHub()
 end
 
 -- ==========================================
--- LÓGICA KEY SYSTEM
+-- LÓGICA DO NOVO SISTEMA DE KEY (GUI)
 -- ==========================================
 
 local function main()
@@ -1361,6 +1331,7 @@ end
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
+-- FUNÇÃO PARA CRIAR A INTERFACE DE KEY SOMENTE SE NECESSÁRIO
 local function CreateKeyUI()
     local KeyGui = CreateObject("ScreenGui", {
         Name = "KhalexisKeySystem", 
@@ -1382,7 +1353,7 @@ local function CreateKeyUI()
         ClipsDescendants = true
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
-    ApplyStroke(MainKeyFrame, COLOR_ACCENT, 2)
+    ApplyStroke(MainKeyFrame, Colors.Accent, 2)
 
     local TitleBar = CreateObject("Frame", {
         Name = "TitleBar",
@@ -1520,6 +1491,7 @@ local function CreateKeyUI()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
     end)
 
+    -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
         local link = "https://linkunlocker.com/key-1-dS7uj?share=true"
         
@@ -1588,6 +1560,7 @@ local function CreateKeyUI()
         end
     end)
     
+    -- Animação de Entrada
     MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
@@ -1599,26 +1572,28 @@ local function CreateKeyUI()
 end
 
 -- ==========================================
--- TOGGLE BUTTON
+-- CRIAÇÃO DO TOGGLE BUTTON (COM DRAG SYSTEM CORRIGIDO)
 -- ==========================================
 ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 45, 0, 45) 
+ToggleButton.Size = UDim2.new(0, 45, 0, 45) -- Redondo
 ToggleButton.Position = UDim2.new(0, 10, 0, 100)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 ToggleButton.BorderColor3 = Color3.fromRGB(255, 140, 0)
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Image = Icons.Logo 
+ToggleButton.Image = Icons.Logo -- Ícone do Roblox
 ToggleButton.Parent = ScreenGui
 ToggleButton.Visible = false
 
+-- Deixar redondo
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(1, 0) 
+corner.CornerRadius = UDim.new(1, 0) -- Torna um círculo perfeito
 corner.Parent = ToggleButton
 
+-- Borda para destacar
 local stroke = Instance.new("UIStroke")
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.Color = COLOR_ACCENT
+stroke.Color = Color3.fromRGB(255, 140, 0) -- Laranja do tema
 stroke.Thickness = 2
 stroke.Parent = ToggleButton
 
@@ -1638,6 +1613,8 @@ ToggleButton.InputBegan:Connect(function(input)
             if input.UserInputState == Enum.UserInputState.End then
                 draggingToggle = false
                 connection:Disconnect()
+                
+                -- SE NÃO MOVEU (CLIQUE RÁPIDO), ABRE O HUB
                 if not hasMoved then
                     if HubOpen then
                         if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
@@ -1659,7 +1636,7 @@ end)
 UserInputService.InputChanged:Connect(function(input)
     if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStartToggle
-        if delta.Magnitude > 3 then 
+        if delta.Magnitude > 3 then -- Tolerância para movimento
             hasMoved = true
             ToggleButton.Position = UDim2.new(startPosToggle.X.Scale, startPosToggle.X.Offset + delta.X, startPosToggle.Y.Scale, startPosToggle.Y.Offset + delta.Y)
         end
