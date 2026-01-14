@@ -1,10 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.3 (SETTINGS UPDATE)
-    -- NOVO: Adicionado ícone de Engrenagem (Configurações).
-    -- NOVO: Sistema de redimensionamento do Hub (Escala de Interface).
-    -- MANTIDO: Sistema de Notificações (Toast) corrigido.
-    -- MANTIDO: Sistema de Key e Lista de Jogos.
+    -- Khalexis Hub - Versão Final v5.4 (SETTINGS INTEGRADO)
+    -- CORREÇÃO: Ícone da engrenagem alterado para um ID universal.
+    -- MUDANÇA: Configurações agora abrem na área de scripts (não é mais popup).
+    -- NOVO: Tamanhos 0.5x (Super Pequeno) e 2.0x (Super Grande).
 
 --]]
 
@@ -47,7 +46,7 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    Settings = "rbxassetid://11380164246" -- Icone de engrenagem
+    Settings = "rbxassetid://3926307971" -- Icone de engrenagem (Universal)
 }
 
 local function applyRoundedCorners(guiObject, radius)
@@ -403,7 +402,6 @@ local function closeHubWithAnimation(container)
     local uiScaler = container:FindFirstChildOfClass("UIScale")
     if not uiScaler then container:Destroy(); return end
     
-    -- Salvar escala atual antes de animar para 0
     local originalScale = currentScale
 
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
@@ -489,7 +487,7 @@ local function createHub()
     animationContainer.Parent = ScreenGui
 
     local uiScaler = Instance.new("UIScale")
-    uiScaler.Scale = currentScale -- Aplica a escala salva
+    uiScaler.Scale = currentScale 
     uiScaler.Parent = animationContainer
 
     local frame = Instance.new("Frame")
@@ -589,7 +587,6 @@ local function createHub()
     -- BOTÕES DA BARRA DE TÍTULO (FECHAR E CONFIG)
     -- ==========================================
 
-    -- Botão Fechar (X)
     local closeButton = Instance.new("TextButton")
     closeButton.Name = "CloseButton"
     closeButton.Size = UDim2.new(0, 24, 0, 24)
@@ -612,7 +609,7 @@ local function createHub()
     local settingsButton = Instance.new("ImageButton")
     settingsButton.Name = "SettingsButton"
     settingsButton.Size = UDim2.new(0, 24, 0, 24)
-    settingsButton.Position = UDim2.new(1, -56, 0.5, -12) -- 28px de espaço + margem
+    settingsButton.Position = UDim2.new(1, -56, 0.5, -12) 
     settingsButton.BackgroundTransparency = 1
     settingsButton.Image = Icons.Settings
     settingsButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
@@ -626,86 +623,6 @@ local function createHub()
     settingsButton.MouseLeave:Connect(function() 
         TweenService:Create(settingsButton, closeTweenInfo, {ImageColor3 = Color3.fromRGB(200, 200, 200)}):Play() 
     end)
-
-    -- ==========================================
-    -- PAINEL DE CONFIGURAÇÕES (SETTINGS)
-    -- ==========================================
-    local settingsFrame = Instance.new("Frame")
-    settingsFrame.Name = "SettingsFrame"
-    settingsFrame.Size = UDim2.new(0, 200, 0, 180)
-    settingsFrame.AnchorPoint = Vector2.new(1, 0)
-    settingsFrame.Position = UDim2.new(1, -10, 0, 50) -- Aparece abaixo do título
-    settingsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    settingsFrame.Visible = false
-    settingsFrame.ZIndex = 10 -- Acima de tudo
-    settingsFrame.Parent = frame
-    applyRoundedCorners(settingsFrame, 10)
-    ApplyStroke(settingsFrame, Colors.Accent, 1, 0.5)
-
-    local settingsTitle = Instance.new("TextLabel")
-    settingsTitle.Text = "Configurações"
-    settingsTitle.Size = UDim2.new(1, 0, 0, 30)
-    settingsTitle.BackgroundTransparency = 1
-    settingsTitle.TextColor3 = Colors.Accent
-    settingsTitle.Font = HUB_FONT
-    settingsTitle.TextSize = 16
-    settingsTitle.ZIndex = 11
-    settingsTitle.Parent = settingsFrame
-
-    local settingsLabel = Instance.new("TextLabel")
-    settingsLabel.Text = "Tamanho da Interface:"
-    settingsLabel.Size = UDim2.new(1, 0, 0, 20)
-    settingsLabel.Position = UDim2.new(0, 0, 0, 35)
-    settingsLabel.BackgroundTransparency = 1
-    settingsLabel.TextColor3 = Colors.TextDim
-    settingsLabel.Font = HUB_FONT
-    settingsLabel.TextSize = 12
-    settingsLabel.ZIndex = 11
-    settingsLabel.Parent = settingsFrame
-
-    local scaleList = Instance.new("UIListLayout")
-    scaleList.Parent = settingsFrame
-    scaleList.SortOrder = Enum.SortOrder.LayoutOrder
-    scaleList.Padding = UDim.new(0, 5)
-    scaleList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    
-    -- Ajuste para o padding inicial do layout
-    local settingsPadding = Instance.new("UIPadding")
-    settingsPadding.PaddingTop = UDim.new(0, 60)
-    settingsPadding.Parent = settingsFrame
-
-    local function createScaleButton(text, scaleValue)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0, 160, 0, 25)
-        btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        btn.Text = text
-        btn.TextColor3 = Colors.Text
-        btn.Font = HUB_FONT
-        btn.TextSize = 12
-        btn.ZIndex = 11
-        btn.Parent = settingsFrame
-        applyRoundedCorners(btn, 6)
-
-        btn.MouseButton1Click:Connect(function()
-            currentScale = scaleValue
-            TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = currentScale}):Play()
-            KhalexisToast("Tamanho", "Interface redimensionada para " .. text, "Success", 2)
-        end)
-    end
-
-    createScaleButton("Muito Pequeno (0.75x)", 0.75)
-    createScaleButton("Normal (1.0x)", 1)
-    createScaleButton("Grande (1.25x)", 1.25)
-    createScaleButton("Muito Grande (1.5x)", 1.5)
-
-    -- Toggle Settings Frame
-    settingsButton.MouseButton1Click:Connect(function()
-        settingsFrame.Visible = not settingsFrame.Visible
-    end)
-
-    -- ==========================================
-    -- FIM DO PAINEL DE CONFIGURAÇÕES
-    -- ==========================================
 
     local searchBox = Instance.new("TextBox")
     searchBox.Name = "CategorySearchBox"
@@ -997,7 +914,16 @@ local function createHub()
     end
 
     local function createScriptButton(name, func)
-        RegisterScript(name, func)
+        -- Se for um script normal, registra. Se for botão de config, não precisa registrar globalmente
+        if func then 
+             -- Check if func is a valid function before registering
+             -- In settings buttons, func is a closure
+        else
+            return
+        end
+        
+        -- Verificar se é um script de jogo para registrar na busca
+        local isGameScript = true
         
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(1, 0, 0, 28)
@@ -1035,51 +961,69 @@ local function createHub()
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        local starBtn = Instance.new("TextButton")
-        starBtn.Name = "StarButton"
-        starBtn.Text = "★"
-        starBtn.BackgroundTransparency = 1
-        starBtn.Size = UDim2.new(0, 30, 1, 0)
-        starBtn.Position = UDim2.new(1, -55, 0, 0) 
-        starBtn.Font = HUB_FONT
-        starBtn.TextSize = 24 
-        starBtn.ZIndex = 2
-        starBtn.Parent = btn
+        -- Se for script de jogo, adiciona estrela de favorito
+        -- Se for botão de config, não adiciona
         
-        if IsFavorited(name) then
-            starBtn.TextColor3 = COLOR_STAR_ON
-        else
-            starBtn.TextColor3 = COLOR_STAR_OFF
+        -- Lógica simples: se o nome contem "(0." ou "(1." ou "(2." provavelmente é config
+        if string.find(name, "x)") then 
+            isGameScript = false 
+            fingerIcon.Image = Icons.Settings
         end
-        
-        starBtn.MouseButton1Click:Connect(function()
-            ToggleFavorite(name)
-            if IsFavorited(name) then
-                SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
-                KhalexisToast("Favoritado", name .. " enviado para Favoritos!", "Success", 3)
-            else
-                SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
-            end
-        end)
 
-        btn.MouseButton1Click:Connect(function()
-            KhalexisToast("Executando Script", "Injetando: " .. name, "Info", 3)
+        if isGameScript then
+            RegisterScript(name, func)
+            local starBtn = Instance.new("TextButton")
+            starBtn.Name = "StarButton"
+            starBtn.Text = "★"
+            starBtn.BackgroundTransparency = 1
+            starBtn.Size = UDim2.new(0, 30, 1, 0)
+            starBtn.Position = UDim2.new(1, -55, 0, 0) 
+            starBtn.Font = HUB_FONT
+            starBtn.TextSize = 24 
+            starBtn.ZIndex = 2
+            starBtn.Parent = btn
             
-            btn.Text = "       EXECUTANDO..."
-            btn.Active = false
-            spawn(function()
-                local success, errorMessage = pcall(func)
-                if not success then
-                    KhalexisToast("Erro na Execução", tostring(errorMessage), "Error", 5)
+            if IsFavorited(name) then
+                starBtn.TextColor3 = COLOR_STAR_ON
+            else
+                starBtn.TextColor3 = COLOR_STAR_OFF
+            end
+            
+            starBtn.MouseButton1Click:Connect(function()
+                ToggleFavorite(name)
+                if IsFavorited(name) then
+                    SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+                    KhalexisToast("Favoritado", name .. " enviado para Favoritos!", "Success", 3)
                 else
-                    KhalexisToast("Sucesso", name .. " executado!", "Success", 3)
-                    wait(1)
-                    closeHubWithAnimation(animationContainer)
+                    SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
                 end
-                btn.Text = "       " .. name:upper()
-                btn.Active = true
             end)
-        end)
+
+            btn.MouseButton1Click:Connect(function()
+                KhalexisToast("Executando Script", "Injetando: " .. name, "Info", 3)
+                
+                btn.Text = "       EXECUTANDO..."
+                btn.Active = false
+                spawn(function()
+                    local success, errorMessage = pcall(func)
+                    if not success then
+                        KhalexisToast("Erro na Execução", tostring(errorMessage), "Error", 5)
+                    else
+                        KhalexisToast("Sucesso", name .. " executado!", "Success", 3)
+                        wait(1)
+                        closeHubWithAnimation(animationContainer)
+                    end
+                    btn.Text = "       " .. name:upper()
+                    btn.Active = true
+                end)
+            end)
+        else
+            -- Lógica para botão de config
+            btn.MouseButton1Click:Connect(function()
+                func() -- Executa a função de mudar tamanho
+            end)
+        end
+
         return btn
     end
 
@@ -1105,9 +1049,49 @@ local function createHub()
         end
     end
 
+    -- ==========================================
+    -- LOGICA DE CONFIGURAÇÕES (NOVO)
+    -- ==========================================
+    local function displaySettings()
+        clearScripts()
+        
+        -- Destaque visual do botão
+        settingsButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
+        for _, otherBtn in pairs(categoryContainer:GetChildren()) do
+            if otherBtn:IsA("TextButton") then
+                 otherBtn.TextColor3 = COLOR_TEXT_DIM
+            end
+        end
+
+        createUpdateLabel("--- CONFIGURAÇÕES ---", Colors.Accent)
+        createUpdateLabel("Selecione o tamanho da interface:", Colors.TextDim)
+        
+        local sizes = {
+            {Name = "Super Pequeno (0.5x)", Value = 0.5},
+            {Name = "Muito Pequeno (0.75x)", Value = 0.75},
+            {Name = "Normal (1.0x)", Value = 1},
+            {Name = "Grande (1.25x)", Value = 1.25},
+            {Name = "Muito Grande (1.5x)", Value = 1.5},
+            {Name = "Super Grande (2.0x)", Value = 2}
+        }
+
+        for _, sizeData in ipairs(sizes) do
+             createScriptButton(sizeData.Name, function()
+                 currentScale = sizeData.Value
+                 TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = currentScale}):Play()
+                 KhalexisToast("Configuração", "Tamanho alterado para " .. sizeData.Name, "Success", 2)
+             end)
+        end
+    end
+
+    -- Conectar botão de engrenagem
+    settingsButton.MouseButton1Click:Connect(displaySettings)
+
     local function onFavoritesClick()
         clearScripts()
         
+        settingsButton.ImageColor3 = Color3.fromRGB(200, 200, 200) -- Reset config btn color
         SmoothTween(favFixedBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
         
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
@@ -1201,6 +1185,9 @@ local function createHub()
         btn.MouseButton1Click:Connect(function()
             clearScripts()
             
+            -- Reset Config Button Color
+            settingsButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+
             TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
             
             for _, otherBtn in pairs(categoryContainer:GetChildren()) do
@@ -1222,11 +1209,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVO: MENU DE CONFIGURAÇÕES", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Agora você pode redimensionar o Hub clicando na engrenagem!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "Clique na engrenagem (topo) para mudar o tamanho!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
