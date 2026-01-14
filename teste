@@ -1,11 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão v5.9 (FIX NOTIFICAÇÕES & MOVIMENTO)
-    -- CORREÇÃO: Notificações agora seguem o Hub/Key ao arrastar.
-    -- CORREÇÃO: Notificações aparecem em cima da interface.
-    -- CORREÇÃO: Notificações não empilham mais; a nova substitui a antiga no mesmo lugar.
-    -- AJUSTE: Tamanho da notificação aumentado para não cortar texto.
-    -- MANTIDO: Save de Configuração e Key.
+    -- Khalexis Hub - Versão v6.0 (FIX CORES KEY & NOTIFICAÇÕES)
+    -- CORREÇÃO: Fundo da Key System agora é preto (estava branco por erro de variável).
+    -- CORREÇÃO: Fundo da notificação agora é cinza mais claro (não fica tão escuro).
+    -- MANTIDO: Notificações seguem o Hub e substituem a anterior.
 
 --]]
 
@@ -29,10 +27,10 @@ local HUB_FONT = Enum.Font.FredokaOne
 local HUB_TEXT_SIZE = 14 
 
 local Colors = {
-    Main = Color3.fromRGB(15, 15, 15),
-    Secondary = Color3.fromRGB(25, 25, 25),
+    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo
+    Secondary = Color3.fromRGB(35, 35, 35),  -- Cinza Médio (Para fundos secundários)
     Stroke = Color3.fromRGB(60, 60, 60),
-    Accent = Color3.fromRGB(255, 140, 0), -- Laranja
+    Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
     Text = Color3.fromRGB(240, 240, 240),
     TextDim = Color3.fromRGB(180, 180, 180),
     Success = Color3.fromRGB(40, 200, 64),
@@ -86,7 +84,7 @@ local FavoritesList = {}
 local AllScriptsGlobal = {}
 local currentScale = 1 -- Valor padrão
 
--- Carregar Configurações (Tamanho do Hub) ANTES DE TUDO
+-- Carregar Configurações
 if isfile(SETTINGS_FILE_NAME) then
     pcall(function()
         local content = readfile(SETTINGS_FILE_NAME)
@@ -175,38 +173,32 @@ local HasShownWelcome = false
 -- ==========================================
 -- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO)
 -- ==========================================
--- Agora detecta onde o usuário está (Key ou Hub) e anexa a notificação lá.
--- Substitui a notificação antiga em vez de criar lista.
 
 function KhalexisToast(title, text, type, duration)
-    -- Definição de Cores/Icones
     local color = Colors.Accent
     local icon = Icons.Info
     if type == "Success" then color = Colors.Success; icon = Icons.Success
     elseif type == "Error" then color = Colors.Error; icon = Icons.Error
     elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
 
-    -- 1. Identificar o PAI (Onde a notificação vai ficar grudada)
+    -- 1. Identificar o PAI
     local targetParent = nil
-    local yOffset = -85 -- Posição Y (Acima do frame)
-    local xOffset = -160 -- Centralizado (Metade da largura da notif 320/2)
+    local yOffset = -85 
+    local xOffset = -160 
 
-    -- Verifica se o Key System está ativo
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         targetParent = keyGui.MainFrame
-    -- Verifica se o Hub está ativo
     elseif MainFrameContainer and MainFrameContainer.Parent then
         targetParent = MainFrameContainer
     else
-        -- Fallback: Se nada estiver aberto, usa o ScreenGui normal
         targetParent = ScreenGui
-        yOffset = 50 -- Topo da tela
+        yOffset = 50 
     end
 
     if not targetParent then return end
 
-    -- 2. Limpeza: Se já existe uma notificação, destroi ela imediatamente
+    -- 2. Limpeza
     local existingToast = targetParent:FindFirstChild("KhalexisActiveToast")
     if existingToast then
         existingToast:Destroy()
@@ -215,33 +207,30 @@ function KhalexisToast(title, text, type, duration)
     -- 3. Criar a nova Notificação
     local Toast = Instance.new("Frame")
     Toast.Name = "KhalexisActiveToast"
-    Toast.Size = UDim2.new(0, 320, 0, 65) -- Aumentado para não cortar texto
+    Toast.Size = UDim2.new(0, 320, 0, 65) 
     
-    -- Posicionamento
     if targetParent == ScreenGui then
-        Toast.Position = UDim2.new(0.5, xOffset, 0.1, 0) -- Topo central na tela
+        Toast.Position = UDim2.new(0.5, xOffset, 0.1, 0)
     else
-        -- Em cima do Hub/Key
         Toast.Position = UDim2.new(0.5, xOffset, 0, yOffset) 
     end
 
-    Toast.BackgroundColor3 = Colors.Main
-    Toast.BackgroundTransparency = 0.1
+    -- CORREÇÃO AQUI: Usando Colors.Secondary (Cinza) em vez de preto
+    Toast.BackgroundColor3 = Color3.fromRGB(32, 32, 32) 
+    Toast.BackgroundTransparency = 0.1 -- Leve transparência
     Toast.Parent = targetParent
-    Toast.ZIndex = 2000 -- Bem na frente
+    Toast.ZIndex = 2000 
     applyRoundedCorners(Toast, 10)
     
     local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
     
-    -- Icon Container
     local IconFrame = Instance.new("Frame")
     IconFrame.Size = UDim2.new(0, 50, 1, 0)
     IconFrame.BackgroundColor3 = color
     IconFrame.BackgroundTransparency = 0.85
     IconFrame.Parent = Toast
-    applyRoundedCorners(IconFrame, 10) -- Arredondar tudo
+    applyRoundedCorners(IconFrame, 10) 
 
-    -- Correção visual para o container do ícone (parecer uma barra lateral)
     local FixCorner = Instance.new("Frame")
     FixCorner.Size = UDim2.new(0, 10, 1, 0)
     FixCorner.Position = UDim2.new(1, -5, 0, 0)
@@ -258,7 +247,6 @@ function KhalexisToast(title, text, type, duration)
     IconImg.ImageColor3 = color
     IconImg.Parent = IconFrame
 
-    -- Textos
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -65, 0, 22)
     TitleLabel.Position = UDim2.new(0, 60, 0, 6)
@@ -271,7 +259,7 @@ function KhalexisToast(title, text, type, duration)
     TitleLabel.Parent = Toast
 
     local DescLabel = Instance.new("TextLabel")
-    DescLabel.Size = UDim2.new(1, -65, 0, 32) -- Mais altura para texto
+    DescLabel.Size = UDim2.new(1, -65, 0, 32)
     DescLabel.Position = UDim2.new(0, 60, 0, 28)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
@@ -283,7 +271,7 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.TextYAlignment = Enum.TextYAlignment.Top
     DescLabel.Parent = Toast
 
-    -- Animação Entrada (Pop in)
+    -- Animação
     Toast.Size = UDim2.new(0, 300, 0, 60)
     Toast.BackgroundTransparency = 1
     TitleLabel.TextTransparency = 1
@@ -294,7 +282,7 @@ function KhalexisToast(title, text, type, duration)
 
     local tInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local appear = TweenService:Create(Toast, tInfo, {
-        Size = UDim2.new(0, 320, 0, 65), -- Expande para o tamanho real
+        Size = UDim2.new(0, 320, 0, 65),
         BackgroundTransparency = 0.1
     })
     
@@ -305,7 +293,6 @@ function KhalexisToast(title, text, type, duration)
     TweenService:Create(DescLabel, tInfo, {TextTransparency = 0}):Play()
     appear:Play()
 
-    -- Remover Automaticamente
     task.delay(duration or 4, function()
         if Toast and Toast.Parent then
             local tOut = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
@@ -331,7 +318,7 @@ _G.showAutoMessage = function(msg)
 end
 
 -- ==========================================
--- KEY SYSTEM CONFIG
+-- KEY SYSTEM CONFIG (CORRIGIDO)
 -- ==========================================
 Config = {
     api = "e696e91d-0ba0-4693-a6a5-91145ead6ed1", 
@@ -342,7 +329,7 @@ Config = {
 local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
-        Background = COLOR_BLACK, 
+        Background = Colors.Main, -- CORREÇÃO: Removido COLOR_BLACK que dava erro (tela branca)
         Title = Color3.fromRGB(255, 140, 0),
         InputField = Color3.fromRGB(25, 25, 25),
         InputFieldBorder = Color3.fromRGB(60, 60, 60), 
@@ -469,12 +456,9 @@ local function createHub()
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
     animationContainer.BackgroundTransparency = 1
     animationContainer.Parent = ScreenGui
-    -- IMPORTANTE: ClipsDescendants deve ser false para a notificação aparecer acima
     animationContainer.ClipsDescendants = false 
 
-    -- =========================================================
-    -- UISCALE: Controla o tamanho de TUDO dentro do container
-    -- =========================================================
+    -- UISCALE
     local uiScaler = Instance.new("UIScale")
     uiScaler.Scale = currentScale 
     uiScaler.Parent = animationContainer
@@ -528,9 +512,6 @@ local function createHub()
     UserInputService.InputChanged:Connect(function(input)
         if draggingHub and input == dragInputHub then
             local delta = input.Position - dragStartHub
-            -- Ajuste para o movimento do mouse funcionar corretamente com UIScale
-            -- Se não ajustar, o mouse move mais rápido que a GUI quando em escala diferente
-            -- Aqui mantemos simples movendo o AnimationContainer inteiro
             animationContainer.Position = UDim2.new(
                 startPosHub.X.Scale, startPosHub.X.Offset + (delta.X), 
                 startPosHub.Y.Scale, startPosHub.Y.Offset + (delta.Y)
@@ -1188,13 +1169,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V6.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "CORREÇÃO NOTIFICAÇÕES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- Agora seguem o Hub/Key", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Aparecem em cima da UI", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Não empilham mais (limpeza)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "CORREÇÃO FINAL:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "- Corrigida Tela Branca na Key", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Corrigida Cor Escura das Notificações", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
@@ -1445,11 +1425,9 @@ local function CreateKeyUI()
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         Size = UDim2.new(0, 350, 0, 270),
-        -- IMPORTANTE: ClipsDescendants = false para a notificação aparecer acima
         ClipsDescendants = false 
     })
     
-    -- Mover o scaler para dentro do frame para garantir funcionamento correto
     keyScaler.Parent = MainKeyFrame
 
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
