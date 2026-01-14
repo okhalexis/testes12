@@ -1,8 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.4 (CORREÇÃO DE POSIÇÃO)
-    -- CORREÇÃO: Notificação de "Minimizado" agora aparece no MEIO da tela (0.5).
-    -- MANTIDO: Fix de camadas (Texto na frente), Cores corrigidas e Sistema de Key.
+    -- Khalexis Hub - Versão v6.5 (FINAL KEY TEXT)
+    -- CORREÇÃO: Texto do botão "Pegar Key" atualizado.
+    -- MANTIDO: Notificação centralizada, Fix de camadas e Sistema de Key.
 
 --]]
 
@@ -1591,7 +1591,7 @@ local function CreateKeyUI()
         
         if setclipboard then
             setclipboard(link)
-            KhalexisToast("Link Copiado", "Link copiado para a área de transferência!", "Success", 3)
+            KhalexisToast("Link Copiado", "Link copiado! Cole no seu navegador.", "Success", 3)
         else
             KhalexisToast("Link", "Link: " .. link, "Info", 5)
         end
