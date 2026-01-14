@@ -1,9 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.2 (FIX ZINDEX & CAMADAS)
-    -- CORREÇÃO FINAL: Camadas (ZIndex) ajustadas manualmente.
-    -- O Texto agora é forçado a ficar na camada 2002 (frente), enquanto o fundo fica na 2000 (trás).
-    -- Texto agora é Branco Puro para leitura máxima.
+    -- Khalexis Hub - Versão v6.3 (FINAL DEFINITIVA)
+    -- CORREÇÃO: Notificação de "Minimizado" agora fica na tela mesmo após o Hub fechar.
+    -- MANTIDO: Fix de camadas (Texto na frente), Cores corrigidas e Sistema de Key.
 
 --]]
 
@@ -163,7 +162,6 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
--- IMPORTANTE: Definir Sibling para respeitar ZIndex
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
 local KeyFrame, MainFrameContainer
@@ -173,7 +171,7 @@ local ToggleButton
 local HasShownWelcome = false
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO CAMADAS)
+-- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO)
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -206,7 +204,7 @@ function KhalexisToast(title, text, type, duration)
         existingToast:Destroy()
     end
 
-    -- 3. Criar a nova Notificação (Container Principal)
+    -- 3. Criar a nova Notificação
     local Toast = Instance.new("Frame")
     Toast.Name = "KhalexisActiveToast"
     Toast.Size = UDim2.new(0, 320, 0, 65) 
@@ -217,22 +215,21 @@ function KhalexisToast(title, text, type, duration)
         Toast.Position = UDim2.new(0.5, xOffset, 0, yOffset) 
     end
 
-    -- FUNDO CINZA CLARO
+    -- CORES E CAMADAS (ZINDEX)
     Toast.BackgroundColor3 = Colors.Secondary 
     Toast.BackgroundTransparency = 0.05 
     Toast.Parent = targetParent
-    Toast.ZIndex = 2000 -- Camada Base (Fundo)
+    Toast.ZIndex = 2000 
     applyRoundedCorners(Toast, 10)
     
     local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
     
-    -- Ícone (Camada Intermediária)
     local IconFrame = Instance.new("Frame")
     IconFrame.Size = UDim2.new(0, 50, 1, 0)
     IconFrame.BackgroundColor3 = color
     IconFrame.BackgroundTransparency = 0.85
     IconFrame.Parent = Toast
-    IconFrame.ZIndex = 2001 -- Acima do fundo
+    IconFrame.ZIndex = 2001 
     applyRoundedCorners(IconFrame, 10) 
 
     local FixCorner = Instance.new("Frame")
@@ -251,20 +248,20 @@ function KhalexisToast(title, text, type, duration)
     IconImg.Image = icon
     IconImg.ImageColor3 = color
     IconImg.Parent = IconFrame
-    IconImg.ZIndex = 2002 -- Acima do Frame do ícone
+    IconImg.ZIndex = 2002 
 
-    -- TEXTOS (Camada SUPERIOR - FRENTE DE TUDO)
+    -- TEXTOS NA FRENTE
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -65, 0, 22)
     TitleLabel.Position = UDim2.new(0, 60, 0, 6)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Text = title
     TitleLabel.Font = HUB_FONT
-    TitleLabel.TextColor3 = Colors.Text -- Branco Puro
+    TitleLabel.TextColor3 = Colors.Text 
     TitleLabel.TextSize = 16
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = Toast
-    TitleLabel.ZIndex = 2002 -- Força o texto para frente
+    TitleLabel.ZIndex = 2002 
 
     local DescLabel = Instance.new("TextLabel")
     DescLabel.Size = UDim2.new(1, -65, 0, 32)
@@ -272,13 +269,13 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
     DescLabel.Font = Enum.Font.GothamMedium
-    DescLabel.TextColor3 = Colors.TextDim -- Cinza claro
+    DescLabel.TextColor3 = Colors.TextDim 
     DescLabel.TextSize = 12
     DescLabel.TextXAlignment = Enum.TextXAlignment.Left
     DescLabel.TextWrapped = true
     DescLabel.TextYAlignment = Enum.TextYAlignment.Top
     DescLabel.Parent = Toast
-    DescLabel.ZIndex = 2002 -- Força o texto para frente
+    DescLabel.ZIndex = 2002 
 
     -- Animação
     Toast.Size = UDim2.new(0, 300, 0, 60)
@@ -379,18 +376,25 @@ end
 local function closeHubWithAnimation(container)
     if not (container and container.Parent) then return end
     
-    KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 4)
-
-    local uiScaler = container:FindFirstChildOfClass("UIScale")
-    if not uiScaler then container:Destroy(); return end
+    -- TRUQUE: Salvamos o container numa variavel local e zeramos a global.
+    -- Isso faz com que a função KhalexisToast (que verifica a global) ache que o Hub já fechou.
+    -- Assim, a notificação vai para o ScreenGui (Tela) e não morre junto com o Hub.
+    local frameToDestroy = MainFrameContainer
+    MainFrameContainer = nil 
     
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-    local goal = { Scale = 0 }
-    local tween = TweenService:Create(uiScaler, tweenInfo, goal)
-    tween:Play()
-    tween.Completed:Wait()
-    if container and container.Parent then container:Destroy() end
-    MainFrameContainer = nil
+    KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 3)
+
+    local uiScaler = frameToDestroy:FindFirstChildOfClass("UIScale")
+    if uiScaler then
+        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        local goal = { Scale = 0 }
+        local tween = TweenService:Create(uiScaler, tweenInfo, goal)
+        tween:Play()
+        tween.Completed:Wait()
+    end
+    
+    if frameToDestroy and frameToDestroy.Parent then frameToDestroy:Destroy() end
+    
     HubOpen = false
     if ToggleButton then ToggleButton.Visible = true end
 end
@@ -1178,12 +1182,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V6.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V6.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "CORREÇÃO NOTIFICAÇÕES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- Texto nítido (Camada Frontal)", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Bem-vindo fixado no Hub", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Notificação de Minimizado fica na tela", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Texto mais legível", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
