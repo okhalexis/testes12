@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.4 (SETTINGS INTEGRADO)
-    -- CORREÇÃO: Ícone da engrenagem alterado para um ID universal.
-    -- MUDANÇA: Configurações agora abrem na área de scripts (não é mais popup).
-    -- NOVO: Tamanhos 0.5x (Super Pequeno) e 2.0x (Super Grande).
+    -- Khalexis Hub - Versão Final v5.5 (PREPARAÇÃO PARA TEMAS)
+    -- ATUALIZAÇÃO: Ícone de Configurações alterado (ID Solicitado).
+    -- ORGANIZAÇÃO: Menu de configurações separado por categorias (Tamanho / Futuros Temas).
+    -- SISTEMA: Redimensionamento via UIScale (Afeta Textos e Imagens proporcionalmente).
 
 --]]
 
@@ -46,7 +46,8 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    Settings = "rbxassetid://3926307971" -- Icone de engrenagem (Universal)
+    -- ID solicitado para a engrenagem:
+    Settings = "rbxassetid://11385220714" 
 }
 
 local function applyRoundedCorners(guiObject, radius)
@@ -486,6 +487,10 @@ local function createHub()
     animationContainer.BackgroundTransparency = 1
     animationContainer.Parent = ScreenGui
 
+    -- =========================================================
+    -- UISCALE: Controla o tamanho de TUDO dentro do container
+    -- (incluindo textos, botões e imagens).
+    -- =========================================================
     local uiScaler = Instance.new("UIScale")
     uiScaler.Scale = currentScale 
     uiScaler.Parent = animationContainer
@@ -914,10 +919,8 @@ local function createHub()
     end
 
     local function createScriptButton(name, func)
-        -- Se for um script normal, registra. Se for botão de config, não precisa registrar globalmente
+        -- Se for um script normal, registra.
         if func then 
-             -- Check if func is a valid function before registering
-             -- In settings buttons, func is a closure
         else
             return
         end
@@ -961,10 +964,7 @@ local function createHub()
         fingerIcon.ZIndex = 2
         fingerIcon.Parent = btn
         
-        -- Se for script de jogo, adiciona estrela de favorito
-        -- Se for botão de config, não adiciona
-        
-        -- Lógica simples: se o nome contem "(0." ou "(1." ou "(2." provavelmente é config
+        -- Lógica simples: se o nome contem "(0." ou "(1." ou "(2." provavelmente é botão de tamanho
         if string.find(name, "x)") then 
             isGameScript = false 
             fingerIcon.Image = Icons.Settings
@@ -1050,7 +1050,7 @@ local function createHub()
     end
 
     -- ==========================================
-    -- LOGICA DE CONFIGURAÇÕES (NOVO)
+    -- LOGICA DE CONFIGURAÇÕES (ATUALIZADA)
     -- ==========================================
     local function displaySettings()
         clearScripts()
@@ -1064,7 +1064,7 @@ local function createHub()
             end
         end
 
-        createUpdateLabel("--- CONFIGURAÇÕES ---", Colors.Accent)
+        createUpdateLabel("--- 📏 DIMENSÕES DO HUB 📏 ---", Colors.Accent)
         createUpdateLabel("Selecione o tamanho da interface:", Colors.TextDim)
         
         local sizes = {
@@ -1079,10 +1079,15 @@ local function createHub()
         for _, sizeData in ipairs(sizes) do
              createScriptButton(sizeData.Name, function()
                  currentScale = sizeData.Value
+                 -- Atualiza a escala global
                  TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = currentScale}):Play()
                  KhalexisToast("Configuração", "Tamanho alterado para " .. sizeData.Name, "Success", 2)
              end)
         end
+        
+        createUpdateLabel(" ", Colors.Main) -- Espaçamento
+        createUpdateLabel("--- 🎨 TEMAS (EM BREVE) 🎨 ---", Color3.fromRGB(100, 100, 100))
+        createUpdateLabel("Futuramente você poderá mudar as cores aqui!", Color3.fromRGB(80, 80, 80))
     end
 
     -- Conectar botão de engrenagem
@@ -1209,7 +1214,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVO: MENU DE CONFIGURAÇÕES", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
