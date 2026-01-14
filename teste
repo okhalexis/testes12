@@ -1,8 +1,12 @@
+--- START OF FILE Paste January 14, 2026 - 11:54AM ---
+
+
 --[[
 
-    -- Khalexis Hub - Versão Final v5.8 (PROPORCIONALIDADE & SAVE COMPLETO)
-    -- AJUSTE: Textos das categorias agora seguem o padrão "limpo" (não estouram o botão).
-    -- NOVO: O tamanho salvo agora é aplicado também na TELA DE KEY.
+    -- Khalexis Hub - Versão Final v5.9 (NOTIFICAÇÕES INTELIGENTES & SAVE)
+    -- AJUSTE: Notificações agora seguem o Hub ao arrastar.
+    -- AJUSTE: Notificações ficam acima do Hub e escalam com o tamanho escolhido.
+    -- AJUSTE: Notificações maiores para evitar corte de texto.
     -- MANTIDO: Save automático de configurações e favoritos.
 
 --]]
@@ -285,22 +289,27 @@ end
 -- ==========================================
 -- SISTEMA DE NOTIFICAÇÃO (TOAST)
 -- ==========================================
+-- MODIFICAÇÃO: Ajuste de tamanho e adição de UIScale para quando estiver fora do Hub
 local NotificationHolder = Instance.new("Frame")
 NotificationHolder.Name = "NotificationHolder"
-NotificationHolder.AnchorPoint = Vector2.new(0.5, 1) 
-NotificationHolder.Size = UDim2.new(0, 320, 0, 500) 
-NotificationHolder.Position = UDim2.new(0.5, 0, 0.5, -180) 
+NotificationHolder.AnchorPoint = Vector2.new(0.5, 0) -- Ancorado no Topo
+NotificationHolder.Size = UDim2.new(0, 360, 1, 0) -- Largura levemente maior
+NotificationHolder.Position = UDim2.new(0.5, 0, 0.1, 0) -- Posição inicial (sem Hub)
 NotificationHolder.BackgroundTransparency = 1
 NotificationHolder.Parent = ScreenGui
 NotificationHolder.ZIndex = 2000
 NotificationHolder.ClipsDescendants = false
+
+local HolderScale = Instance.new("UIScale")
+HolderScale.Scale = currentScale
+HolderScale.Parent = NotificationHolder
 
 local NotifList = Instance.new("UIListLayout")
 NotifList.Parent = NotificationHolder
 NotifList.SortOrder = Enum.SortOrder.LayoutOrder
 NotifList.Padding = UDim.new(0, 8)
 NotifList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom 
+NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Cresce para cima
 
 local notifCount = 0
 
@@ -317,7 +326,8 @@ function KhalexisToast(title, text, type, duration)
     local Toast = Instance.new("Frame")
     Toast.Name = "Toast"
     Toast.LayoutOrder = notifCount 
-    Toast.Size = UDim2.new(0, 300, 0, 50)
+    -- MODIFICAÇÃO: Aumentei o tamanho do Toast para caber mais texto
+    Toast.Size = UDim2.new(0, 350, 0, 55) 
     Toast.BackgroundColor3 = Colors.Main
     Toast.BackgroundTransparency = 0.1
     Toast.Parent = NotificationHolder
@@ -352,28 +362,29 @@ function KhalexisToast(title, text, type, duration)
     IconImg.ImageColor3 = color
     IconImg.Parent = IconFrame
 
-    -- Textos
+    -- Textos (Ajustados para o novo tamanho)
     local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -60, 0, 20)
-    TitleLabel.Position = UDim2.new(0, 60, 0, 5)
+    TitleLabel.Size = UDim2.new(1, -65, 0, 20) -- Mais espaço
+    TitleLabel.Position = UDim2.new(0, 60, 0, 6)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Text = title
     TitleLabel.Font = HUB_FONT
     TitleLabel.TextColor3 = Colors.Text
-    TitleLabel.TextSize = 14
+    TitleLabel.TextSize = 15
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = Toast
 
     local DescLabel = Instance.new("TextLabel")
-    DescLabel.Size = UDim2.new(1, -60, 0, 20)
-    DescLabel.Position = UDim2.new(0, 60, 0, 25)
+    DescLabel.Size = UDim2.new(1, -65, 0, 25) -- Mais espaço e altura
+    DescLabel.Position = UDim2.new(0, 60, 0, 26)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
     DescLabel.Font = Enum.Font.GothamMedium
     DescLabel.TextColor3 = Colors.TextDim
-    DescLabel.TextSize = 11
+    DescLabel.TextSize = 12
     DescLabel.TextXAlignment = Enum.TextXAlignment.Left
     DescLabel.TextWrapped = true
+    DescLabel.TextYAlignment = Enum.TextYAlignment.Top
     DescLabel.Parent = Toast
 
     -- Animação Entrada
@@ -421,13 +432,20 @@ end
 local function closeHubWithAnimation(container)
     if not (container and container.Parent) then return end
     
+    -- MODIFICAÇÃO: Ao fechar o Hub, devolvemos as notificações para a ScreenGui
+    -- E reativamos o UIScale próprio delas
+    if NotificationHolder then
+        NotificationHolder.Parent = ScreenGui
+        NotificationHolder.Position = UDim2.new(0.5, 0, 0.1, 0) -- Volta pro topo da tela
+        HolderScale.Enabled = true 
+        HolderScale.Scale = currentScale
+    end
+
     KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 4)
 
     local uiScaler = container:FindFirstChildOfClass("UIScale")
     if not uiScaler then container:Destroy(); return end
     
-    local originalScale = currentScale
-
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
     local goal = { Scale = 0 }
     local tween = TweenService:Create(uiScaler, tweenInfo, goal)
@@ -517,6 +535,19 @@ local function createHub()
     uiScaler.Scale = currentScale 
     uiScaler.Parent = animationContainer
 
+    -- =========================================================
+    -- MODIFICAÇÃO CRÍTICA: PARENTAR NOTIFICAÇÕES NO CONTAINER
+    -- =========================================================
+    if NotificationHolder then
+        NotificationHolder.Parent = animationContainer
+        -- Posiciona logo acima do Hub. Como VerticalAlignment = Bottom, elas crescem pra cima a partir daqui.
+        NotificationHolder.Position = UDim2.new(0.5, 0, 0, -10)
+        NotificationHolder.AnchorPoint = Vector2.new(0.5, 1) -- Ancorado na base do holder
+        
+        -- Desativa o Scale próprio do holder, pois ele vai usar o Scale do container
+        HolderScale.Enabled = false 
+    end
+
     local frame = Instance.new("Frame")
     frame.Name="MainFrame"
     frame.Size=UDim2.new(1, 0, 1, 0)
@@ -567,6 +598,7 @@ local function createHub()
         if draggingHub and input == dragInputHub then
             local delta = input.Position - dragStartHub
             -- Ajuste para o movimento do mouse funcionar corretamente com UIScale
+            -- Como a notificação é filha do animationContainer, ela se move junto!
             local scale = uiScaler.Scale
             animationContainer.Position = UDim2.new(
                 startPosHub.X.Scale, startPosHub.X.Offset + (delta.X), 
@@ -1103,6 +1135,12 @@ local function createHub()
                  currentScale = sizeData.Value
                  -- Atualiza a escala global
                  TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = currentScale}):Play()
+                 
+                 -- Atualiza a escala da notificação também
+                 if HolderScale then
+                     HolderScale.Scale = currentScale
+                 end
+
                  KhalexisToast("Configuração", "Tamanho alterado para " .. sizeData.Name, "Success", 2)
                  SaveSettings() -- Salva a config
              end)
@@ -1248,11 +1286,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "NOVO: SISTEMA DE SAVE COMPLETO", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "O tamanho do Hub agora fica salvo, inclusive na Key!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVO: NOTIFICAÇÕES INTELIGENTES", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "As notificações agora acompanham o Hub e mudam de tamanho!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
