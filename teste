@@ -1,7 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.6 (NO MINIMIZED NOTIFICATION)
-    -- REMOVIDO: Notificação de "Minimizado" ao fechar o Hub.
+    -- Khalexis Hub - Versão v6.7 (MOBILE NOTIFICATION FIX)
+    -- ALTERAÇÃO: Notificações agora aparecem penduradas na parte INFERIOR das janelas.
+    -- Ideal para Mobile: Fica abaixo do rodapé "By Khalexis" ou abaixo do botão "Discord".
 
 --]]
 
@@ -170,7 +171,7 @@ local ToggleButton
 local HasShownWelcome = false
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO E CENTRALIZADO)
+-- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO E REPOSICIONADO)
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -180,19 +181,31 @@ function KhalexisToast(title, text, type, duration)
     elseif type == "Error" then color = Colors.Error; icon = Icons.Error
     elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
 
-    -- 1. Identificar o PAI
+    -- 1. Identificar o PAI e definir a Posição Base
     local targetParent = nil
-    local yOffset = -85 
-    local xOffset = -160 
+    
+    -- Configuração padrão: Centralizado na tela (para quando não houver janela)
+    local startPosition = UDim2.new(0.5, -160, 0.85, 0) -- Fundo da tela (Mobile friendly)
 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
+
     if keyGui and keyGui:FindFirstChild("MainFrame") then
+        -- Caso 1: Sistema de Key está aberto
         targetParent = keyGui.MainFrame
+        -- Posiciona EXATAMENTE abaixo do frame da Key (Scale Y = 1 + 10px de margem)
+        startPosition = UDim2.new(0.5, -160, 1, 10)
+
     elseif MainFrameContainer and MainFrameContainer.Parent then
+        -- Caso 2: Hub Principal está aberto
         targetParent = MainFrameContainer
+        -- Posiciona EXATAMENTE abaixo do rodapé do Hub
+        startPosition = UDim2.new(0.5, -160, 1, 10)
+
     else
+        -- Caso 3: Nenhum menu aberto (apenas tela)
         targetParent = ScreenGui
-        yOffset = 50 
+        -- Mantém no fundo da tela
+        startPosition = UDim2.new(0.5, -160, 0.85, 0)
     end
 
     if not targetParent then return end
@@ -207,13 +220,7 @@ function KhalexisToast(title, text, type, duration)
     local Toast = Instance.new("Frame")
     Toast.Name = "KhalexisActiveToast"
     Toast.Size = UDim2.new(0, 320, 0, 65) 
-    
-    if targetParent == ScreenGui then
-        -- ALTERAÇÃO AQUI: Mudado de 0.1 (Topo) para 0.5 (Meio)
-        Toast.Position = UDim2.new(0.5, xOffset, 0.5, -32)
-    else
-        Toast.Position = UDim2.new(0.5, xOffset, 0, yOffset) 
-    end
+    Toast.Position = startPosition 
 
     -- CORES E CAMADAS (ZINDEX)
     Toast.BackgroundColor3 = Colors.Secondary 
@@ -379,9 +386,8 @@ local function closeHubWithAnimation(container)
     local frameToDestroy = MainFrameContainer
     MainFrameContainer = nil 
     
-    -- REMOVIDO: A notificação de minimizado foi removida conforme solicitado.
-    -- KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 3)
-
+    -- REMOVIDO: Notificação de minimizado (Solicitado)
+    
     local uiScaler = frameToDestroy:FindFirstChildOfClass("UIScale")
     if uiScaler then
         local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
