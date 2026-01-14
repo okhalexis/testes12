@@ -1,8 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.7 (MOBILE NOTIFICATION FIX)
-    -- ALTERAÇÃO: Notificações agora aparecem penduradas na parte INFERIOR das janelas.
-    -- Ideal para Mobile: Fica abaixo do rodapé "By Khalexis" ou abaixo do botão "Discord".
+    -- Khalexis Hub - Versão v6.8 (FINAL NOTIFICATION FIX)
+    -- AJUSTE: Notificações agora ficam "Meio a Meio".
+    -- Metade dentro do Hub/Key System e Metade fora.
+    -- Isso garante visibilidade total no Mobile.
 
 --]]
 
@@ -171,7 +172,7 @@ local ToggleButton
 local HasShownWelcome = false
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO E REPOSICIONADO)
+-- SISTEMA DE NOTIFICAÇÃO (POSIÇÃO AJUSTADA)
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -185,26 +186,31 @@ function KhalexisToast(title, text, type, duration)
     local targetParent = nil
     
     -- Configuração padrão: Centralizado na tela (para quando não houver janela)
-    local startPosition = UDim2.new(0.5, -160, 0.85, 0) -- Fundo da tela (Mobile friendly)
+    -- Ajustado levemente para cima para garantir visibilidade no mobile
+    local startPosition = UDim2.new(0.5, -160, 0.8, 0) 
 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         -- Caso 1: Sistema de Key está aberto
         targetParent = keyGui.MainFrame
-        -- Posiciona EXATAMENTE abaixo do frame da Key (Scale Y = 1 + 10px de margem)
-        startPosition = UDim2.new(0.5, -160, 1, 10)
+        
+        -- AJUSTE MOBILE SOLICITADO:
+        -- Scale Y = 1 (Fundo da janela)
+        -- Offset Y = -35 (Sobe 35 pixels). 
+        -- Como a notificação tem 65px de altura, ela fica "Metade Dentro / Metade Fora".
+        startPosition = UDim2.new(0.5, -160, 1, -35)
 
     elseif MainFrameContainer and MainFrameContainer.Parent then
         -- Caso 2: Hub Principal está aberto
         targetParent = MainFrameContainer
-        -- Posiciona EXATAMENTE abaixo do rodapé do Hub
-        startPosition = UDim2.new(0.5, -160, 1, 10)
+        
+        -- MESMA LÓGICA: Metade dentro do hub
+        startPosition = UDim2.new(0.5, -160, 1, -35)
 
     else
         -- Caso 3: Nenhum menu aberto (apenas tela)
         targetParent = ScreenGui
-        -- Mantém no fundo da tela
         startPosition = UDim2.new(0.5, -160, 0.85, 0)
     end
 
@@ -386,7 +392,7 @@ local function closeHubWithAnimation(container)
     local frameToDestroy = MainFrameContainer
     MainFrameContainer = nil 
     
-    -- REMOVIDO: Notificação de minimizado (Solicitado)
+    -- REMOVIDO: Notificação de minimizado
     
     local uiScaler = frameToDestroy:FindFirstChildOfClass("UIScale")
     if uiScaler then
