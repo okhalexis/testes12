@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.0 (FIX CORES KEY & NOTIFICAÇÕES)
-    -- CORREÇÃO: Fundo da Key System agora é preto (estava branco por erro de variável).
-    -- CORREÇÃO: Fundo da notificação agora é cinza mais claro (não fica tão escuro).
-    -- MANTIDO: Notificações seguem o Hub e substituem a anterior.
+    -- Khalexis Hub - Versão v6.1 (FIX FINAL CORES & BEM VINDO)
+    -- CORREÇÃO: Fundo das notificações agora é um cinza mais claro (legível).
+    -- CORREÇÃO: Mensagem "Bem Vindo" agora espera o Hub abrir para grudar nele.
+    -- MANTIDO: Sistema de Key e Save.
 
 --]]
 
@@ -27,8 +27,8 @@ local HUB_FONT = Enum.Font.FredokaOne
 local HUB_TEXT_SIZE = 14 
 
 local Colors = {
-    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo
-    Secondary = Color3.fromRGB(35, 35, 35),  -- Cinza Médio (Para fundos secundários)
+    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo (Fundo do Hub)
+    Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Mais Claro (Para Notificações)
     Stroke = Color3.fromRGB(60, 60, 60),
     Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
     Text = Color3.fromRGB(240, 240, 240),
@@ -215,9 +215,9 @@ function KhalexisToast(title, text, type, duration)
         Toast.Position = UDim2.new(0.5, xOffset, 0, yOffset) 
     end
 
-    -- CORREÇÃO AQUI: Usando Colors.Secondary (Cinza) em vez de preto
-    Toast.BackgroundColor3 = Color3.fromRGB(32, 32, 32) 
-    Toast.BackgroundTransparency = 0.1 -- Leve transparência
+    -- CORREÇÃO: Usando uma cor bem mais clara (Cinza Chumbo) para destacar do fundo preto
+    Toast.BackgroundColor3 = Colors.Secondary 
+    Toast.BackgroundTransparency = 0.05 -- Quase sólido para melhor leitura
     Toast.Parent = targetParent
     Toast.ZIndex = 2000 
     applyRoundedCorners(Toast, 10)
@@ -283,7 +283,7 @@ function KhalexisToast(title, text, type, duration)
     local tInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     local appear = TweenService:Create(Toast, tInfo, {
         Size = UDim2.new(0, 320, 0, 65),
-        BackgroundTransparency = 0.1
+        BackgroundTransparency = 0.05
     })
     
     TweenService:Create(ToastStroke, tInfo, {Transparency = 0.5}):Play()
@@ -318,7 +318,7 @@ _G.showAutoMessage = function(msg)
 end
 
 -- ==========================================
--- KEY SYSTEM CONFIG (CORRIGIDO)
+-- KEY SYSTEM CONFIG
 -- ==========================================
 Config = {
     api = "e696e91d-0ba0-4693-a6a5-91145ead6ed1", 
@@ -329,7 +329,7 @@ Config = {
 local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
-        Background = Colors.Main, -- CORREÇÃO: Removido COLOR_BLACK que dava erro (tela branca)
+        Background = Colors.Main, 
         Title = Color3.fromRGB(255, 140, 0),
         InputField = Color3.fromRGB(25, 25, 25),
         InputFieldBorder = Color3.fromRGB(60, 60, 60), 
@@ -1169,12 +1169,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V6.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V6.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "CORREÇÃO FINAL:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- Corrigida Tela Branca na Key", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Corrigida Cor Escura das Notificações", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "CORREÇÃO NOTIFICAÇÕES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "- Fundo mais claro (cinza)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Bem-vindo fixado no Hub", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
@@ -1379,13 +1379,16 @@ local function showLoadingAndOpenHub()
     if StopLoadingAnim then StopLoadingAnim() end
     if LoadingScreen and LoadingScreen.Parent then LoadingScreen:Destroy() end
 
+    -- CORREÇÃO: Cria o Hub PRIMEIRO
+    MainFrameContainer=createHub()
+    HubOpen=true
+    
+    -- DEPOIS mostra a mensagem, assim ela acha o Hub para grudar
     if not HasShownWelcome then
         KhalexisToast("Bem Vindo", "Bem vindo " .. player.Name .. " ao Khalexis Hub!", "Success", 5)
         HasShownWelcome = true
     end
 
-    MainFrameContainer=createHub()
-    HubOpen=true
     if ToggleButton then ToggleButton.Visible = false end
 end
 
