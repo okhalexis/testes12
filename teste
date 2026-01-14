@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.3 (CORRIGIDA)
-    -- 1. CORES: Revertidas para o padrão original (Dark/Orange).
-    -- 2. DASHBOARD: Limpa (sem emojis), com status em tempo real.
-    -- 3. NOTIFICAÇÕES: Posicionadas EMBAIXO, estilo Toast.
+    -- Khalexis Hub - Versão v5.4 (HOME ICON + NOTIFICAÇÕES FIX)
+    -- 1. HOME ICON: Botão de casa na barra de título abre a Dashboard.
+    -- 2. NOTIFICAÇÕES: Sistema corrigido (Stack Bottom-Up).
+    -- 3. CORES: Originais mantidas.
     -- 4. KEY SYSTEM: LinkUnlocker integrado.
 
 --]]
@@ -51,6 +51,7 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
+    Home = "rbxassetid://10709752906", -- Casinha
     Clock = "rbxassetid://10709752254",
     Signal = "rbxassetid://10709752535"
 }
@@ -243,13 +244,13 @@ local function SmoothTween(obj, time, properties)
 end
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (TOAST)
+-- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO)
 -- ==========================================
 local NotificationHolder = Instance.new("Frame")
 NotificationHolder.Name = "NotificationHolder"
-NotificationHolder.Size = UDim2.new(0, 320, 1, 0)
--- Posição inferior
-NotificationHolder.Position = UDim2.new(0.5, -160, 0.85, -20) 
+NotificationHolder.Size = UDim2.new(0, 300, 0.5, 0)
+-- Posição: Canto inferior direito ou Central Inferior
+NotificationHolder.Position = UDim2.new(0.5, -150, 0.45, 0) -- Levemente acima do final da tela
 NotificationHolder.BackgroundTransparency = 1
 NotificationHolder.Parent = ScreenGui
 NotificationHolder.ZIndex = 2000
@@ -257,8 +258,8 @@ NotificationHolder.ZIndex = 2000
 local NotifList = Instance.new("UIListLayout")
 NotifList.Parent = NotificationHolder
 NotifList.SortOrder = Enum.SortOrder.LayoutOrder
-NotifList.Padding = UDim.new(0, 8)
-NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom 
+NotifList.Padding = UDim.new(0, 5)
+NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Cresce de baixo para cima
 NotifList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 function KhalexisToast(title, text, type, duration)
@@ -271,51 +272,52 @@ function KhalexisToast(title, text, type, duration)
 
     local Toast = Instance.new("Frame")
     Toast.Name = "Toast"
-    Toast.Size = UDim2.new(0, 300, 0, 50)
+    Toast.Size = UDim2.new(0, 280, 0, 45) -- Tamanho compacto
     Toast.BackgroundColor3 = COLOR_BLACK
     Toast.BackgroundTransparency = 0.1
     Toast.Parent = NotificationHolder
-    applyRoundedCorners(Toast, 10)
+    applyRoundedCorners(Toast, 8)
     
-    local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
+    local ToastStroke = ApplyStroke(Toast, color, 1, 0.5)
     
     local IconFrame = Instance.new("Frame")
-    IconFrame.Size = UDim2.new(0, 50, 1, 0)
+    IconFrame.Size = UDim2.new(0, 45, 1, 0)
     IconFrame.BackgroundColor3 = color
-    IconFrame.BackgroundTransparency = 0.85
+    IconFrame.BackgroundTransparency = 0.9
     IconFrame.Parent = Toast
-    applyRoundedCorners(IconFrame, 10)
+    applyRoundedCorners(IconFrame, 8)
     
+    -- Fix para borda esquerda reta se quiser
     local FixCorner = Instance.new("Frame")
-    FixCorner.Size = UDim2.new(0, 10, 1, 0)
+    FixCorner.Size = UDim2.new(0, 5, 1, 0)
     FixCorner.Position = UDim2.new(1, -5, 0, 0)
     FixCorner.BackgroundColor3 = color
-    FixCorner.BackgroundTransparency = 0.85
+    FixCorner.BackgroundTransparency = 0.9
     FixCorner.BorderSizePixel = 0
     FixCorner.Parent = IconFrame
 
     local IconImg = Instance.new("ImageLabel")
-    IconImg.Size = UDim2.new(0, 24, 0, 24)
-    IconImg.Position = UDim2.new(0.5, -12, 0.5, -12)
+    IconImg.Size = UDim2.new(0, 20, 0, 20)
+    IconImg.Position = UDim2.new(0.5, -10, 0.5, -10)
     IconImg.BackgroundTransparency = 1
     IconImg.Image = icon
     IconImg.ImageColor3 = color
     IconImg.Parent = IconFrame
 
     local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -60, 0, 20)
-    TitleLabel.Position = UDim2.new(0, 60, 0, 5)
+    TitleLabel.Size = UDim2.new(1, -55, 0, 18)
+    TitleLabel.Position = UDim2.new(0, 50, 0, 4)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Text = title
     TitleLabel.Font = HUB_FONT
     TitleLabel.TextColor3 = COLOR_TEXT
-    TitleLabel.TextSize = 14
+    TitleLabel.TextSize = 13
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = Toast
 
     local DescLabel = Instance.new("TextLabel")
-    DescLabel.Size = UDim2.new(1, -60, 0, 20)
-    DescLabel.Position = UDim2.new(0, 60, 0, 25)
+    DescLabel.Size = UDim2.new(1, -55, 0, 18)
+    DescLabel.Position = UDim2.new(0, 50, 0, 22)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
     DescLabel.Font = Enum.Font.GothamMedium
@@ -325,23 +327,25 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.TextWrapped = true
     DescLabel.Parent = Toast
 
-    -- Animação Entrada
+    -- Animação Slide Up + Fade In
     Toast.BackgroundTransparency = 1
     TitleLabel.TextTransparency = 1
     DescLabel.TextTransparency = 1
     IconImg.ImageTransparency = 1
     ToastStroke.Transparency = 1
     IconFrame.BackgroundTransparency = 1
-
-    local tInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    -- Usando LayoutOrder para forçar ordem se necessário, mas padrão funciona
+    
+    local tInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     TweenService:Create(Toast, tInfo, {BackgroundTransparency = 0.1}):Play()
     TweenService:Create(ToastStroke, tInfo, {Transparency = 0.5}):Play()
-    TweenService:Create(IconFrame, tInfo, {BackgroundTransparency = 0.85}):Play()
+    TweenService:Create(IconFrame, tInfo, {BackgroundTransparency = 0.9}):Play()
     TweenService:Create(IconImg, tInfo, {ImageTransparency = 0}):Play()
     TweenService:Create(TitleLabel, tInfo, {TextTransparency = 0}):Play()
     TweenService:Create(DescLabel, tInfo, {TextTransparency = 0}):Play()
 
-    task.delay(duration or 4, function()
+    task.delay(duration or 3, function()
         if Toast and Toast.Parent then
             local tOut = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
             local fadeOut = TweenService:Create(Toast, tOut, {BackgroundTransparency = 1})
@@ -534,15 +538,28 @@ local function createHub()
 
     local titleLabel=Instance.new("TextLabel")
     titleLabel.Name="Title"
-    titleLabel.Size=UDim2.new(1,0,1,0)
+    titleLabel.Size=UDim2.new(1,-30,1,0) -- Espaço para icone home
+    titleLabel.Position = UDim2.new(0, 30, 0, 0)
     titleLabel.BackgroundTransparency=1
     titleLabel.Text="Khalexis Hub"
     titleLabel.TextColor3=COLOR_TEXT
     titleLabel.Font=HUB_FONT
     titleLabel.TextSize=18
-    titleLabel.TextXAlignment=Enum.TextXAlignment.Center
-    titleLabel.TextYAlignment=Enum.TextYAlignment.Center
+    titleLabel.TextXAlignment=Enum.TextXAlignment.Left
     titleLabel.Parent=titleBar
+
+    -- [NOVO] ÍCONE HOME NA BARRA DE TÍTULO
+    local homeButton = Instance.new("ImageButton")
+    homeButton.Name = "HomeButton"
+    homeButton.Size = UDim2.new(0, 20, 0, 20)
+    homeButton.Position = UDim2.new(0, 8, 0.5, -10)
+    homeButton.BackgroundTransparency = 1
+    homeButton.Image = Icons.Home
+    homeButton.ImageColor3 = COLOR_TEXT
+    homeButton.Parent = titleBar
+
+    homeButton.MouseEnter:Connect(function() SmoothTween(homeButton, 0.2, {ImageColor3 = COLOR_ACCENT}) end)
+    homeButton.MouseLeave:Connect(function() SmoothTween(homeButton, 0.2, {ImageColor3 = COLOR_TEXT}) end)
 
     local closeButton = Instance.new("TextButton")
     closeButton.Name = "CloseButton"
@@ -793,9 +810,11 @@ local function createHub()
             local added = ToggleFavorite(name)
             if added then
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+                -- [ADICIONADO O + AQUI]
                 KhalexisToast("Favoritos", "[+] Adicionado: " .. name, "Success", 2)
             else
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
+                -- [ADICIONADO O - AQUI]
                 KhalexisToast("Favoritos", "[-] Removido: " .. name, "Warning", 2)
             end
         end)
@@ -1026,7 +1045,7 @@ local function createHub()
     
     favFixedBtn.MouseButton1Click:Connect(onFavoritesClick)
 
-    local function createCategoryButton(name, contents, defaultOrder, isDashboard)
+    local function createCategoryButton(name, contents, defaultOrder)
         if typeof(contents) == "table" then
             for _, s in ipairs(contents) do
                 RegisterScript(s.Name, s.Func)
@@ -1060,10 +1079,7 @@ local function createHub()
             btn.LayoutOrder = defaultOrder + 10
         end
         
-        if isDashboard then 
-            btn.LayoutOrder = 0 
-            btn.Text = "Dashboard" -- SEM EMOJI
-        elseif name == "📣 Atualizações 📣" then 
+        if name == "📣 Atualizações 📣" then 
             btn.LayoutOrder = 1 
         end
 
@@ -1075,9 +1091,7 @@ local function createHub()
             end
             btn.TextColor3 = COLOR_STAR_ON
 
-            if isDashboard then
-                displayDashboard()
-            elseif name == "📣 Atualizações 📣" then
+            if name == "📣 Atualizações 📣" then
                 displayUpdates()
             elseif typeof(contents)=="table" then
                 clearScripts()
@@ -1089,10 +1103,10 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVIDADES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- Nova aba DASHBOARD com status em tempo real.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- ÍCONE HOME ADICIONADO na barra de título.", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "- Notificações reposicionadas EMBAIXO.", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "- CORES: Revertidas para o original.", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
@@ -1242,7 +1256,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
     }
 
     -- CRIAÇÃO DAS ABAS
-    local dashboardButton = createCategoryButton("Dashboard", nil, 0, true)
     local updatesButtonInstance = createCategoryButton("📣 Atualizações 📣", nil, 1)
     
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
@@ -1282,14 +1295,17 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
     createCategoryButton("Escape Tsunami For Brainrots", EscapeTsunamiForBrainrotsScripts, 37)
     createCategoryButton("Devil Hunter", DevilHunterScripts, 38)
 
-    -- INICIA NA DASHBOARD
-    if dashboardButton then
+    -- INICIA NO DASHBOARD
+    displayDashboard()
+    
+    -- Home Button Logic
+    homeButton.MouseButton1Click:Connect(function()
+        TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
             if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
         end
-        dashboardButton.TextColor3 = COLOR_STAR_ON
         displayDashboard()
-    end
+    end)
 
     return animationContainer
 end
