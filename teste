@@ -1,10 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v6.0 (SMART SCALING)
-    -- NOVO: Sistema de Escalonamento Inteligente (PC = Grande / Mobile = Normal).
-    -- CÁLCULO: Baseado na resolução da viewport e tipo de entrada (Touch/Mouse).
-    -- CORREÇÃO: Dragging ajustado matematicamente para funcionar com UIScale.
-    -- CORREÇÃO: Sistema de Notificações agora escala junto com o Hub.
+    -- Khalexis Hub - Versão Final v6.1 (SETTINGS CATALOG)
+    -- NOVO: Ícone de Engrenagem para Configurações.
+    -- NOVO: Catálogo de Tamanhos (Botões pré-definidos: 0.5x, 0.75x, 1.5x, 2x, 3x).
+    -- NOVO: Sistema de Salvar Configuração (Lembra o tamanho escolhido).
+    -- CORREÇÃO: Dragging ajustado matematicamente para funcionar perfeitamente com qualquer tamanho.
 
 --]]
 
@@ -22,20 +22,17 @@ end
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
--- SERVIÇOS & VARIÁVEIS LOCAIS
+-- CONFIGURAÇÃO VISUAL E VARIÁVEIS
 -- ==========================================
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
-local Camera = workspace.CurrentCamera
+local SCALE_FILE = "KhalexisHub_ScaleConfig.txt" -- Arquivo de config
+local CurrentScale = 1.0
 
--- ==========================================
--- CONFIGURAÇÃO VISUAL
--- ==========================================
+-- Carregar escala salva
+if isfile(SCALE_FILE) then
+    local saved = tonumber(readfile(SCALE_FILE))
+    if saved then CurrentScale = saved end
+end
+
 local HUB_FONT = Enum.Font.FredokaOne 
 local HUB_TEXT_SIZE = 14 
 
@@ -58,100 +55,10 @@ local Icons = {
     Error = "rbxassetid://113312905787220",
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
-    Finger = "rbxassetid://12333784627"
+    Finger = "rbxassetid://12333784627",
+    Gear = "rbxassetid://11389136423" -- Engrenagem
 }
 
--- ==========================================
--- SISTEMA DE ESCALONAMENTO INTELIGENTE (SMART SCALING)
--- ==========================================
-local SmartScale = {}
-SmartScale.CurrentFactor = 1
-
-function SmartScale.GetOptimalScale()
-    local viewport = Camera.ViewportSize
-    local isTouch = UserInputService.TouchEnabled
-    local isKeyboard = UserInputService.KeyboardEnabled
-    local isMouse = UserInputService.MouseEnabled
-
-    -- Lógica de Detecção
-    local isMobile = isTouch and not isMouse
-    local isPC = isMouse and isKeyboard
-
-    -- Tamanho Base de Referência (Design Mobile)
-    local baseHeight = 350 -- Altura média do Hub em pixels
-
-    if isPC then
-        -- CÁLCULO PARA PC
-        -- Queremos que seja cerca de 2.4x maior, mas não pode sair da tela.
-        
-        local targetMultiplier = 2.4 -- Alvo desejado para PC (Grande)
-        
-        -- Cálculo de Limitador: O Hub não deve ocupar mais que 85% da altura da tela
-        local maxHeightScale = (viewport.Y * 0.85) / baseHeight
-        
-        -- Retorna o menor valor entre o alvo (2.4x) e o limite da tela
-        return math.min(targetMultiplier, maxHeightScale)
-        
-    elseif isMobile then
-        -- CÁLCULO PARA MOBILE
-        -- Mantém próximo de 1.0, mas ajusta para tablets
-        if viewport.X > 600 then
-            return 1.2 -- Tablet
-        else
-            return 1.0 -- Celular Padrão
-        end
-    else
-        -- Fallback (Console ou outros)
-        return 1.5
-    end
-end
-
--- Atualiza o fator global
-SmartScale.CurrentFactor = SmartScale.GetOptimalScale()
-
--- Função para tornar um Frame arrastável considerando o Scale
-local function MakeDraggable(frame, container, scaleObj)
-    local dragging = false
-    local dragInput, dragStart, startPos
-
-    frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = container.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input == dragInput then
-            local currentScale = scaleObj.Scale
-            if currentScale == 0 then currentScale = 1 end -- Evitar divisão por zero
-
-            -- CÁLCULO CORRIGIDO: Dividir o Delta pelo Scale para o mouse acompanhar o frame corretamente
-            local delta = (input.Position - dragStart) / currentScale
-            container.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X, 
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-end
-
--- ==========================================
--- UTILITÁRIOS VISUAIS
--- ==========================================
 local function applyRoundedCorners(guiObject, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, radius or 8)
@@ -168,11 +75,13 @@ local function ApplyStroke(instance, color, thickness, transparency)
     return stroke
 end
 
-local function SmoothTween(obj, time, properties)
-    local tween = TweenService:Create(obj, TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), properties)
-    tween:Play()
-    return tween
-end
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
 -- BANCO DE DADOS DE IDS
@@ -287,59 +196,24 @@ local function RegisterScript(name, func)
 end
 
 -- ==========================================
--- CONFIGURAÇÃO KEY SYSTEM
--- ==========================================
-Config = {
-    api = "e696e91d-0ba0-4693-a6a5-91145ead6ed1", 
-    service = "Khalexis Hub - Key",
-    provider = "Khalexis Hub - Key"
-}
-
-local KeySystemData = {
-    Name = "Khalexis Hub",
-    Colors = {
-        Background = COLOR_BLACK, 
-        Title = Color3.fromRGB(255, 140, 0),
-        InputField = COLOR_CATEGORY_BG,
-        InputFieldBorder = Color3.fromRGB(60, 60, 60), 
-        Button = COLOR_CATEGORY_BG,
-        ButtonHover = Color3.fromRGB(45, 45, 45),
-        Error = Color3.fromRGB(220, 50, 50),
-        Success = Color3.fromRGB(80, 200, 80),
-        Discord = Color3.fromRGB(88, 101, 242)
-    },
-    Service = "redexecutor",
-    DiscordInvite = "aNaFpb2Qsb"
-}
-
--- ==========================================
 -- SISTEMA DE NOTIFICAÇÃO (TOAST)
 -- ==========================================
 local NotificationHolder = Instance.new("Frame")
 NotificationHolder.Name = "NotificationHolder"
 NotificationHolder.AnchorPoint = Vector2.new(0.5, 1) 
 NotificationHolder.Size = UDim2.new(0, 320, 0, 500) 
--- Ajuste dinâmico da posição do Toast baseado no Scale
-local baseToastOffset = -180
-local function UpdateToastPos()
-    local scale = SmartScale.CurrentFactor
-    -- Se a escala for grande, o hub ocupa mais tela, então o toast deve subir mais
-    -- offset = base - (altura extra)
-    NotificationHolder.Position = UDim2.new(0.5, 0, 0.5, baseToastOffset * scale)
-end
-UpdateToastPos()
-
+NotificationHolder.Position = UDim2.new(0.5, 0, 0.5, -180) 
 NotificationHolder.BackgroundTransparency = 1
 NotificationHolder.Parent = ScreenGui
 NotificationHolder.ZIndex = 2000
-NotificationHolder.ClipsDescendants = false
+NotificationHolder.ClipsDescendants = false 
 
 local NotifList = Instance.new("UIListLayout")
 NotifList.Parent = NotificationHolder
-NotifList.SortOrder = Enum.SortOrder.LayoutOrder
+NotifList.SortOrder = Enum.SortOrder.LayoutOrder 
 NotifList.Padding = UDim.new(0, 8)
 NotifList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom
+NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom 
 
 local notifCount = 0
 
@@ -362,16 +236,6 @@ function KhalexisToast(title, text, type, duration)
     Toast.Parent = NotificationHolder
     applyRoundedCorners(Toast, 10)
     
-    -- Aplicar escala ao Toast individualmente se necessário, mas o holder deve ser suficiente se bem posicionado.
-    -- Para consistência com o Hub "Gigante" no PC, vamos aplicar um scale relativo.
-    local scaleFactor = SmartScale.CurrentFactor
-    if scaleFactor > 1.5 then
-        -- Se estiver no PC Gigante, aumenta um pouco o toast, mas não tanto quanto o hub (2.5x toast fica absurdo)
-        local toastScale = Instance.new("UIScale")
-        toastScale.Scale = math.clamp(scaleFactor * 0.7, 1, 1.5)
-        toastScale.Parent = Toast
-    end
-
     local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
     
     local IconFrame = Instance.new("Frame")
@@ -415,7 +279,6 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.TextWrapped = true
     DescLabel.Parent = Toast
 
-    -- Animação
     Toast.BackgroundTransparency = 1
     TitleLabel.TextTransparency = 1
     DescLabel.TextTransparency = 1
@@ -472,6 +335,12 @@ local function closeHubWithAnimation(container)
     if ToggleButton then ToggleButton.Visible = true end
 end
 
+local function saveScale(val)
+    if writefile then
+        writefile(SCALE_FILE, tostring(val))
+    end
+end
+
 local function showLoadingScreen()
     local frame = Instance.new("Frame")
     frame.Name = "LoadingFrame"
@@ -482,10 +351,10 @@ local function showLoadingScreen()
     frame.Parent = ScreenGui
     applyRoundedCorners(frame, 16)
     
-    -- Scale Loading Screen
-    local scale = Instance.new("UIScale")
-    scale.Scale = SmartScale.CurrentFactor
-    scale.Parent = frame
+    -- Aplicar escala salva
+    local s = Instance.new("UIScale")
+    s.Scale = CurrentScale
+    s.Parent = frame
 
     local border = Instance.new("UIStroke")
     border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -548,17 +417,14 @@ local function createHub()
     animationContainer.BackgroundTransparency = 1
     animationContainer.Parent = ScreenGui
 
-    -- ====================================================
-    -- APLICAÇÃO DO SCALE (SMART SCALING)
-    -- ====================================================
     local uiScaler = Instance.new("UIScale")
     uiScaler.Parent = animationContainer
     
-    -- Começa em 0 para animação de entrada
+    -- Começa em 0 para animar
     uiScaler.Scale = 0 
     
-    local targetScale = SmartScale.GetOptimalScale() -- Recalcula para garantir precisão
-    local openTween = TweenService:Create(uiScaler, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = targetScale})
+    -- Tween até o CurrentScale
+    local openTween = TweenService:Create(uiScaler, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = CurrentScale})
     openTween:Play()
 
     local frame = Instance.new("Frame")
@@ -569,8 +435,41 @@ local function createHub()
     frame.Parent=animationContainer
     applyRoundedCorners(frame,12)
 
-    -- Aplicar Drag Logic ajustada para UIScale
-    MakeDraggable(frame, animationContainer, uiScaler)
+    -- DRAG LOGIC (CORRIGIDA COM SCALE)
+    local draggingHub = false
+    local dragInputHub, dragStartHub, startPosHub
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            draggingHub = true
+            dragStartHub = input.Position
+            startPosHub = animationContainer.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    draggingHub = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInputHub = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if draggingHub and input == dragInputHub then
+            local scale = uiScaler.Scale
+            if scale == 0 then scale = 1 end
+            -- MATEMÁTICA: (PosAtual - PosInicial) / Escala
+            local delta = (input.Position - dragStartHub) / scale
+            animationContainer.Position = UDim2.new(
+                startPosHub.X.Scale, startPosHub.X.Offset + delta.X, 
+                startPosHub.Y.Scale, startPosHub.Y.Offset + delta.Y
+            )
+        end
+    end)
 
     local hubBorder=Instance.new("UIStroke")
     hubBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
@@ -605,12 +504,13 @@ local function createHub()
     titleLabel.Name="Title"
     titleLabel.Size=UDim2.new(1,0,1,0)
     titleLabel.BackgroundTransparency=1
-    titleLabel.Text="Khalexis Hub v6.0"
+    titleLabel.Text="Khalexis Hub"
     titleLabel.TextColor3=COLOR_TEXT
     titleLabel.Font=HUB_FONT
     titleLabel.TextSize=18
     titleLabel.Parent=titleBar
 
+    -- CLOSE BUTTON
     local closeButton = Instance.new("TextButton")
     closeButton.Name = "CloseButton"
     closeButton.Size = UDim2.new(0, 24, 0, 24)
@@ -623,6 +523,33 @@ local function createHub()
     closeButton.Parent = titleBar
     applyRoundedCorners(closeButton,12)
     closeButton.MouseButton1Click:Connect(function() closeHubWithAnimation(animationContainer) end)
+
+    -- GEAR BUTTON (SETTINGS)
+    local gearButton = Instance.new("ImageButton")
+    gearButton.Name = "GearButton"
+    gearButton.Size = UDim2.new(0, 24, 0, 24)
+    gearButton.Position = UDim2.new(1, -58, 0.5, -12) -- Ao lado do X
+    gearButton.BackgroundColor3 = COLOR_CATEGORY_BG
+    gearButton.Image = Icons.Gear
+    gearButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+    gearButton.Parent = titleBar
+    applyRoundedCorners(gearButton, 8)
+    
+    local scriptFrame=Instance.new("ScrollingFrame") -- Referencia antecipada
+    local settingsFrame = Instance.new("Frame") -- Referencia antecipada
+
+    gearButton.MouseButton1Click:Connect(function()
+        -- Alternar entre ScriptFrame e SettingsFrame
+        if settingsFrame.Visible then
+            settingsFrame.Visible = false
+            scriptFrame.Visible = true
+            gearButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+        else
+            settingsFrame.Visible = true
+            scriptFrame.Visible = false
+            gearButton.ImageColor3 = Colors.Accent
+        end
+    end)
 
     -- SIDEBAR (ESQUERDA)
     local searchBox = Instance.new("TextBox")
@@ -689,8 +616,7 @@ local function createHub()
         end 
     end)
 
-    -- MAIN CONTENT (DIREITA)
-    local scriptFrame=Instance.new("ScrollingFrame")
+    -- MAIN CONTENT (DIREITA - SCRIPTS)
     scriptFrame.Name="ScriptFrame"
     scriptFrame.Size=UDim2.new(1,-135,0,250)
     scriptFrame.Position=UDim2.new(0,130,0,40)
@@ -717,6 +643,104 @@ local function createHub()
         scriptContainer.Size=UDim2.new(1,-20,0,layoutScript.AbsoluteContentSize.Y)
         scriptFrame.CanvasSize = UDim2.new(0, 0, 0, layoutScript.AbsoluteContentSize.Y + 50)
     end)
+
+    -- ====================================================
+    -- SETTINGS FRAME (CATÁLOGO DE TAMANHO)
+    -- ====================================================
+    settingsFrame.Name = "SettingsFrame"
+    settingsFrame.Size = UDim2.new(1,-135,0,250)
+    settingsFrame.Position = UDim2.new(0,130,0,40)
+    settingsFrame.BackgroundColor3 = COLOR_BLACK
+    settingsFrame.Visible = false -- Oculto por padrão
+    settingsFrame.Parent = frame
+    applyRoundedCorners(settingsFrame, 16)
+    ApplyStroke(settingsFrame, Color3.fromRGB(60,60,60), 1.5)
+
+    local stgLabel = Instance.new("TextLabel")
+    stgLabel.Text = "TAMANHO DA INTERFACE"
+    stgLabel.Size = UDim2.new(1,0,0,30)
+    stgLabel.BackgroundTransparency = 1
+    stgLabel.TextColor3 = Colors.Accent
+    stgLabel.Font = HUB_FONT
+    stgLabel.TextSize = 14
+    stgLabel.Parent = settingsFrame
+
+    local stgContainer = Instance.new("ScrollingFrame")
+    stgContainer.Size = UDim2.new(1, -20, 1, -40)
+    stgContainer.Position = UDim2.new(0, 10, 0, 35)
+    stgContainer.BackgroundTransparency = 1
+    stgContainer.BorderSizePixel = 0
+    stgContainer.Parent = settingsFrame
+    
+    local stgList = Instance.new("UIListLayout")
+    stgList.SortOrder = Enum.SortOrder.LayoutOrder
+    stgList.Padding = UDim.new(0, 15)
+    stgList.Parent = stgContainer
+
+    -- Helper para criar botões de tamanho
+    local function CreateSizeSection(title, options)
+        local secFrame = Instance.new("Frame")
+        secFrame.Size = UDim2.new(1, 0, 0, 60)
+        secFrame.BackgroundTransparency = 1
+        secFrame.Parent = stgContainer
+        
+        local secTitle = Instance.new("TextLabel")
+        secTitle.Text = title
+        secTitle.Size = UDim2.new(1, 0, 0, 20)
+        secTitle.BackgroundTransparency = 1
+        secTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+        secTitle.Font = HUB_FONT
+        secTitle.TextSize = 12
+        secTitle.TextXAlignment = Enum.TextXAlignment.Left
+        secTitle.Parent = secFrame
+
+        local btnContainer = Instance.new("Frame")
+        btnContainer.Size = UDim2.new(1, 0, 0, 35)
+        btnContainer.Position = UDim2.new(0, 0, 0, 25)
+        btnContainer.BackgroundTransparency = 1
+        btnContainer.Parent = secFrame
+        
+        local btnList = Instance.new("UIListLayout")
+        btnList.FillDirection = Enum.FillDirection.Horizontal
+        btnList.Padding = UDim.new(0, 10)
+        btnList.Parent = btnContainer
+
+        for _, opt in ipairs(options) do
+            local sBtn = Instance.new("TextButton")
+            sBtn.Size = UDim2.new(0, 80, 1, 0)
+            sBtn.BackgroundColor3 = COLOR_CATEGORY_BTN
+            sBtn.Text = opt.Label
+            sBtn.TextColor3 = COLOR_TEXT
+            sBtn.Font = HUB_FONT
+            sBtn.TextSize = 12
+            sBtn.Parent = btnContainer
+            applyRoundedCorners(sBtn, 6)
+            local sBorder = ApplyStroke(sBtn, Color3.fromRGB(60,60,60), 1)
+
+            sBtn.MouseButton1Click:Connect(function()
+                CurrentScale = opt.Value
+                saveScale(CurrentScale)
+                -- Anima a troca de tamanho
+                TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = CurrentScale}):Play()
+                KhalexisToast("Configuração", "Tamanho alterado para: " .. opt.Label, "Success", 2)
+            end)
+        end
+    end
+
+    CreateSizeSection("Diminuir", {
+        {Label = "0.5x", Value = 0.5},
+        {Label = "0.75x", Value = 0.75}
+    })
+
+    CreateSizeSection("Padrão", {
+        {Label = "Normal (1.0x)", Value = 1.0}
+    })
+
+    CreateSizeSection("Aumentar", {
+        {Label = "1.5x", Value = 1.5},
+        {Label = "2.0x", Value = 2.0},
+        {Label = "3.0x", Value = 3.0}
+    })
 
     -- FOOTER
     local footerBackground=Instance.new("Frame")
@@ -857,6 +881,11 @@ local function createHub()
         end
 
         btn.MouseButton1Click:Connect(function()
+            -- Garante que volte para scripts se estiver em settings
+            settingsFrame.Visible = false
+            scriptFrame.Visible = true
+            gearButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+
             clearScripts()
             TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
             for _, otherBtn in pairs(categoryContainer:GetChildren()) do
@@ -871,6 +900,11 @@ local function createHub()
     end
 
     local function onFavoritesClick()
+        -- Garante que volte para scripts
+        settingsFrame.Visible = false
+        scriptFrame.Visible = true
+        gearButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
+
         clearScripts()
         SmoothTween(favFixedBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
@@ -1122,14 +1156,36 @@ local function CreateKeyUI()
     MainKeyFrame.ClipsDescendants = true
     applyRoundedCorners(MainKeyFrame, 8)
     ApplyStroke(MainKeyFrame, Colors.Accent, 2)
+    
+    -- Aplicar Scale salvo também na KeyUI
+    local kScale = Instance.new("UIScale")
+    kScale.Scale = CurrentScale
+    kScale.Parent = MainKeyFrame
 
-    -- APLICAR SMART SCALE
-    local uiScale = Instance.new("UIScale")
-    uiScale.Scale = SmartScale.GetOptimalScale()
-    uiScale.Parent = MainKeyFrame
-
-    -- Make Drag Key
-    MakeDraggable(MainKeyFrame, MainKeyFrame, uiScale)
+    -- Drag Key
+    local dragging = false
+    local dragStart, startPos
+    MainKeyFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainKeyFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local scale = kScale.Scale
+            if scale == 0 then scale = 1 end
+            local delta = (input.Position - dragStart) / scale
+            MainKeyFrame.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X, 
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
 
     local TitleBar = Instance.new("Frame")
     TitleBar.Name = "TitleBar"
@@ -1145,7 +1201,7 @@ local function CreateKeyUI()
     Title.Position = UDim2.new(0.5, 0, 0, 45) 
     Title.Size = UDim2.new(0, 250, 0, 20)
     Title.Font = HUB_FONT
-    Title.TextColor3 = KeySystemData.Colors.Title, 
+    Title.TextColor3 = KeySystemData.Colors.Title
     Title.TextSize = 15
     Title.TextXAlignment = Enum.TextXAlignment.Center
     Title.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1196,7 +1252,7 @@ local function CreateKeyUI()
     SubmitButton.Text = "Verificar Key"
     SubmitButton.Font = HUB_FONT
     SubmitButton.TextSize = 14
-    SubmitButton.TextColor3 = KeySystemData.Colors.Title, 
+    SubmitButton.TextColor3 = KeySystemData.Colors.Title
     SubmitButton.AutoButtonColor = false
     SubmitButton.AnchorPoint = Vector2.new(0.5, 0)
     applyRoundedCorners(SubmitButton, 6)
@@ -1209,7 +1265,7 @@ local function CreateKeyUI()
     GetKeyButton.Text = "Pegar Key"
     GetKeyButton.Font = HUB_FONT
     GetKeyButton.TextSize = 14
-    GetKeyButton.TextColor3 = KeySystemData.Colors.Title, 
+    GetKeyButton.TextColor3 = KeySystemData.Colors.Title
     GetKeyButton.AutoButtonColor = false
     GetKeyButton.AnchorPoint = Vector2.new(0.5, 0)
     applyRoundedCorners(GetKeyButton, 6)
@@ -1287,9 +1343,8 @@ ToggleButton.Image = Icons.Logo
 ToggleButton.Parent = ScreenGui
 ToggleButton.Visible = false
 
--- Aplica o Scale também no botão para não ficar minúsculo no PC
 local btnScale = Instance.new("UIScale")
-btnScale.Scale = SmartScale.CurrentFactor
+btnScale.Scale = CurrentScale -- Aplica a escala salva
 btnScale.Parent = ToggleButton
 
 local corner = Instance.new("UICorner")
@@ -1302,7 +1357,33 @@ stroke.Color = Color3.fromRGB(255, 140, 0)
 stroke.Thickness = 2
 stroke.Parent = ToggleButton
 
-MakeDraggable(ToggleButton, ToggleButton, btnScale)
+-- Drag Toggle (Adaptado para Scale)
+local draggingToggle = false
+local dragStartToggle, startPosToggle
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingToggle = true
+        dragStartToggle = input.Position
+        startPosToggle = ToggleButton.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                draggingToggle = false
+            end
+        end)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local s = btnScale.Scale
+        if s == 0 then s = 1 end
+        local delta = (input.Position - dragStartToggle) / s
+        ToggleButton.Position = UDim2.new(
+            startPosToggle.X.Scale, startPosToggle.X.Offset + delta.X, 
+            startPosToggle.Y.Scale, startPosToggle.Y.Offset + delta.Y
+        )
+    end
+end)
 
 ToggleButton.MouseButton1Click:Connect(function()
     if HubOpen then
