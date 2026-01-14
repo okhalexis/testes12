@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.1 (FIX FINAL CORES & BEM VINDO)
-    -- CORREÇÃO: Fundo das notificações agora é um cinza mais claro (legível).
-    -- CORREÇÃO: Mensagem "Bem Vindo" agora espera o Hub abrir para grudar nele.
-    -- MANTIDO: Sistema de Key e Save.
+    -- Khalexis Hub - Versão v6.2 (FIX ZINDEX & CAMADAS)
+    -- CORREÇÃO FINAL: Camadas (ZIndex) ajustadas manualmente.
+    -- O Texto agora é forçado a ficar na camada 2002 (frente), enquanto o fundo fica na 2000 (trás).
+    -- Texto agora é Branco Puro para leitura máxima.
 
 --]]
 
@@ -28,11 +28,11 @@ local HUB_TEXT_SIZE = 14
 
 local Colors = {
     Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo (Fundo do Hub)
-    Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Mais Claro (Para Notificações)
+    Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Chumbo (Fundo da Notificação)
     Stroke = Color3.fromRGB(60, 60, 60),
     Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
-    Text = Color3.fromRGB(240, 240, 240),
-    TextDim = Color3.fromRGB(180, 180, 180),
+    Text = Color3.fromRGB(255, 255, 255),    -- Branco Puro (Para texto da notificação)
+    TextDim = Color3.fromRGB(200, 200, 200), -- Cinza Claro
     Success = Color3.fromRGB(40, 200, 64),
     Error = Color3.fromRGB(245, 70, 90),
     Warning = Color3.fromRGB(254, 188, 46),
@@ -163,6 +163,8 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
+-- IMPORTANTE: Definir Sibling para respeitar ZIndex
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 
 local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
@@ -171,7 +173,7 @@ local ToggleButton
 local HasShownWelcome = false
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO)
+-- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO CAMADAS)
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -204,7 +206,7 @@ function KhalexisToast(title, text, type, duration)
         existingToast:Destroy()
     end
 
-    -- 3. Criar a nova Notificação
+    -- 3. Criar a nova Notificação (Container Principal)
     local Toast = Instance.new("Frame")
     Toast.Name = "KhalexisActiveToast"
     Toast.Size = UDim2.new(0, 320, 0, 65) 
@@ -215,20 +217,22 @@ function KhalexisToast(title, text, type, duration)
         Toast.Position = UDim2.new(0.5, xOffset, 0, yOffset) 
     end
 
-    -- CORREÇÃO: Usando uma cor bem mais clara (Cinza Chumbo) para destacar do fundo preto
+    -- FUNDO CINZA CLARO
     Toast.BackgroundColor3 = Colors.Secondary 
-    Toast.BackgroundTransparency = 0.05 -- Quase sólido para melhor leitura
+    Toast.BackgroundTransparency = 0.05 
     Toast.Parent = targetParent
-    Toast.ZIndex = 2000 
+    Toast.ZIndex = 2000 -- Camada Base (Fundo)
     applyRoundedCorners(Toast, 10)
     
     local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
     
+    -- Ícone (Camada Intermediária)
     local IconFrame = Instance.new("Frame")
     IconFrame.Size = UDim2.new(0, 50, 1, 0)
     IconFrame.BackgroundColor3 = color
     IconFrame.BackgroundTransparency = 0.85
     IconFrame.Parent = Toast
+    IconFrame.ZIndex = 2001 -- Acima do fundo
     applyRoundedCorners(IconFrame, 10) 
 
     local FixCorner = Instance.new("Frame")
@@ -238,6 +242,7 @@ function KhalexisToast(title, text, type, duration)
     FixCorner.BackgroundTransparency = 0.85
     FixCorner.BorderSizePixel = 0
     FixCorner.Parent = IconFrame
+    FixCorner.ZIndex = 2001
 
     local IconImg = Instance.new("ImageLabel")
     IconImg.Size = UDim2.new(0, 28, 0, 28)
@@ -246,17 +251,20 @@ function KhalexisToast(title, text, type, duration)
     IconImg.Image = icon
     IconImg.ImageColor3 = color
     IconImg.Parent = IconFrame
+    IconImg.ZIndex = 2002 -- Acima do Frame do ícone
 
+    -- TEXTOS (Camada SUPERIOR - FRENTE DE TUDO)
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -65, 0, 22)
     TitleLabel.Position = UDim2.new(0, 60, 0, 6)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Text = title
     TitleLabel.Font = HUB_FONT
-    TitleLabel.TextColor3 = Colors.Text
+    TitleLabel.TextColor3 = Colors.Text -- Branco Puro
     TitleLabel.TextSize = 16
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = Toast
+    TitleLabel.ZIndex = 2002 -- Força o texto para frente
 
     local DescLabel = Instance.new("TextLabel")
     DescLabel.Size = UDim2.new(1, -65, 0, 32)
@@ -264,12 +272,13 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.BackgroundTransparency = 1
     DescLabel.Text = text
     DescLabel.Font = Enum.Font.GothamMedium
-    DescLabel.TextColor3 = Colors.TextDim
+    DescLabel.TextColor3 = Colors.TextDim -- Cinza claro
     DescLabel.TextSize = 12
     DescLabel.TextXAlignment = Enum.TextXAlignment.Left
     DescLabel.TextWrapped = true
     DescLabel.TextYAlignment = Enum.TextYAlignment.Top
     DescLabel.Parent = Toast
+    DescLabel.ZIndex = 2002 -- Força o texto para frente
 
     -- Animação
     Toast.Size = UDim2.new(0, 300, 0, 60)
@@ -1169,11 +1178,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V6.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V6.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "CORREÇÃO NOTIFICAÇÕES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- Fundo mais claro (cinza)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Texto nítido (Camada Frontal)", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "- Bem-vindo fixado no Hub", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
