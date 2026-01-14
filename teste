@@ -1,15 +1,14 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.7 (Atualização Visual do Toggle)
-    -- 1. CLEANUP: Remove interfaces antigas.
-    -- 2. TOGGLE: Substituído texto "K" por Ícone do Roblox.
-    -- 3. DRAG SYSTEM: Sistema de arrastar o botão (PC/Mobile) aprimorado.
-    -- 4. FIX: Todas as correções de bugs da v4.6 mantidas.
+    -- Khalexis Hub - Versão Final v4.8 (FIX: Toggle Move System)
+    -- 1. FIX: Sistema de arrastar o Toggle corrigido (separação de clique vs drag).
+    -- 2. VISUAL: Ícone do Roblox mantido e arredondado.
+    -- 3. UPDATES: Mantidas todas as configurações anteriores.
 
 --]]
 
 -- ==========================================
--- LIMPEZA DE GUI ANTIGA (Importante para atualizar)
+-- LIMPEZA DE GUI ANTIGA
 -- ==========================================
 if game.CoreGui:FindFirstChild("KhalexisHub") then
     game.CoreGui:FindFirstChild("KhalexisHub"):Destroy()
@@ -18,7 +17,6 @@ if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
     game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
 
--- Resetar verificação de execução única para permitir re-execução
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
@@ -42,7 +40,7 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS (ATUALIZADO)
+-- BANCO DE DADOS DE IDS
 -- ==========================================
 local GameID_Database = {
     [109983668079237] = "Steal A Brainrot",
@@ -1407,10 +1405,8 @@ local function CreateKeyUI()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
     end)
 
-    -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
         local link = "https://linkunlocker.com/key-1-dS7uj?share=true"
-        
         if setclipboard then
             setclipboard(link)
             ShowStatusMessage("Link copiado para a área de transferência!", KeySystemData.Colors.Success)
@@ -1476,7 +1472,6 @@ local function CreateKeyUI()
         end
     end)
     
-    -- Animação de Entrada
     MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
@@ -1488,75 +1483,79 @@ local function CreateKeyUI()
 end
 
 -- ==========================================
--- CRIAÇÃO DO TOGGLE BUTTON (COM ÍCONE E DRAG)
+-- CRIAÇÃO DO TOGGLE BUTTON (COM DRAG SYSTEM CORRIGIDO)
 -- ==========================================
 ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 45, 0, 45) -- Tamanho confortável
+ToggleButton.Size = UDim2.new(0, 45, 0, 45)
 ToggleButton.Position = UDim2.new(0, 10, 0, 100)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 ToggleButton.BorderColor3 = Color3.fromRGB(255, 140, 0)
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Image = "rbxassetid://101462084575687" -- ID da textura fornecido
+ToggleButton.Image = "rbxassetid://101462084575687"
 ToggleButton.Parent = ScreenGui
 ToggleButton.Visible = false
 
--- Deixar redondo
+-- Estilo Redondo
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(1, 0) -- Torna um círculo perfeito
+corner.CornerRadius = UDim.new(1, 0)
 corner.Parent = ToggleButton
 
--- Borda para destacar
+-- Borda Laranja
 local stroke = Instance.new("UIStroke")
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.Color = Color3.fromRGB(255, 140, 0) -- Laranja do tema
+stroke.Color = Color3.fromRGB(255, 140, 0)
 stroke.Thickness = 2
 stroke.Parent = ToggleButton
 
+-- Lógica de Arrastar vs Clicar
 local draggingToggle = false
 local dragStartToggle, startPosToggle
-local currentInputObjectToggle = nil
+local hasMoved = false 
 
 ToggleButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         draggingToggle = true
+        hasMoved = false -- Resetar flag de movimento
         dragStartToggle = input.Position
         startPosToggle = ToggleButton.Position
-        currentInputObjectToggle = input
         
         local connection
         connection = input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 draggingToggle = false
-                currentInputObjectToggle = nil
                 connection:Disconnect()
+                
+                -- SE NÃO MOVEU (CLIQUE RÁPIDO), ABRE O HUB
+                if not hasMoved then
+                    if HubOpen then
+                        if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
+                    else
+                        if HasShownWelcome then
+                            MainFrameContainer = createHub()
+                            HubOpen = true
+                            ToggleButton.Visible = false
+                        else
+                            showLoadingAndOpenHub()
+                        end
+                    end
+                end
             end
         end)
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if draggingToggle and currentInputObjectToggle == input and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+    if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStartToggle
-        ToggleButton.Position = UDim2.new(startPosToggle.X.Scale, startPosToggle.X.Offset + delta.X, startPosToggle.Y.Scale, startPosToggle.Y.Offset + delta.Y)
-    end
-end)
-
-ToggleButton.MouseButton1Click:Connect(function()
-    if HubOpen then
-        if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
-    else
-        if HasShownWelcome then
-            MainFrameContainer = createHub()
-            HubOpen = true
-            ToggleButton.Visible = false
-        else
-            showLoadingAndOpenHub()
+        -- Se mover mais de 2 pixels, considera como ARRASTAR
+        if delta.Magnitude > 2 then
+            hasMoved = true
+            ToggleButton.Position = UDim2.new(startPosToggle.X.Scale, startPosToggle.X.Offset + delta.X, startPosToggle.Y.Scale, startPosToggle.Y.Offset + delta.Y)
         end
     end
 end)
 
--- Inicialização com Check de Key Salva (Correção de Bug)
 local function startKeySystem()
     local alreadyValid = false
     
