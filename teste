@@ -1,8 +1,7 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.5 (FINAL KEY TEXT)
-    -- CORREÇÃO: Texto do botão "Pegar Key" atualizado.
-    -- MANTIDO: Notificação centralizada, Fix de camadas e Sistema de Key.
+    -- Khalexis Hub - Versão v6.6 (NO MINIMIZED NOTIFICATION)
+    -- REMOVIDO: Notificação de "Minimizado" ao fechar o Hub.
 
 --]]
 
@@ -377,13 +376,11 @@ end
 local function closeHubWithAnimation(container)
     if not (container and container.Parent) then return end
     
-    -- TRUQUE: Salvamos o container numa variavel local e zeramos a global.
-    -- Isso faz com que a função KhalexisToast (que verifica a global) ache que o Hub já fechou.
-    -- Assim, a notificação vai para o ScreenGui (Tela) e agora será centralizada.
     local frameToDestroy = MainFrameContainer
     MainFrameContainer = nil 
     
-    KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 3)
+    -- REMOVIDO: A notificação de minimizado foi removida conforme solicitado.
+    -- KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 3)
 
     local uiScaler = frameToDestroy:FindFirstChildOfClass("UIScale")
     if uiScaler then
