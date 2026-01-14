@@ -1,9 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.8 (FINAL NOTIFICATION FIX)
-    -- AJUSTE: Notificações agora ficam "Meio a Meio".
-    -- Metade dentro do Hub/Key System e Metade fora.
-    -- Isso garante visibilidade total no Mobile.
+    -- Khalexis Hub - Versão v6.9 (FINAL LINK UPDATE)
+    -- ATUALIZADO: Link do botão "Pegar Key" alterado.
+    -- MANTIDO: Notificações "Meio a Meio" (Metade dentro/fora) para mobile.
 
 --]]
 
@@ -1195,14 +1194,13 @@ local function createHub()
         {Text = "📣 Khalexis Hub V6.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "CORREÇÃO NOTIFICAÇÕES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "- Notificação de Minimizado fica na tela", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- Texto mais legível", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 Scripts Anime Fighting: Endless", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+2 Scripts 99 Nights in the Florest", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVAS NOTIFICAÇÕES", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "NOVO SISTEMA DE TAMANHO DO HUB", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVA ABA DE CONFIGURAÇÕES ( Do lado do X )", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVA FOTO DO TOOGLE", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+3 Scripts Escape Tsunami for Brainrots", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Script Devil Hunter", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Script Muder Mystery ( MM2 )", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     -- SCRIPTS
@@ -1228,7 +1226,6 @@ local function createHub()
     local growScripts = {{Name = "No Lag Hub", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/XHMN2zpp"))() end}}
     local voxSeasScripts = {{Name = "Brutus Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/codenixstudios/brutus-hub/BRUTUS_TEAM/Games/VoxSeas.lua"))() end}}
     local bloxFruitsScripts = {
-        {Name = "HOHO HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI"))() end},
         {Name = "( NOVO ) REDZ HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
         {Name = "Gravity Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
         {Name = "W-Azure", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))() end},
@@ -1596,7 +1593,7 @@ local function CreateKeyUI()
     end)
 
     local function openGetKey()
-        local link = "https://linkunlocker.com/key-1-dS7uj?share=true"
+        local link = "https://linkunlocker.com/key-1-s0Vzy?share=true"
         
         if setclipboard then
             setclipboard(link)
