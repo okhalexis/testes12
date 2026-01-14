@@ -1,17 +1,13 @@
---- START OF FILE Paste January 14, 2026 - 12:54AM ---
-
 --[[
 
-    -- Khalexis Hub - Versão Final v5.1 (ATUALIZADA)
-    -- 1. NOTIFICAÇÕES: Posicionadas logo acima do Hub.
-    -- 2. FEEDBACK: Aviso ao minimizar e ao favoritar scripts.
-    -- 3. TOGGLE: Funcionalidade mantida.
-    -- 4. KEY SYSTEM: LinkUnlocker integrado.
+    -- Khalexis Hub - Versão Final v5.2 (CORRIGIDA)
+    -- CORREÇÃO: Sistema de Notificações (Toast) agora empilha corretamente ao clicar várias vezes.
+    -- CORREÇÃO: Posicionamento das notificações ajustado para ficar logo acima do Hub.
 
 --]]
 
 -- ==========================================
--- LIMPEZA DE GUI ANTIGA (Importante para atualizar)
+-- LIMPEZA DE GUI ANTIGA
 -- ==========================================
 if game.CoreGui:FindFirstChild("KhalexisHub") then
     game.CoreGui:FindFirstChild("KhalexisHub"):Destroy()
@@ -20,11 +16,11 @@ if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
     game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
 
--- Resetar verificação de execução única para permitir re-execução em caso de falha
+-- Resetar verificação de execução única
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
--- CONFIGURAÇÃO VISUAL (FONTE & CORES NOVAS)
+-- CONFIGURAÇÃO VISUAL
 -- ==========================================
 local HUB_FONT = Enum.Font.FredokaOne 
 local HUB_TEXT_SIZE = 14 
@@ -76,7 +72,7 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
--- BANCO DE DADOS DE IDS (ATUALIZADO)
+-- BANCO DE DADOS DE IDS
 -- ==========================================
 local GameID_Database = {
     [109983668079237] = "Steal A Brainrot",
@@ -122,7 +118,7 @@ ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Paletas de Cores Originais (Compatibilidade)
+-- Paletas de Cores
 local themes = {
     normal = {
         main_bg = Color3.fromRGB(15, 15, 15),       
@@ -214,7 +210,6 @@ end
 -- ==========================================
 -- KEY SYSTEM CONFIG
 -- ==========================================
-
 Config = {
     api = "e696e91d-0ba0-4693-a6a5-91145ead6ed1", 
     service = "Khalexis Hub - Key",
@@ -259,27 +254,35 @@ local function SmoothTween(obj, time, properties)
 end
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (TOAST)
+-- SISTEMA DE NOTIFICAÇÃO (TOAST) - CORRIGIDO
 -- ==========================================
 local NotificationHolder = Instance.new("Frame")
 NotificationHolder.Name = "NotificationHolder"
-NotificationHolder.Size = UDim2.new(0, 320, 1, 0)
--- [ALTERAÇÃO 1] Posicionando ACIMA do Hub (que é centralizado)
--- O Hub tem ~340 de altura. Centro é 0.5. Topo do Hub ~= 0.5 - 170px.
--- Colocamos em 0.5 - 250px para ficar acima com uma folga.
-NotificationHolder.Position = UDim2.new(0.5, -160, 0.5, -250) 
+-- Aumentamos a altura para caber o empilhamento e ajustamos o posicionamento.
+-- O AnchorPoint (0.5, 1) significa que o ponto de referência é o CENTRO INFERIOR do frame.
+NotificationHolder.AnchorPoint = Vector2.new(0.5, 1) 
+NotificationHolder.Size = UDim2.new(0, 320, 0, 500) -- Altura suficiente para empilhar
+-- Position: 50% da tela no X, 50% da tela no Y menos 180px (metade da altura do Hub aprox).
+-- Isso coloca o fundo do holder exatamente acima do topo do Hub.
+NotificationHolder.Position = UDim2.new(0.5, 0, 0.5, -180) 
 NotificationHolder.BackgroundTransparency = 1
 NotificationHolder.Parent = ScreenGui
 NotificationHolder.ZIndex = 2000
+NotificationHolder.ClipsDescendants = false -- Permite que animações não sejam cortadas
 
 local NotifList = Instance.new("UIListLayout")
 NotifList.Parent = NotificationHolder
-NotifList.SortOrder = Enum.SortOrder.LayoutOrder
+NotifList.SortOrder = Enum.SortOrder.LayoutOrder -- Importante: Usa ordem numérica
 NotifList.Padding = UDim.new(0, 8)
 NotifList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Cresce de baixo para cima (opcional, ajustável)
+NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Cresce de baixo para cima (do hub para o topo da tela)
+
+-- Contador global para garantir a ordem
+local notifCount = 0
 
 function KhalexisToast(title, text, type, duration)
+    notifCount = notifCount + 1
+    
     local color = Colors.Accent
     local icon = Icons.Info
     
@@ -289,6 +292,7 @@ function KhalexisToast(title, text, type, duration)
 
     local Toast = Instance.new("Frame")
     Toast.Name = "Toast"
+    Toast.LayoutOrder = notifCount -- Define a ordem baseada no contador
     Toast.Size = UDim2.new(0, 300, 0, 50)
     Toast.BackgroundColor3 = Colors.Main
     Toast.BackgroundTransparency = 0.1
@@ -382,7 +386,6 @@ function KhalexisToast(title, text, type, duration)
     end)
 end
 
--- Substituir função antiga
 _G.showAutoMessage = function(msg)
     KhalexisToast("Aviso", msg, "Warning", 4)
 end
@@ -394,7 +397,6 @@ end
 local function closeHubWithAnimation(container)
     if not (container and container.Parent) then return end
     
-    -- [ALTERAÇÃO 2] Notificação ao minimizar
     KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 4)
 
     local uiScaler = container:FindFirstChildOfClass("UIScale")
@@ -939,7 +941,6 @@ local function createHub()
             ToggleFavorite(name)
             if IsFavorited(name) then
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
-                -- [ALTERAÇÃO 3] Notificação ao Favoritar
                 KhalexisToast("Favoritado", name .. " enviado para Favoritos!", "Success", 3)
             else
                 SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
@@ -1299,7 +1300,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
     createCategoryButton("Escape Tsunami For Brainrots", EscapeTsunamiForBrainrotsScripts, 37)
     createCategoryButton("Devil Hunter", DevilHunterScripts, 38)
 
-    -- [MANTER] Lógica de entrada direta garantida na aba de Atualizações
     if updatesButtonInstance then
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
             if otherBtn:IsA("TextButton") then
@@ -1320,7 +1320,6 @@ local function showLoadingAndOpenHub()
     if LoadingScreen and LoadingScreen.Parent then LoadingScreen:Destroy() end
 
     if not HasShownWelcome then
-        -- [NOVO] USANDO TOAST NO LUGAR DO FRAME ANTIGO
         KhalexisToast("Bem Vindo", "Bem vindo " .. player.Name .. " ao Khalexis Hub!", "Success", 5)
         HasShownWelcome = true
     end
@@ -1341,7 +1340,6 @@ end
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
--- FUNÇÃO PARA CRIAR A INTERFACE DE KEY SOMENTE SE NECESSÁRIO
 local function CreateKeyUI()
     local KeyGui = CreateObject("ScreenGui", {
         Name = "KhalexisKeySystem", 
@@ -1501,7 +1499,6 @@ local function CreateKeyUI()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
     end)
 
-    -- [ALTERAÇÃO SOLICITADA] Link fixo para redirecionamento
     local function openGetKey()
         local link = "https://linkunlocker.com/key-1-dS7uj?share=true"
         
@@ -1570,7 +1567,6 @@ local function CreateKeyUI()
         end
     end)
     
-    -- Animação de Entrada
     MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
@@ -1582,7 +1578,7 @@ local function CreateKeyUI()
 end
 
 -- ==========================================
--- CRIAÇÃO DO TOGGLE BUTTON (COM DRAG SYSTEM CORRIGIDO)
+-- TOGGLE BUTTON
 -- ==========================================
 ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "ToggleButton"
@@ -1591,19 +1587,17 @@ ToggleButton.Position = UDim2.new(0, 10, 0, 100)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 ToggleButton.BorderColor3 = Color3.fromRGB(255, 140, 0)
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Image = Icons.Logo -- Ícone do Roblox
+ToggleButton.Image = Icons.Logo
 ToggleButton.Parent = ScreenGui
 ToggleButton.Visible = false
 
--- Deixar redondo
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(1, 0) -- Torna um círculo perfeito
+corner.CornerRadius = UDim.new(1, 0) 
 corner.Parent = ToggleButton
 
--- Borda para destacar
 local stroke = Instance.new("UIStroke")
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.Color = Color3.fromRGB(255, 140, 0) -- Laranja do tema
+stroke.Color = Color3.fromRGB(255, 140, 0) 
 stroke.Thickness = 2
 stroke.Parent = ToggleButton
 
@@ -1624,7 +1618,6 @@ ToggleButton.InputBegan:Connect(function(input)
                 draggingToggle = false
                 connection:Disconnect()
                 
-                -- SE NÃO MOVEU (CLIQUE RÁPIDO), ABRE O HUB
                 if not hasMoved then
                     if HubOpen then
                         if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
@@ -1646,7 +1639,7 @@ end)
 UserInputService.InputChanged:Connect(function(input)
     if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStartToggle
-        if delta.Magnitude > 3 then -- Tolerância para movimento
+        if delta.Magnitude > 3 then 
             hasMoved = true
             ToggleButton.Position = UDim2.new(startPosToggle.X.Scale, startPosToggle.X.Offset + delta.X, startPosToggle.Y.Scale, startPosToggle.Y.Offset + delta.Y)
         end
