@@ -1,13 +1,11 @@
---- START OF FILE Paste January 14, 2026 - 11:54AM ---
-
-
 --[[
 
-    -- Khalexis Hub - Versão Final v6.0 (CORREÇÃO DE NOTIFICAÇÕES)
-    -- CORREÇÃO: Notificações não empilham mais (1 por vez).
-    -- CORREÇÃO: Notificações seguem a janela (Key System ou Hub).
-    -- CORREÇÃO: Notificações aparecem ACIMA da janela.
-    -- MANTIDO: Save automático e Key System.
+    -- Khalexis Hub - Versão v5.9 (FIX NOTIFICAÇÕES & MOVIMENTO)
+    -- CORREÇÃO: Notificações agora seguem o Hub/Key ao arrastar.
+    -- CORREÇÃO: Notificações aparecem em cima da interface.
+    -- CORREÇÃO: Notificações não empilham mais; a nova substitui a antiga no mesmo lugar.
+    -- AJUSTE: Tamanho da notificação aumentado para não cortar texto.
+    -- MANTIDO: Save de Configuração e Key.
 
 --]]
 
@@ -77,9 +75,6 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
--- Variável Global para controlar quem é o "Pai" da notificação (Key ou Hub)
-local GlobalActiveFrame = nil 
-
 -- ==========================================
 -- SISTEMA DE SALVAMENTO (CONFIG & FAVORITOS)
 -- ==========================================
@@ -91,7 +86,7 @@ local FavoritesList = {}
 local AllScriptsGlobal = {}
 local currentScale = 1 -- Valor padrão
 
--- Carregar Configurações
+-- Carregar Configurações (Tamanho do Hub) ANTES DE TUDO
 if isfile(SETTINGS_FILE_NAME) then
     pcall(function()
         local content = readfile(SETTINGS_FILE_NAME)
@@ -124,7 +119,9 @@ end
 
 local function SaveSettings()
     pcall(function()
-        local data = { Scale = currentScale }
+        local data = {
+            Scale = currentScale
+        }
         local json = HttpService:JSONEncode(data)
         writefile(SETTINGS_FILE_NAME, json)
     end)
@@ -162,12 +159,203 @@ local function RegisterScript(name, func)
 end
 
 -- ==========================================
--- CONFIG BÁSICA GUI
+-- VARIÁVEIS GLOBAIS DE UI
 -- ==========================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
+
+local KeyFrame, MainFrameContainer
+local LoadingScreen, StopLoadingAnim
+local HubOpen = false
+local ToggleButton 
+local HasShownWelcome = false
+
+-- ==========================================
+-- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO)
+-- ==========================================
+-- Agora detecta onde o usuário está (Key ou Hub) e anexa a notificação lá.
+-- Substitui a notificação antiga em vez de criar lista.
+
+function KhalexisToast(title, text, type, duration)
+    -- Definição de Cores/Icones
+    local color = Colors.Accent
+    local icon = Icons.Info
+    if type == "Success" then color = Colors.Success; icon = Icons.Success
+    elseif type == "Error" then color = Colors.Error; icon = Icons.Error
+    elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
+
+    -- 1. Identificar o PAI (Onde a notificação vai ficar grudada)
+    local targetParent = nil
+    local yOffset = -85 -- Posição Y (Acima do frame)
+    local xOffset = -160 -- Centralizado (Metade da largura da notif 320/2)
+
+    -- Verifica se o Key System está ativo
+    local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
+    if keyGui and keyGui:FindFirstChild("MainFrame") then
+        targetParent = keyGui.MainFrame
+    -- Verifica se o Hub está ativo
+    elseif MainFrameContainer and MainFrameContainer.Parent then
+        targetParent = MainFrameContainer
+    else
+        -- Fallback: Se nada estiver aberto, usa o ScreenGui normal
+        targetParent = ScreenGui
+        yOffset = 50 -- Topo da tela
+    end
+
+    if not targetParent then return end
+
+    -- 2. Limpeza: Se já existe uma notificação, destroi ela imediatamente
+    local existingToast = targetParent:FindFirstChild("KhalexisActiveToast")
+    if existingToast then
+        existingToast:Destroy()
+    end
+
+    -- 3. Criar a nova Notificação
+    local Toast = Instance.new("Frame")
+    Toast.Name = "KhalexisActiveToast"
+    Toast.Size = UDim2.new(0, 320, 0, 65) -- Aumentado para não cortar texto
+    
+    -- Posicionamento
+    if targetParent == ScreenGui then
+        Toast.Position = UDim2.new(0.5, xOffset, 0.1, 0) -- Topo central na tela
+    else
+        -- Em cima do Hub/Key
+        Toast.Position = UDim2.new(0.5, xOffset, 0, yOffset) 
+    end
+
+    Toast.BackgroundColor3 = Colors.Main
+    Toast.BackgroundTransparency = 0.1
+    Toast.Parent = targetParent
+    Toast.ZIndex = 2000 -- Bem na frente
+    applyRoundedCorners(Toast, 10)
+    
+    local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
+    
+    -- Icon Container
+    local IconFrame = Instance.new("Frame")
+    IconFrame.Size = UDim2.new(0, 50, 1, 0)
+    IconFrame.BackgroundColor3 = color
+    IconFrame.BackgroundTransparency = 0.85
+    IconFrame.Parent = Toast
+    applyRoundedCorners(IconFrame, 10) -- Arredondar tudo
+
+    -- Correção visual para o container do ícone (parecer uma barra lateral)
+    local FixCorner = Instance.new("Frame")
+    FixCorner.Size = UDim2.new(0, 10, 1, 0)
+    FixCorner.Position = UDim2.new(1, -5, 0, 0)
+    FixCorner.BackgroundColor3 = color
+    FixCorner.BackgroundTransparency = 0.85
+    FixCorner.BorderSizePixel = 0
+    FixCorner.Parent = IconFrame
+
+    local IconImg = Instance.new("ImageLabel")
+    IconImg.Size = UDim2.new(0, 28, 0, 28)
+    IconImg.Position = UDim2.new(0.5, -14, 0.5, -14)
+    IconImg.BackgroundTransparency = 1
+    IconImg.Image = icon
+    IconImg.ImageColor3 = color
+    IconImg.Parent = IconFrame
+
+    -- Textos
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(1, -65, 0, 22)
+    TitleLabel.Position = UDim2.new(0, 60, 0, 6)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Text = title
+    TitleLabel.Font = HUB_FONT
+    TitleLabel.TextColor3 = Colors.Text
+    TitleLabel.TextSize = 16
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.Parent = Toast
+
+    local DescLabel = Instance.new("TextLabel")
+    DescLabel.Size = UDim2.new(1, -65, 0, 32) -- Mais altura para texto
+    DescLabel.Position = UDim2.new(0, 60, 0, 28)
+    DescLabel.BackgroundTransparency = 1
+    DescLabel.Text = text
+    DescLabel.Font = Enum.Font.GothamMedium
+    DescLabel.TextColor3 = Colors.TextDim
+    DescLabel.TextSize = 12
+    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DescLabel.TextWrapped = true
+    DescLabel.TextYAlignment = Enum.TextYAlignment.Top
+    DescLabel.Parent = Toast
+
+    -- Animação Entrada (Pop in)
+    Toast.Size = UDim2.new(0, 300, 0, 60)
+    Toast.BackgroundTransparency = 1
+    TitleLabel.TextTransparency = 1
+    DescLabel.TextTransparency = 1
+    IconImg.ImageTransparency = 1
+    ToastStroke.Transparency = 1
+    IconFrame.BackgroundTransparency = 1
+
+    local tInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local appear = TweenService:Create(Toast, tInfo, {
+        Size = UDim2.new(0, 320, 0, 65), -- Expande para o tamanho real
+        BackgroundTransparency = 0.1
+    })
+    
+    TweenService:Create(ToastStroke, tInfo, {Transparency = 0.5}):Play()
+    TweenService:Create(IconFrame, tInfo, {BackgroundTransparency = 0.85}):Play()
+    TweenService:Create(IconImg, tInfo, {ImageTransparency = 0}):Play()
+    TweenService:Create(TitleLabel, tInfo, {TextTransparency = 0}):Play()
+    TweenService:Create(DescLabel, tInfo, {TextTransparency = 0}):Play()
+    appear:Play()
+
+    -- Remover Automaticamente
+    task.delay(duration or 4, function()
+        if Toast and Toast.Parent then
+            local tOut = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            local fadeOut = TweenService:Create(Toast, tOut, {
+                Size = UDim2.new(0, 300, 0, 60),
+                BackgroundTransparency = 1
+            })
+            TweenService:Create(ToastStroke, tOut, {Transparency = 1}):Play()
+            TweenService:Create(IconFrame, tOut, {BackgroundTransparency = 1}):Play()
+            TweenService:Create(IconImg, tOut, {ImageTransparency = 1}):Play()
+            TweenService:Create(TitleLabel, tOut, {TextTransparency = 1}):Play()
+            TweenService:Create(DescLabel, tOut, {TextTransparency = 1}):Play()
+            
+            fadeOut:Play()
+            fadeOut.Completed:Wait()
+            if Toast then Toast:Destroy() end
+        end
+    end)
+end
+
+_G.showAutoMessage = function(msg)
+    KhalexisToast("Aviso", msg, "Warning", 4)
+end
+
+-- ==========================================
+-- KEY SYSTEM CONFIG
+-- ==========================================
+Config = {
+    api = "e696e91d-0ba0-4693-a6a5-91145ead6ed1", 
+    service = "Khalexis Hub - Key",
+    provider = "Khalexis Hub - Key"
+}
+
+local KeySystemData = {
+    Name = "Khalexis Hub",
+    Colors = {
+        Background = COLOR_BLACK, 
+        Title = Color3.fromRGB(255, 140, 0),
+        InputField = Color3.fromRGB(25, 25, 25),
+        InputFieldBorder = Color3.fromRGB(60, 60, 60), 
+        Button = Color3.fromRGB(25, 25, 25),
+        ButtonHover = Color3.fromRGB(45, 45, 45),
+        Error = Color3.fromRGB(220, 50, 50),
+        Success = Color3.fromRGB(80, 200, 80),
+        Discord = Color3.fromRGB(88, 101, 242)
+    },
+    Service = "redexecutor",
+    DiscordInvite = "aNaFpb2Qsb",
+    FileName = "redexecutor/key.txt"
+}
 
 local function CreateObject(class, props)
     local obj = Instance.new(class)
@@ -189,156 +377,12 @@ local function SmoothTween(obj, time, properties)
 end
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (CORRIGIDO)
--- ==========================================
--- O Holder agora é criado dinamicamente ou reparentado
-local NotificationHolder = Instance.new("Frame")
-NotificationHolder.Name = "NotificationHolder"
-NotificationHolder.Size = UDim2.new(0, 360, 0, 60)
-NotificationHolder.BackgroundTransparency = 1
-NotificationHolder.ZIndex = 2000
-NotificationHolder.ClipsDescendants = false
-
--- Layout para garantir centralização, mas vamos limpar os filhos antes de add
-local NotifLayout = Instance.new("UIListLayout")
-NotifLayout.SortOrder = Enum.SortOrder.LayoutOrder
-NotifLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-NotifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-NotifLayout.Padding = UDim.new(0, 5)
-NotifLayout.Parent = NotificationHolder
-
-function KhalexisToast(title, text, type, duration)
-    -- LÓGICA DE OURO: Limpar notificações antigas para não empilhar
-    for _, child in pairs(NotificationHolder:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
-    end
-
-    -- Definir onde a notificação vai aparecer
-    if GlobalActiveFrame and GlobalActiveFrame.Parent then
-        -- Se tem uma janela ativa (Key ou Hub), gruda nela
-        NotificationHolder.Parent = GlobalActiveFrame
-        -- Posição: No meio horizontalmente, e ACIMA da janela (-65 pixels)
-        NotificationHolder.Position = UDim2.new(0.5, -180, 0, -65)
-        NotificationHolder.AnchorPoint = Vector2.new(0, 0)
-    else
-        -- Se não tem janela (minimizado ou carregando), joga na tela
-        NotificationHolder.Parent = ScreenGui
-        NotificationHolder.Position = UDim2.new(0.5, -180, 0.1, 0)
-    end
-
-    local color = Colors.Accent
-    local icon = Icons.Info
-    if type == "Success" then color = Colors.Success; icon = Icons.Success
-    elseif type == "Error" then color = Colors.Error; icon = Icons.Error
-    elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
-
-    local Toast = Instance.new("Frame")
-    Toast.Name = "Toast"
-    Toast.Size = UDim2.new(0, 350, 0, 55) -- Tamanho fixo e maior
-    Toast.BackgroundColor3 = Colors.Main
-    Toast.BackgroundTransparency = 0.1
-    Toast.Parent = NotificationHolder
-    applyRoundedCorners(Toast, 10)
-    
-    local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
-    
-    -- Icon
-    local IconFrame = Instance.new("Frame")
-    IconFrame.Size = UDim2.new(0, 50, 1, 0)
-    IconFrame.BackgroundColor3 = color
-    IconFrame.BackgroundTransparency = 0.85
-    IconFrame.Parent = Toast
-    applyRoundedCorners(IconFrame, 10) -- Arredondar tudo
-    
-    -- Ajuste visual do canto direito do icone
-    local FixCorner = Instance.new("Frame")
-    FixCorner.Size = UDim2.new(0, 10, 1, 0)
-    FixCorner.Position = UDim2.new(1, -5, 0, 0)
-    FixCorner.BackgroundColor3 = color
-    FixCorner.BackgroundTransparency = 0.85
-    FixCorner.BorderSizePixel = 0
-    FixCorner.Parent = IconFrame
-
-    local IconImg = Instance.new("ImageLabel")
-    IconImg.Size = UDim2.new(0, 24, 0, 24)
-    IconImg.Position = UDim2.new(0.5, -12, 0.5, -12)
-    IconImg.BackgroundTransparency = 1
-    IconImg.Image = icon
-    IconImg.ImageColor3 = color
-    IconImg.Parent = IconFrame
-
-    -- Textos
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -65, 0, 20)
-    TitleLabel.Position = UDim2.new(0, 60, 0, 6)
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Text = title
-    TitleLabel.Font = HUB_FONT
-    TitleLabel.TextColor3 = Colors.Text
-    TitleLabel.TextSize = 15
-    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    TitleLabel.Parent = Toast
-
-    local DescLabel = Instance.new("TextLabel")
-    DescLabel.Size = UDim2.new(1, -65, 0, 25)
-    DescLabel.Position = UDim2.new(0, 60, 0, 26)
-    DescLabel.BackgroundTransparency = 1
-    DescLabel.Text = text
-    DescLabel.Font = Enum.Font.GothamMedium
-    DescLabel.TextColor3 = Colors.TextDim
-    DescLabel.TextSize = 12
-    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
-    DescLabel.TextWrapped = true
-    DescLabel.TextYAlignment = Enum.TextYAlignment.Top
-    DescLabel.Parent = Toast
-
-    -- Animação
-    Toast.BackgroundTransparency = 1
-    TitleLabel.TextTransparency = 1
-    DescLabel.TextTransparency = 1
-    IconImg.ImageTransparency = 1
-    ToastStroke.Transparency = 1
-    IconFrame.BackgroundTransparency = 1
-    Toast.Position = UDim2.new(0, 0, 0, 10) -- Começa um pouco mais baixo
-
-    local tInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    TweenService:Create(Toast, tInfo, {BackgroundTransparency = 0.1, Position = UDim2.new(0,0,0,0)}):Play()
-    TweenService:Create(ToastStroke, tInfo, {Transparency = 0.5}):Play()
-    TweenService:Create(IconFrame, tInfo, {BackgroundTransparency = 0.85}):Play()
-    TweenService:Create(IconImg, tInfo, {ImageTransparency = 0}):Play()
-    TweenService:Create(TitleLabel, tInfo, {TextTransparency = 0}):Play()
-    TweenService:Create(DescLabel, tInfo, {TextTransparency = 0}):Play()
-
-    -- Remover
-    task.delay(duration or 3, function()
-        if Toast and Toast.Parent then
-            local tOut = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            TweenService:Create(Toast, tOut, {BackgroundTransparency = 1}):Play()
-            TweenService:Create(ToastStroke, tOut, {Transparency = 1}):Play()
-            TweenService:Create(IconFrame, tOut, {BackgroundTransparency = 1}):Play()
-            TweenService:Create(IconImg, tOut, {ImageTransparency = 1}):Play()
-            TweenService:Create(TitleLabel, tOut, {TextTransparency = 1}):Play()
-            TweenService:Create(DescLabel, tOut, {TextTransparency = 1}):Play()
-            wait(0.2)
-            Toast:Destroy()
-        end
-    end)
-end
-
-_G.showAutoMessage = function(msg)
-    KhalexisToast("Aviso", msg, "Warning", 4)
-end
-
--- ==========================================
 -- FUNÇÕES DO HUB
 -- ==========================================
 
 local function closeHubWithAnimation(container)
     if not (container and container.Parent) then return end
     
-    GlobalActiveFrame = nil -- Reseta a janela ativa
     KhalexisToast("Minimizado", "Clique no Toggle (K) para reabrir o Hub!", "Info", 4)
 
     local uiScaler = container:FindFirstChildOfClass("UIScale")
@@ -360,13 +404,10 @@ local function showLoadingScreen()
     frame.Name = "LoadingFrame"
     frame.Size = UDim2.new(0, 300, 0, 120)
     frame.Position = UDim2.new(0.5, -150, 0.5, -60)
-    frame.BackgroundColor3 = COLOR_BLACK
+    frame.BackgroundColor3 = Colors.Main
     frame.BorderSizePixel = 0
     frame.Parent = ScreenGui
     applyRoundedCorners(frame, 16)
-
-    -- Definir como frame ativo para notificações
-    GlobalActiveFrame = frame
 
     local border = Instance.new("UIStroke")
     border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -380,7 +421,7 @@ local function showLoadingScreen()
     label.Position = UDim2.new(0, 0, 0.3, -15)
     label.BackgroundTransparency = 1
     label.Text = "Carregando..."
-    label.TextColor3 = COLOR_TEXT
+    label.TextColor3 = Colors.Text
     label.Font = HUB_FONT
     label.TextSize = 20
     label.Parent = frame
@@ -428,11 +469,12 @@ local function createHub()
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
     animationContainer.BackgroundTransparency = 1
     animationContainer.Parent = ScreenGui
-    
-    -- IMPORTANTE: Definir como janela ativa e permitir itens fora dela
-    GlobalActiveFrame = animationContainer
+    -- IMPORTANTE: ClipsDescendants deve ser false para a notificação aparecer acima
     animationContainer.ClipsDescendants = false 
 
+    -- =========================================================
+    -- UISCALE: Controla o tamanho de TUDO dentro do container
+    -- =========================================================
     local uiScaler = Instance.new("UIScale")
     uiScaler.Scale = currentScale 
     uiScaler.Parent = animationContainer
@@ -441,7 +483,7 @@ local function createHub()
     frame.Name="MainFrame"
     frame.Size=UDim2.new(1, 0, 1, 0)
     frame.Position=UDim2.new(0, 0, 0, 0)
-    frame.BackgroundColor3=COLOR_BLACK
+    frame.BackgroundColor3=Colors.Main
     frame.BorderSizePixel=0
     frame.Parent=animationContainer
     applyRoundedCorners(frame,12)
@@ -486,6 +528,9 @@ local function createHub()
     UserInputService.InputChanged:Connect(function(input)
         if draggingHub and input == dragInputHub then
             local delta = input.Position - dragStartHub
+            -- Ajuste para o movimento do mouse funcionar corretamente com UIScale
+            -- Se não ajustar, o mouse move mais rápido que a GUI quando em escala diferente
+            -- Aqui mantemos simples movendo o AnimationContainer inteiro
             animationContainer.Position = UDim2.new(
                 startPosHub.X.Scale, startPosHub.X.Offset + (delta.X), 
                 startPosHub.Y.Scale, startPosHub.Y.Offset + (delta.Y)
@@ -497,7 +542,7 @@ local function createHub()
     titleBar.Name="TitleBar"
     titleBar.Size=UDim2.new(1,-10,0,40)
     titleBar.Position = UDim2.new(0, 5, 0, 5)
-    titleBar.BackgroundColor3=COLOR_TITLEBAR
+    titleBar.BackgroundColor3=Color3.fromRGB(20, 20, 20)
     titleBar.BorderSizePixel=0
     titleBar.Parent=frame
     applyRoundedCorners(titleBar,10)
@@ -521,7 +566,7 @@ local function createHub()
     titleLabel.Size=UDim2.new(1,0,1,0)
     titleLabel.BackgroundTransparency=1
     titleLabel.Text="Khalexis Hub"
-    titleLabel.TextColor3=COLOR_TEXT
+    titleLabel.TextColor3=Colors.Text
     titleLabel.Font=HUB_FONT
     titleLabel.TextSize=18
     titleLabel.TextXAlignment=Enum.TextXAlignment.Center
@@ -568,8 +613,8 @@ local function createHub()
     searchBox.Name = "CategorySearchBox"
     searchBox.Size = UDim2.new(0, 120, 0, 22)
     searchBox.Position = UDim2.new(0, 5, 0, 50) 
-    searchBox.BackgroundColor3 = COLOR_CATEGORY_BG
-    searchBox.TextColor3 = COLOR_TEXT
+    searchBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    searchBox.TextColor3 = Colors.Text
     searchBox.PlaceholderText = "🔍 Pesquisar..."
     searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
     searchBox.Text = ""
@@ -597,8 +642,8 @@ local function createHub()
     favFixedBtn.Name = "FixedFavoritesButton"
     favFixedBtn.Size = UDim2.new(0, 120, 0, 22)
     favFixedBtn.Position = UDim2.new(0, 5, 0, 78) 
-    favFixedBtn.BackgroundColor3 = COLOR_CATEGORY_BG
-    favFixedBtn.TextColor3 = COLOR_TEXT_DIM
+    favFixedBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    favFixedBtn.TextColor3 = Colors.TextDim
     favFixedBtn.Text = "⭐ Favoritos"
     favFixedBtn.Font = HUB_FONT
     favFixedBtn.TextSize = 12
@@ -623,7 +668,7 @@ local function createHub()
     categoryFrame.Name = "CategoryFrame"
     categoryFrame.Size = UDim2.new(0, 120, 0, 190) 
     categoryFrame.Position = UDim2.new(0, 5, 0, 106)
-    categoryFrame.BackgroundColor3 = COLOR_CATEGORY_BG
+    categoryFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     categoryFrame.BorderSizePixel = 0
     categoryFrame.ScrollBarThickness = 4
     categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100) 
@@ -681,7 +726,7 @@ local function createHub()
     scriptFrame.Name="ScriptFrame"
     scriptFrame.Size=UDim2.new(1,-135,0,250)
     scriptFrame.Position=UDim2.new(0,130,0,40)
-    scriptFrame.BackgroundColor3=COLOR_BLACK
+    scriptFrame.BackgroundColor3=Colors.Main
     scriptFrame.BorderSizePixel=0
     scriptFrame.ScrollBarThickness=4
     scriptFrame.ScrollBarImageColor3=Color3.fromRGB(100, 100, 100)
@@ -727,7 +772,7 @@ local function createHub()
     footerBackground.Name="FooterBackground"
     footerBackground.Size=UDim2.new(1,-10,0,40)
     footerBackground.Position=UDim2.new(0,5,1,-45)
-    footerBackground.BackgroundColor3=COLOR_TITLEBAR
+    footerBackground.BackgroundColor3=Color3.fromRGB(20, 20, 20)
     footerBackground.BackgroundTransparency=0
     footerBackground.BorderSizePixel=0
     footerBackground.Parent=frame
@@ -752,7 +797,7 @@ local function createHub()
     footerText.Text="By Khalexis"
     footerText.Font=HUB_FONT
     footerText.TextSize=10
-    footerText.TextColor3=COLOR_FOOTER_TEXT
+    footerText.TextColor3=Color3.fromRGB(150, 150, 150)
     footerText.BackgroundTransparency=1
     footerText.Size=UDim2.new(1, 0, 1, 0)
     footerText.Position=UDim2.new(0, 5, 0, 5)
@@ -825,14 +870,14 @@ local function createHub()
     avatar.Name="AvatarImage"
     avatar.Size=UDim2.new(0,24,0,24)
     avatar.Position=UDim2.new(0,0,0,0)
-    avatar.BackgroundColor3=COLOR_SCRIPT_BTN
+    avatar.BackgroundColor3=Color3.fromRGB(30, 30, 30)
     avatar.BorderSizePixel=0
     avatar.Parent=playerInfo
     avatar.ScaleType=Enum.ScaleType.Fit
     applyRoundedCorners(avatar,12)
 
     local thumbType,thumbSize=Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48
-    local thumbContent,_=Players:GetUserThumbnailAsync(userId,thumbType,thumbSize)
+    local thumbContent,_=Players:GetUserThumbnailAsync(player.UserId,thumbType,thumbSize)
     avatar.Image=thumbContent
 
     local playerNameLabel=Instance.new("TextLabel")
@@ -840,7 +885,7 @@ local function createHub()
     playerNameLabel.Size=UDim2.new(1,-28,1,0)
     playerNameLabel.Position=UDim2.new(0,28,0,0)
     playerNameLabel.BackgroundTransparency=1
-    playerNameLabel.Text=userName
+    playerNameLabel.Text=player.Name
     playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     playerNameLabel.Font=HUB_FONT
     playerNameLabel.TextSize=10
@@ -854,15 +899,15 @@ local function createHub()
     end
 
     local function createScriptButton(name, func)
-        if not func then return end
+        if func then else return end
         
         local isGameScript = true
         
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(1, 0, 0, 28)
-        btn.BackgroundColor3 = COLOR_SCRIPT_BTN
+        btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         btn.BorderSizePixel = 0
-        btn.TextColor3 = COLOR_TEXT
+        btn.TextColor3 = Colors.Text
         btn.Font = HUB_FONT
         btn.TextSize = 12
         btn.Text = "       " .. name:upper()
@@ -913,18 +958,18 @@ local function createHub()
             starBtn.Parent = btn
             
             if IsFavorited(name) then
-                starBtn.TextColor3 = COLOR_STAR_ON
+                starBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
             else
-                starBtn.TextColor3 = COLOR_STAR_OFF
+                starBtn.TextColor3 = Color3.fromRGB(80, 80, 80)
             end
             
             starBtn.MouseButton1Click:Connect(function()
                 ToggleFavorite(name)
                 if IsFavorited(name) then
-                    SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+                    SmoothTween(starBtn, 0.3, {TextColor3 = Color3.fromRGB(255, 215, 0)})
                     KhalexisToast("Favoritado", name .. " enviado para Favoritos!", "Success", 3)
                 else
-                    SmoothTween(starBtn, 0.3, {TextColor3 = COLOR_STAR_OFF})
+                    SmoothTween(starBtn, 0.3, {TextColor3 = Color3.fromRGB(80, 80, 80)})
                 end
             end)
 
@@ -951,6 +996,7 @@ local function createHub()
                 func() 
             end)
         end
+
         return btn
     end
 
@@ -958,7 +1004,7 @@ local function createHub()
         local lbl=Instance.new("TextLabel")
         lbl.Size=UDim2.new(1,0,0,18)
         lbl.BackgroundTransparency=1
-        lbl.TextColor3=textColor or COLOR_TEXT
+        lbl.TextColor3=textColor or Colors.Text
         lbl.Font=font or HUB_FONT
         lbl.TextSize=12
         lbl.Text=text
@@ -978,10 +1024,13 @@ local function createHub()
 
     local function displaySettings()
         clearScripts()
+        
         settingsButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
-        TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
+        TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = Colors.TextDim}):Play()
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-            if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
+            if otherBtn:IsA("TextButton") then
+                 otherBtn.TextColor3 = Colors.TextDim
+            end
         end
 
         createUpdateLabel("--- 📏 DIMENSÕES DO HUB 📏 ---", Colors.Accent)
@@ -1001,20 +1050,27 @@ local function createHub()
                  currentScale = sizeData.Value
                  TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = currentScale}):Play()
                  KhalexisToast("Configuração", "Tamanho alterado para " .. sizeData.Name, "Success", 2)
-                 SaveSettings() 
+                 SaveSettings()
              end)
         end
+        
+        createUpdateLabel(" ", Colors.Main) 
+        createUpdateLabel("--- 🎨 TEMAS (EM BREVE) 🎨 ---", Color3.fromRGB(100, 100, 100))
+        createUpdateLabel("Futuramente você poderá mudar as cores aqui!", Color3.fromRGB(80, 80, 80))
     end
 
     settingsButton.MouseButton1Click:Connect(displaySettings)
 
     local function onFavoritesClick()
         clearScripts()
+        
         settingsButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
-        SmoothTween(favFixedBtn, 0.3, {TextColor3 = COLOR_STAR_ON})
+        SmoothTween(favFixedBtn, 0.3, {TextColor3 = Color3.fromRGB(255, 215, 0)})
         
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-            if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
+            if otherBtn:IsA("TextButton") then
+                otherBtn.TextColor3 = Colors.TextDim
+            end
         end
 
         local hasFav = false
@@ -1026,6 +1082,7 @@ local function createHub()
                     break
                 end
             end
+
             if scriptData then
                 createScriptButton(scriptData.Name, scriptData.Func)
                 hasFav = true
@@ -1034,6 +1091,7 @@ local function createHub()
         
         if not hasFav then
             createUpdateLabel("Você não tem favoritos ainda!", Color3.fromRGB(150, 150, 150))
+            createUpdateLabel("Clique na estrela ao lado dos scripts.", Color3.fromRGB(150, 150, 150))
         end
     end
     
@@ -1041,15 +1099,17 @@ local function createHub()
 
     local function createCategoryButton(name, contents, defaultOrder)
         if typeof(contents) == "table" then
-            for _, s in ipairs(contents) do RegisterScript(s.Name, s.Func) end
+            for _, s in ipairs(contents) do
+                RegisterScript(s.Name, s.Func)
+            end
         end
 
         local btn = Instance.new("TextButton")
         btn.Name = name:gsub("%s+", "")
         btn.Size = UDim2.new(1, 0, 0, 22)
-        btn.BackgroundColor3 = COLOR_CATEGORY_BTN
+        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
         btn.BorderSizePixel = 0
-        btn.TextColor3 = COLOR_TEXT_DIM
+        btn.TextColor3 = Colors.TextDim
         btn.Font = HUB_FONT
         btn.TextScaled = true 
         btn.TextWrapped = true
@@ -1090,7 +1150,9 @@ local function createHub()
             btn.Text = '<font color="#FFD700">★</font> ' .. name
             btn.TextXAlignment = Enum.TextXAlignment.Center
         else
-            if defaultOrder then btn.LayoutOrder = defaultOrder + 10 end
+            if defaultOrder then
+                btn.LayoutOrder = defaultOrder + 10
+            end
             btn.TextXAlignment = Enum.TextXAlignment.Center
         end
         
@@ -1102,14 +1164,18 @@ local function createHub()
 
         btn.MouseButton1Click:Connect(function()
             clearScripts()
+            
             settingsButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
-            TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = COLOR_TEXT_DIM}):Play()
+
+            TweenService:Create(favFixedBtn, TweenInfo.new(0.3), {TextColor3 = Colors.TextDim}):Play()
             
             for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-                if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
+                if otherBtn:IsA("TextButton") then
+                     otherBtn.TextColor3 = Colors.TextDim
+                end
             end
             
-            btn.TextColor3 = COLOR_STAR_ON
+            btn.TextColor3 = Color3.fromRGB(255, 215, 0)
 
             if name == "📣 Atualizações 📣" then
                 displayUpdates()
@@ -1117,38 +1183,210 @@ local function createHub()
                 for _,s in ipairs(contents) do createScriptButton(s.Name,s.Func) end
             end
         end)
+
         return btn
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V6.0 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.9 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "CORREÇÃO CRÍTICA: NOTIFICAÇÕES", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Notificações agora aparecem acima da janela e não empilham mais!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "CORREÇÃO NOTIFICAÇÕES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "- Agora seguem o Hub/Key", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Aparecem em cima da UI", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Não empilham mais (limpeza)", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Scripts Anime Fighting: Endless", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Scripts 99 Nights in the Florest", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     -- SCRIPTS
-    local stealScripts = {{Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}}
-    local noiteScripts = {{Name = "SPOLARIUM HUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2ead9862009d1eaa48c5384bd02dba73.lua"))() end}}
+    local stealScripts = {
+        {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, 
+        {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, 
+        {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, 
+        {Name = "Zen Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Gregy677/Gunmods-strucid/main/Steal%20a%20brain%20rot",true))() end},
+        {Name = "Dofug", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneClye1/dofug/refs/heads/main/dofug.txt"))() end}
+    }
+    local noiteScripts = {
+        {Name = "SPOLARIUM HUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/2ead9862009d1eaa48c5384bd02dba73.lua"))() end},
+        {Name = "H4X HUB ( key )", Func = function() loadstring(game:HttpGet("https://H4xScripts.xyz/loader"))() end},
+        {Name = "RAYFIELD", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/FourHub.lua"))() end},
+        {Name = "FOXNAME", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end}, 
+        {Name = "Farm Diamante", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua'))() end},
+        {Name = "Imortalidade ( Vida Infinita )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))() end},
+        {Name = "Iliankytb", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Iliankytb/Iliankytb/main/Best99NightsInTheForest"))() end},
+        {Name = "Nazuro.xyz", Func = function() loadstring(game:HttpGet("https://nazuro.xyz/99nights"))() end},
+        {Name = "Hutao-Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/SLK-gaming/Hutao-Hub/refs/heads/main/99-Nights-In-The-Forest.txt"))() end},
+        {Name = "Kasumi-Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kasumichwan/scripts/refs/heads/main/kasumi-hub.lua"))() end}
+    }
     local growScripts = {{Name = "No Lag Hub", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/XHMN2zpp"))() end}}
     local voxSeasScripts = {{Name = "Brutus Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/codenixstudios/brutus-hub/BRUTUS_TEAM/Games/VoxSeas.lua"))() end}}
-    local bloxFruitsScripts = {{Name = "HOHO HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI"))() end}, {Name = "( NOVO ) REDZ HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end}}
+    local bloxFruitsScripts = {
+        {Name = "HOHO HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI"))() end},
+        {Name = "( NOVO ) REDZ HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
+        {Name = "Gravity Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua"))() end},
+        {Name = "W-Azure", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))() end},
+        {Name = "Xero Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua"))() end}
+    }
     local kingLegacyScripts = {{Name = "Zee Hub", Func = function() loadstring(game:HttpGet('https://zuwz.me/Ls-Zee-Hub-KL'))() end}}
-    
-    -- (Adicione o restante dos scripts aqui se necessário, mantive resumido para caber)
-    -- ... (O restante dos scripts é idêntico à versão anterior)
+    local rivalsScripts = {{Name = "Rise", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowBey01/SHWX-Team-Rise-Scripts/refs/heads/main/Games/Rise%20(Rivals).lua", true))() end}}
+    local doorsScripts = {{Name = "Velocity X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/DasVelocity/VelocityX/refs/heads/main/VelocityX.lua"))() end}}
+    local brookhavenScripts = {{Name = "Sander XY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kigredns/testUIDK/refs/heads/main/panel.lua"))() end}}
+    local buildAPlaneScripts = {{Name = "Arbix Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Z1ntrax/bigmac/refs/heads/main/bap/bapobfuscated.lua"))() end}}
+    local inkGameScripts = {{Name = "Revive Hub", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Have3165/Reviv3-Hub/refs/heads/main/InkGame'))() end}}
+    local naturalDisasterScripts = {{Name = "BaconJJScript", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/MAnXu0qv"))() end}}
+    local forsakenScripts = {{Name = "SNT HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Snowt69/SNT-HUB/refs/heads/main/Forsaken"))() end}}
+    local pegueOPeixeScripts = {
+        {Name = "UB HUB ( key )", Func = function() loadstring(game:HttpGet("https://gitlab.com/r_soft/main/-/raw/main/LoadUB.lua"))() end},
+        {Name = "ASHLABS HUB ( key )", Func = function() loadstring(game:HttpGet("https://ashlabs.me/api/game?name=fish-it.lua", true))() end},
+        {Name = "RYZEN HUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/178c353fa8240cbf61835f4c6f76112e.lua"))() end},
+        {Name = "SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
+        {Name = "KENNIEL HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Kenniel123/Universal-Loader/refs/heads/main/MultiGame"))() end},
+        {Name = "727EXE HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/arcadeisreal/717exe---Fish-It/refs/heads/main/loader.lua"))() end},
+        {Name = "Seraphin Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nniellx/SeraphinHub/main/SeraphinMain.lua"))() end},
+        {Name = "Tsuo Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/Tsuoscripts"))() end},
+        {Name = "VinzHub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Vinzyy13/VinzHub/refs/heads/main/Fish-It"))() end}
+    }
+    local murderMysteryScripts = {
+        {Name = "( NOVO ) FOURHUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/jokerbiel13/FourHub/refs/heads/main/MM2.lua",true))() end},
+        {Name = "THUNDER HUB", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Roman34296589/SnapSanixHUB/refs/heads/main/SnapSanixHUB.lua'))() end},
+        {Name = "VERTEX-HUB", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/vertex-peak/vertex/refs/heads/main/loadstring'))() end}
+    }
+    local weakLegacy2Scripts = {
+        {Name = "PULSAR X HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Estevansit0/KJJK/refs/heads/main/PusarX-loader.lua"))() end},
+        {Name = "L4BIB HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/L4BIBKAZI/L4BIB-HUB/refs/heads/main/Weak%20Legacy%202"))() end}
+    }
+    local plantaVSBrainrotScripts = {
+        {Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/PlantsVsBrainrots"))() end},
+        {Name = "Blessed-Hub-X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/mynamewendel-ctrl/Blessed-Hub-X-/refs/heads/main/Plants-Vs-Brainrots.lua"))() end},
+        {Name = "KASPIK", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/KaspikScriptsRb/steal-a-brainrot/refs/heads/main/.lua"))() end},
+        {Name = "LURK NO KEY", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/vertex-peak/vertex/refs/heads/main/loadstring'))() end}
+    }
+    local deadRailsScripts = {
+        {Name = "Qiwik hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Qiwikox12/stubrawl/refs/heads/main/DeadRails.txt"))() end},
+        {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/refs/heads/main/DeadRails", true))() end}
+    }
+    local testeDeQiScripts = {{Name = "Aqua-Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ExploiterGuy/Aqua-Hub/refs/heads/main/IQ%20TEST.txt"))() end}}
+    local passOrDieScripts = {{Name = "DAVITROLLZ", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Davidfhdgfyyfytyttry/DAVITROLLZ-BRASIL/refs/heads/main/Pass%20or%20die"))() end}}
+    local mathMurderScripts = {
+        {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/refs/heads/main/MathMurder", true))() end}
+    }
+    local brainrotTrainingScripts = {{Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BrainrotTraining"))() end}}
+    local dumpScripts = {{Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DUMP"))() end}}
+    local eatBrainrotForFightScripts = {{Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/EatBrainrotforfight"))() end}}
+    local khSaeedScripts = {{Name = "KhSaeed90", Func = function() loadstring(game:HttpGet("https://github.com/KhSaeed90/Roblox/raw/workspace/6875469709"))() end}}
+    local brainrotEvolucaoScripts = {
+        {Name = "Pancakq", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Pancakq/Public-Scripts/refs/heads/main/UniversalEvolutionGames"))() end},
+        {Name = "Gumanba", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BrainrotEvolution"))() end},
+        {Name = "H4xScripts", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader2.lua"))() end}
+    }
+    local animeEternalScripts = {
+        {Name = "Yowai Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterYowai/Anime-Eternal-Yowai-Hub-/refs/heads/main/Anime%20Eternal%20*Yowai%20Hub*"))() end}
+    }
+    local animeWeaponsScripts = {
+        {Name = "ScriptsRBX", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsRBXdotCom/scripts/refs/heads/main/animeweapons"))() end}
+    }
+    local carsVsTrucksScripts = {
+        {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/CarsvsTrucks"))() end}
+    }
+    local deadlyDeliveryScripts = {
+        {Name = "Tora IsMe", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadlyDelivery"))() end}
+    }
+    local theForgeScripts = {
+        {Name = "ZENITH HUB ( key )", Func = function() script_key="LQieOngTuTWRNxVwfcxpCJRZtYAGKoQT";
+loadstring(game:HttpGet("https://zenithhub.cloud/panel/script"))() end},
+        {Name = "NOUSIGI HUB ( key )", Func = function() loadstring(game:HttpGet("https://nousigi.com/loader.lua"))() end},
+        {Name = "AIRFLOW HUB ( key )", Func = function() loadstring(game:HttpGet("https://airflowscript.com/loader"))() end},
+        {Name = "CHIYO HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua"))() end},
+        {Name = "POLLUTED HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/ecfcccea43f60fa4c46009f854c06a52.lua"))() end},
+        {Name = "SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
+        {Name = "NOVA HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/luareflection/public-novahub/refs/heads/main/forge/loader.luau"))() end},
+        {Name = "HAZE HUB", Func = function() loadstring(game:HttpGet("https://haze.wtf/api/script"))() end}, 
+        {Name = "RYZEN HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3e05c29156e4b16232286e86f97b97b4.lua"))() end}, 
+        {Name = "LAZY HUB", Func = function() getgenv().mobileMode = false; repeat wait() until game:IsLoaded(); loadstring(game:HttpGet("https://raw.githubusercontent.com/LioK251/RbScripts/refs/heads/main/lazyuhub_theforge.lua"))() end},
+        {Name = "UB HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua"))() end},
+        {Name = "VEX HUB", Func = function() loadstring(game:HttpGet("https://ry-zen.studio/raw/VexHub/Hub.lua?key=U2VjdXJlQXV0aEtleQ"))() end},
+        {Name = "TOASTY HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/nouralddin-abdullah/Airlines/refs/heads/main/Forge.lua"))() end},
+        {Name = "LUNOR HUB", Func = function() loadstring(game:HttpGet("https://lunor.dev/loader"))() end},
+        {Name = "PEPEHOOCK", Func = function() script_key="NO KEY REQUIRED CURRENTLY"; loadstring(game:HttpGet("https://raw.githubusercontent.com/GiftStein1/pepehook-loader/refs/heads/main/loader.lua"))() end}
+    }
+    local grandPieceOnlineScripts = {
+        {Name = "SWITCHHUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3ff0c2bb5eae1c1a397a7a8e715b8e.lua"))() end},
+        {Name = "KAIZENSCRIPT", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/bestocheetos/GPOKAIZEN/refs/heads/main/kizaru0k"))() end},
+        {Name = "DEVIL FRUIT NOTIFIER", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ArponAG/Scripts/main/gpo.lua', true))() end},
+        {Name = "MANDY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeNotMandy/GPO/refs/heads/main/Candy"))() end}
+    }
+    local afsInfinityScripts = {
+        {Name = "YUTO HUB ( key )", Func = function() repeat wait() until game:IsLoaded()
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/Binintrozza/yutv2e/main/Yutohub')))() end},
+        {Name = "IMP HUB ( key )", Func = function() script_key = "";
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba5e5e39c7c2d6d7fdfe.lua"))() end},
+        {Name = "NSHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OhhMyGehlee/sh/refs/heads/main/a"))() end},
+        {Name = "SERAPH HUB", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/zu3xEPnv"))() end},
+        {Name = "SHADOW HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowXScript/Shadow-Hub/refs/heads/main/AFSE/loader.lua"))() end}
+    }
+    local BladeBallScripts = {   
+        {Name = "NOTHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/lightymysterious-oss/DAHEN-HUB/refs/heads/main/BladeBall.lua"))() end},
+        {Name = "PROJECT TREVOUS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotRox1/Trevous-Hub/refs/heads/main/blade-ball.lua"))() end}
+    }
+    local EscapeTsunamiForBrainrotsScripts = {   
+        {Name = "( NOVO ) WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
+        {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
+        {Name = "( NOVO ) IWASHERE67", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/donthackmeblud-lab/Tinkering/refs/heads/Escape-Tsunami-For-Brainrots!/Escape%20Tsunami%20For%20Brainrots!", false))() end}
+    }
+    local DevilHunterScripts = {   
+        {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end}
+    }
 
     local updatesButtonInstance = createCategoryButton("📣 Atualizações 📣", nil, 1)
+    
     createCategoryButton("Steal A Brainrot", stealScripts, 2)
     createCategoryButton("99 Nights in the Florest", noiteScripts, 3)
+    createCategoryButton("Grow A Garden", growScripts, 4)
+    createCategoryButton("Vox Seas", voxSeasScripts, 5)
     createCategoryButton("Blox Fruits", bloxFruitsScripts, 6)
-    
+    createCategoryButton("King Legacy", kingLegacyScripts, 7)
+    createCategoryButton("Rivals", rivalsScripts, 8)
+    createCategoryButton("Doors", doorsScripts, 9)
+    createCategoryButton("Brookhaven", brookhavenScripts, 10)
+    createCategoryButton("Build A Plane", buildAPlaneScripts, 11)
+    createCategoryButton("Ink Game", inkGameScripts, 12)
+    createCategoryButton("Natural Disaster", naturalDisasterScripts, 13)
+    createCategoryButton("Forsaken", forsakenScripts, 14)
+    createCategoryButton("Fish It", pegueOPeixeScripts, 15)
+    createCategoryButton("Murder Mystery 2", murderMysteryScripts, 16)
+    createCategoryButton("Weak Legacy 2", weakLegacy2Scripts, 17)
+    createCategoryButton("Plants vs Brainrots", plantaVSBrainrotScripts, 18)
+    createCategoryButton("Dead Rails", deadRailsScripts, 19)
+    createCategoryButton("Iq Test", testeDeQiScripts, 20)
+    createCategoryButton("Pass or Die", passOrDieScripts, 21)
+    createCategoryButton("Math Murder", mathMurderScripts, 22)
+    createCategoryButton("Brainrot Training", brainrotTrainingScripts, 23)
+    createCategoryButton("Dump", dumpScripts, 24)
+    createCategoryButton("Eat Brainrot For Fight", eatBrainrotForFightScripts, 25)
+    createCategoryButton("No Limit Strongest Punch Simulator", khSaeedScripts, 26)
+    createCategoryButton("Brainrot Evolution", brainrotEvolucaoScripts, 27)
+    createCategoryButton("Anime Eternal", animeEternalScripts, 28)
+    createCategoryButton("Anime Weapons", animeWeaponsScripts, 29)
+    createCategoryButton("Cars vs Trucks", carsVsTrucksScripts, 30)
+    createCategoryButton("Deadly Delivery", deadlyDeliveryScripts, 31)
+    createCategoryButton("The Forge", theForgeScripts, 32)
+    createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
+    createCategoryButton("Anime Fighting Simulator: Endless", afsInfinityScripts, 35)
+    createCategoryButton("Blade Ball", BladeBallScripts, 36)
+    createCategoryButton("Escape Tsunami For Brainrots", EscapeTsunamiForBrainrotsScripts, 37)
+    createCategoryButton("Devil Hunter", DevilHunterScripts, 38)
+
     if updatesButtonInstance then
         for _, otherBtn in pairs(categoryContainer:GetChildren()) do
-            if otherBtn:IsA("TextButton") then otherBtn.TextColor3 = COLOR_TEXT_DIM end
+            if otherBtn:IsA("TextButton") then
+                otherBtn.TextColor3 = Colors.TextDim
+            end
         end
-        updatesButtonInstance.TextColor3 = COLOR_STAR_ON
+        updatesButtonInstance.TextColor3 = Color3.fromRGB(255, 215, 0)
         displayUpdates()
     end
 
@@ -1172,7 +1410,7 @@ local function showLoadingAndOpenHub()
 end
 
 -- ==========================================
--- SISTEMA DE KEY (GUI)
+-- LÓGICA DO NOVO SISTEMA DE KEY (GUI)
 -- ==========================================
 
 local function main()
@@ -1191,6 +1429,9 @@ local function CreateKeyUI()
         DisplayOrder = 999
     })
 
+    -- =========================================================
+    -- UISCALE PARA A KEY: LÊ O currentScale SALVO!
+    -- =========================================================
     local keyScaler = Instance.new("UIScale")
     keyScaler.Scale = currentScale
     keyScaler.Parent = KeyGui 
@@ -1203,14 +1444,14 @@ local function CreateKeyUI()
         BorderSizePixel = 2,
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 270), 
-        ClipsDescendants = false -- IMPORTANTE: Permitir notificações saltarem pra fora
+        Size = UDim2.new(0, 350, 0, 270),
+        -- IMPORTANTE: ClipsDescendants = false para a notificação aparecer acima
+        ClipsDescendants = false 
     })
     
-    -- Definir como frame ativo para as notificações grudarem
-    GlobalActiveFrame = MainKeyFrame
-    
+    -- Mover o scaler para dentro do frame para garantir funcionamento correto
     keyScaler.Parent = MainKeyFrame
+
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
     ApplyStroke(MainKeyFrame, Colors.Accent, 2)
 
@@ -1352,6 +1593,7 @@ local function CreateKeyUI()
 
     local function openGetKey()
         local link = "https://linkunlocker.com/key-1-dS7uj?share=true"
+        
         if setclipboard then
             setclipboard(link)
             KhalexisToast("Link Copiado", "Link copiado para a área de transferência!", "Success", 3)
@@ -1372,12 +1614,13 @@ local function CreateKeyUI()
         local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
         
         if isValid then
-            if writefile then pcall(function() writefile(KEY_FILE_NAME, userKey) end) end
+            if writefile then
+                pcall(function() writefile(KEY_FILE_NAME, userKey) end)
+            end
             KhalexisToast("Sucesso", "Key válida! Carregando Hub...", "Success", 3)
             SmoothTween(MainKeyFrame, 0.5, {Position = UDim2.new(0.5, 0, -0.5, 0), BackgroundTransparency = 1})
             task.wait(0.5)
             KeyGui:Destroy()
-            GlobalActiveFrame = nil 
             main()
         else
             KhalexisToast("Erro", "Key inválida. Tente novamente!", "Error", 3)
