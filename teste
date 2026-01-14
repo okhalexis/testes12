@@ -1087,12 +1087,12 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "NOTHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/lightymysterious-oss/DAHEN-HUB/refs/heads/main/BladeBall.lua"))() end},
         {Name = "PROJECT TREVOUS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotRox1/Trevous-Hub/refs/heads/main/blade-ball.lua"))() end}
     }
-    local EscapeTsunamiForBrainrots = {   
+    local EscapeTsunamiForBrainrotsScripts = {   
         {Name = "( NOVO ) WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
         {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
         {Name = "( NOVO ) IWASHERE67", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/donthackmeblud-lab/Tinkering/refs/heads/Escape-Tsunami-For-Brainrots!/Escape%20Tsunami%20For%20Brainrots!", false))() end}
     }
-    local Escape DevilHunter = {   
+    local Escape DevilHunterScripts = {   
         {Name = "( NOVO ) LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end}
     }
 
@@ -1132,8 +1132,8 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
     createCategoryButton("Grand Piece Online", grandPieceOnlineScripts, 33)
     createCategoryButton("Anime Fighting Simulator: Endless", afsInfinityScripts, 35)
     createCategoryButton("Blade Ball", BladeBallScripts, 36)
-    createCategoryButton("Escape Tsunami For Brainrots", EscapeTsunamiForBrainrots, 37)
-    createCategoryButton("Devil Hunter", DevilHunter, 38)
+    createCategoryButton("Escape Tsunami For Brainrots", EscapeTsunamiForBrainrotsScripts, 37)
+    createCategoryButton("Devil Hunter", DevilHunterScripts, 38)
 
     -- [MANTER] Lógica de entrada direta garantida na aba de Atualizações
     if updatesButtonInstance then
