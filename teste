@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.6 (ESCALA DE TEXTO CORRIGIDA)
-    -- ATUALIZAÇÃO: Ícone de Configurações novo (ID: 18870471941).
-    -- CORREÇÃO: Textos das categorias agora aumentam corretamente com o Hub.
-    -- MANTIDO: Sistema de Key, Save, Favoritos e Temas (Em breve).
+    -- Khalexis Hub - Versão Final v5.7 (PERSISTÊNCIA & CORREÇÃO TEXTO)
+    -- NOVO: O tamanho do Hub agora é SALVO automaticamente (Config.json).
+    -- CORREÇÃO: Textos das categorias agora escalam 100% proporcionalmente.
+    -- MANTIDO: Sistema de Key, Favoritos e Ícones.
 
 --]]
 
@@ -46,8 +46,7 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    -- ID solicitado (Textura):
-    Settings = "rbxassetid://18870471941" 
+    Settings = "rbxassetid://18870471941" -- Ícone Solicitado
 }
 
 local function applyRoundedCorners(guiObject, radius)
@@ -73,6 +72,89 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+
+-- ==========================================
+-- SISTEMA DE SALVAMENTO (CONFIG & FAVORITOS)
+-- ==========================================
+local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
+local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
+local SETTINGS_FILE_NAME = "KhalexisHub_Settings.json"
+
+local FavoritesList = {} 
+local AllScriptsGlobal = {}
+local currentScale = 1 -- Valor padrão
+
+-- Carregar Favoritos
+if isfile(FAV_FILE_NAME) then
+    pcall(function()
+        local content = readfile(FAV_FILE_NAME)
+        local data = HttpService:JSONDecode(content)
+        if typeof(data) == "table" then
+            FavoritesList = data
+        end
+    end)
+else
+    FavoritesList = {}
+end
+
+-- Carregar Configurações (Tamanho do Hub)
+if isfile(SETTINGS_FILE_NAME) then
+    pcall(function()
+        local content = readfile(SETTINGS_FILE_NAME)
+        local data = HttpService:JSONDecode(content)
+        if typeof(data) == "table" and data.Scale then
+            currentScale = data.Scale
+        end
+    end)
+end
+
+local function SaveFavorites()
+    pcall(function()
+        local json = HttpService:JSONEncode(FavoritesList)
+        writefile(FAV_FILE_NAME, json)
+    end)
+end
+
+local function SaveSettings()
+    pcall(function()
+        local data = {
+            Scale = currentScale
+        }
+        local json = HttpService:JSONEncode(data)
+        writefile(SETTINGS_FILE_NAME, json)
+    end)
+end
+
+local function IsFavorited(name)
+    for _, v in ipairs(FavoritesList) do
+        if v == name then return true end
+    end
+    return false
+end
+
+local function ToggleFavorite(name)
+    if IsFavorited(name) then
+        for i, v in ipairs(FavoritesList) do
+            if v == name then
+                table.remove(FavoritesList, i)
+                break
+            end
+        end
+    else
+        table.insert(FavoritesList, name)
+    end
+    SaveFavorites()
+end
+
+local function RegisterScript(name, func)
+    local found = false
+    for _, s in ipairs(AllScriptsGlobal) do
+        if s.Name == name then found = true; break end
+    end
+    if not found then
+        table.insert(AllScriptsGlobal, {Name = name, Func = func})
+    end
+end
 
 -- ==========================================
 -- BANCO DE DADOS DE IDS
@@ -153,65 +235,6 @@ local LoadingScreen, StopLoadingAnim
 local HubOpen = false
 local ToggleButton 
 local HasShownWelcome = false
-
--- Variável Global para Escala do Hub
-local currentScale = 1
-
-local KEY_FILE_NAME = "KhalexisHub_SavedKey.txt"
-local FAV_FILE_NAME = "KhalexisHub_FavoritesV2.json"
-
-local FavoritesList = {} 
-local AllScriptsGlobal = {}
-
-if isfile(FAV_FILE_NAME) then
-    pcall(function()
-        local content = readfile(FAV_FILE_NAME)
-        local data = HttpService:JSONDecode(content)
-        if typeof(data) == "table" then
-            FavoritesList = data
-        end
-    end)
-else
-    FavoritesList = {}
-end
-
-local function SaveFavorites()
-    pcall(function()
-        local json = HttpService:JSONEncode(FavoritesList)
-        writefile(FAV_FILE_NAME, json)
-    end)
-end
-
-local function IsFavorited(name)
-    for _, v in ipairs(FavoritesList) do
-        if v == name then return true end
-    end
-    return false
-end
-
-local function ToggleFavorite(name)
-    if IsFavorited(name) then
-        for i, v in ipairs(FavoritesList) do
-            if v == name then
-                table.remove(FavoritesList, i)
-                break
-            end
-        end
-    else
-        table.insert(FavoritesList, name)
-    end
-    SaveFavorites()
-end
-
-local function RegisterScript(name, func)
-    local found = false
-    for _, s in ipairs(AllScriptsGlobal) do
-        if s.Name == name then found = true; break end
-    end
-    if not found then
-        table.insert(AllScriptsGlobal, {Name = name, Func = func})
-    end
-end
 
 -- ==========================================
 -- KEY SYSTEM CONFIG
@@ -489,7 +512,6 @@ local function createHub()
 
     -- =========================================================
     -- UISCALE: Controla o tamanho de TUDO dentro do container
-    -- (incluindo textos, botões e imagens).
     -- =========================================================
     local uiScaler = Instance.new("UIScale")
     uiScaler.Scale = currentScale 
@@ -1082,6 +1104,7 @@ local function createHub()
                  -- Atualiza a escala global
                  TweenService:Create(uiScaler, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Scale = currentScale}):Play()
                  KhalexisToast("Configuração", "Tamanho alterado para " .. sizeData.Name, "Success", 2)
+                 SaveSettings() -- Salva a config
              end)
         end
         
@@ -1147,11 +1170,19 @@ local function createHub()
         btn.TextWrapped = true
         btn.RichText = true 
         
-        -- CORREÇÃO: Aumentado o MaxTextSize para permitir que o texto cresça com o Hub
+        -- CORREÇÃO: Limite de texto alto (100) para permitir que cresça
         local sizeConstraint = Instance.new("UITextSizeConstraint")
-        sizeConstraint.MaxTextSize = 25  -- Aumentado de 10 para 25
+        sizeConstraint.MaxTextSize = 100 
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
+        
+        -- Adicionado Padding para evitar que o texto encoste na borda
+        local padding = Instance.new("UIPadding")
+        padding.PaddingTop = UDim.new(0, 2)
+        padding.PaddingBottom = UDim.new(0, 2)
+        padding.PaddingLeft = UDim.new(0, 2)
+        padding.PaddingRight = UDim.new(0, 2)
+        padding.Parent = btn
         
         btn.Text = name
         btn.Parent = categoryContainer
@@ -1215,11 +1246,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "CORREÇÃO: ESCALA DOS TEXTOS", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Agora os textos das categorias crescem junto com o Hub!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVO: SISTEMA DE SAVE", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "O tamanho do Hub agora fica salvo!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
