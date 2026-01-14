@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.5 (PREPARAÇÃO PARA TEMAS)
-    -- ATUALIZAÇÃO: Ícone de Configurações alterado (ID Solicitado).
-    -- ORGANIZAÇÃO: Menu de configurações separado por categorias (Tamanho / Futuros Temas).
-    -- SISTEMA: Redimensionamento via UIScale (Afeta Textos e Imagens proporcionalmente).
+    -- Khalexis Hub - Versão Final v5.6 (ESCALA DE TEXTO CORRIGIDA)
+    -- ATUALIZAÇÃO: Ícone de Configurações novo (ID: 18870471941).
+    -- CORREÇÃO: Textos das categorias agora aumentam corretamente com o Hub.
+    -- MANTIDO: Sistema de Key, Save, Favoritos e Temas (Em breve).
 
 --]]
 
@@ -46,8 +46,8 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    -- ID solicitado para a engrenagem:
-    Settings = "rbxassetid://11385220714" 
+    -- ID solicitado (Textura):
+    Settings = "rbxassetid://18870471941" 
 }
 
 local function applyRoundedCorners(guiObject, radius)
@@ -1147,8 +1147,9 @@ local function createHub()
         btn.TextWrapped = true
         btn.RichText = true 
         
+        -- CORREÇÃO: Aumentado o MaxTextSize para permitir que o texto cresça com o Hub
         local sizeConstraint = Instance.new("UITextSizeConstraint")
-        sizeConstraint.MaxTextSize = 10 
+        sizeConstraint.MaxTextSize = 25  -- Aumentado de 10 para 25
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
         
@@ -1214,11 +1215,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "NOVO: MENU DE CONFIGURAÇÕES", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "Clique na engrenagem (topo) para mudar o tamanho!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "CORREÇÃO: ESCALA DOS TEXTOS", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "Agora os textos das categorias crescem junto com o Hub!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
