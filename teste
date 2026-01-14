@@ -1,13 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v4.6 (Correção de Bugs)
+    -- Khalexis Hub - Versão Final v4.7 (Atualização Visual do Toggle)
     -- 1. CLEANUP: Remove interfaces antigas.
-    -- 2. LAYOUT: Ícone de crosshair REMOVIDO.
-    -- 3. ALINHAMENTO: Texto das categorias CENTRALIZADO.
-    -- 4. AUTO-SELECT: Entra direto em Atualizações.
-    -- 5. KEY SYSTEM: Link de redirecionamento atualizado para LinkUnlocker (dS7uj).
-    -- 6. NOVO: Categoria Blade Ball e +20 novos scripts adicionados.
-    -- 7. FIX: Erros de sintaxe (vírgulas e nomes de variáveis) corrigidos.
+    -- 2. TOGGLE: Substituído texto "K" por Ícone do Roblox.
+    -- 3. DRAG SYSTEM: Sistema de arrastar o botão (PC/Mobile) aprimorado.
+    -- 4. FIX: Todas as correções de bugs da v4.6 mantidas.
 
 --]]
 
@@ -21,7 +18,7 @@ if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
     game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
 
--- Resetar verificação de execução única para permitir re-execução em caso de falha
+-- Resetar verificação de execução única para permitir re-execução
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
@@ -80,7 +77,7 @@ local GameID_Database = {
     [130247632398296] = "Anime Fighting Simulator: Endless", 
     [16347316744] = "The Forge", 
     [76558904092080] = "The Forge",
-    [13772394625] = "Blade Ball", -- ID Adicionado
+    [13772394625] = "Blade Ball", 
 }
 
 local CurrentPlaceId = game.PlaceId
@@ -1490,34 +1487,47 @@ local function CreateKeyUI()
     })
 end
 
--- CRIAÇÃO DO TOGGLE BUTTON (INICIALMENTE OCULTO)
-ToggleButton=Instance.new("TextButton")
-ToggleButton.Name="ToggleButton"
-ToggleButton.Size=UDim2.new(0,35,0,35)
-ToggleButton.Position=UDim2.new(0,10,0,10)
-ToggleButton.BackgroundColor3=Color3.new(0,0,0)
-ToggleButton.TextColor3=Color3.new(1,1,1)
-ToggleButton.Text="K"
-ToggleButton.Font=HUB_FONT
-ToggleButton.TextSize=24
-ToggleButton.Parent=ScreenGui
+-- ==========================================
+-- CRIAÇÃO DO TOGGLE BUTTON (COM ÍCONE E DRAG)
+-- ==========================================
+ToggleButton = Instance.new("ImageButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 45, 0, 45) -- Tamanho confortável
+ToggleButton.Position = UDim2.new(0, 10, 0, 100)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleButton.BorderColor3 = Color3.fromRGB(255, 140, 0)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Image = "rbxassetid://101462084575687" -- ID da textura fornecido
+ToggleButton.Parent = ScreenGui
 ToggleButton.Visible = false
-applyRoundedCorners(ToggleButton,10)
 
-local draggingToggle=false
-local dragStartToggle,startPosToggle
+-- Deixar redondo
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0) -- Torna um círculo perfeito
+corner.Parent = ToggleButton
+
+-- Borda para destacar
+local stroke = Instance.new("UIStroke")
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Color = Color3.fromRGB(255, 140, 0) -- Laranja do tema
+stroke.Thickness = 2
+stroke.Parent = ToggleButton
+
+local draggingToggle = false
+local dragStartToggle, startPosToggle
 local currentInputObjectToggle = nil
 
 ToggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
-        draggingToggle=true
-        dragStartToggle=input.Position
-        startPosToggle=ToggleButton.Position
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingToggle = true
+        dragStartToggle = input.Position
+        startPosToggle = ToggleButton.Position
         currentInputObjectToggle = input
+        
         local connection
-        connection=input.Changed:Connect(function()
-            if input.UserInputState==Enum.UserInputState.Ended then
-                draggingToggle=false
+        connection = input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                draggingToggle = false
                 currentInputObjectToggle = nil
                 connection:Disconnect()
             end
@@ -1526,9 +1536,9 @@ ToggleButton.InputBegan:Connect(function(input)
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if draggingToggle and currentInputObjectToggle == input and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
-        local delta=input.Position-dragStartToggle
-        ToggleButton.Position=UDim2.new(startPosToggle.X.Scale,startPosToggle.X.Offset+delta.X,startPosToggle.Y.Scale,startPosToggle.Y.Offset+delta.Y)
+    if draggingToggle and currentInputObjectToggle == input and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStartToggle
+        ToggleButton.Position = UDim2.new(startPosToggle.X.Scale, startPosToggle.X.Offset + delta.X, startPosToggle.Y.Scale, startPosToggle.Y.Offset + delta.Y)
     end
 end)
 
@@ -1537,8 +1547,8 @@ ToggleButton.MouseButton1Click:Connect(function()
         if MainFrameContainer then closeHubWithAnimation(MainFrameContainer) end
     else
         if HasShownWelcome then
-            MainFrameContainer=createHub()
-            HubOpen=true
+            MainFrameContainer = createHub()
+            HubOpen = true
             ToggleButton.Visible = false
         else
             showLoadingAndOpenHub()
