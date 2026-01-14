@@ -1,9 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.7 (PERSISTÊNCIA & CORREÇÃO TEXTO)
-    -- NOVO: O tamanho do Hub agora é SALVO automaticamente (Config.json).
-    -- CORREÇÃO: Textos das categorias agora escalam 100% proporcionalmente.
-    -- MANTIDO: Sistema de Key, Favoritos e Ícones.
+    -- Khalexis Hub - Versão Final v5.8 (PROPORCIONALIDADE & SAVE COMPLETO)
+    -- AJUSTE: Textos das categorias agora seguem o padrão "limpo" (não estouram o botão).
+    -- NOVO: O tamanho salvo agora é aplicado também na TELA DE KEY.
+    -- MANTIDO: Save automático de configurações e favoritos.
 
 --]]
 
@@ -46,7 +46,7 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    Settings = "rbxassetid://18870471941" -- Ícone Solicitado
+    Settings = "rbxassetid://18870471941" 
 }
 
 local function applyRoundedCorners(guiObject, radius)
@@ -84,6 +84,17 @@ local FavoritesList = {}
 local AllScriptsGlobal = {}
 local currentScale = 1 -- Valor padrão
 
+-- Carregar Configurações (Tamanho do Hub) ANTES DE TUDO
+if isfile(SETTINGS_FILE_NAME) then
+    pcall(function()
+        local content = readfile(SETTINGS_FILE_NAME)
+        local data = HttpService:JSONDecode(content)
+        if typeof(data) == "table" and data.Scale then
+            currentScale = data.Scale
+        end
+    end)
+end
+
 -- Carregar Favoritos
 if isfile(FAV_FILE_NAME) then
     pcall(function()
@@ -95,17 +106,6 @@ if isfile(FAV_FILE_NAME) then
     end)
 else
     FavoritesList = {}
-end
-
--- Carregar Configurações (Tamanho do Hub)
-if isfile(SETTINGS_FILE_NAME) then
-    pcall(function()
-        local content = readfile(SETTINGS_FILE_NAME)
-        local data = HttpService:JSONDecode(content)
-        if typeof(data) == "table" and data.Scale then
-            currentScale = data.Scale
-        end
-    end)
 end
 
 local function SaveFavorites()
@@ -1170,13 +1170,15 @@ local function createHub()
         btn.TextWrapped = true
         btn.RichText = true 
         
-        -- CORREÇÃO: Limite de texto alto (100) para permitir que cresça
+        -- CORREÇÃO: Limite de texto definido para 12 (Padrão limpo).
+        -- Com TextScaled, se o botão dobrar de tamanho (2x), o texto dobra junto.
+        -- Se o botão diminuir, o texto diminui. Isso garante a proporção.
         local sizeConstraint = Instance.new("UITextSizeConstraint")
-        sizeConstraint.MaxTextSize = 100 
+        sizeConstraint.MaxTextSize = 12 
         sizeConstraint.MinTextSize = 5
         sizeConstraint.Parent = btn
         
-        -- Adicionado Padding para evitar que o texto encoste na borda
+        -- Adicionado Padding
         local padding = Instance.new("UIPadding")
         padding.PaddingTop = UDim.new(0, 2)
         padding.PaddingBottom = UDim.new(0, 2)
@@ -1246,11 +1248,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "NOVO: SISTEMA DE SAVE", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "O tamanho do Hub agora fica salvo!", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "NOVO: SISTEMA DE SAVE COMPLETO", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
+        {Text = "O tamanho do Hub agora fica salvo, inclusive na Key!", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+5 Scripts Fish it", Color = Color3.fromRGB(220, 220, 220)},
@@ -1487,6 +1489,13 @@ local function CreateKeyUI()
         DisplayOrder = 999
     })
 
+    -- =========================================================
+    -- UISCALE PARA A KEY: AGORA LÊ O currentScale SALVO!
+    -- =========================================================
+    local keyScaler = Instance.new("UIScale")
+    keyScaler.Scale = currentScale
+    keyScaler.Parent = KeyGui -- Aplica na ScreenGui inteira ou no Frame principal
+
     local MainKeyFrame = CreateObject("Frame", {
         Name = "MainFrame",
         Parent = KeyGui,
@@ -1498,6 +1507,10 @@ local function CreateKeyUI()
         Size = UDim2.new(0, 350, 0, 270), 
         ClipsDescendants = true
     })
+    
+    -- Mover o scaler para dentro do frame para garantir funcionamento correto
+    keyScaler.Parent = MainKeyFrame
+
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 8), Parent = MainKeyFrame})
     ApplyStroke(MainKeyFrame, Colors.Accent, 2)
 
