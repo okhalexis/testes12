@@ -1,10 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão Final v5.5 (CORES CORRIGIDAS)
-    -- 1. CORES: Idênticas ao script fornecido (Tabela Colors + Legacy).
-    -- 2. DASHBOARD: Limpa (sem emojis), status real, acessada pelo ícone Home.
-    -- 3. NOTIFICAÇÕES: Estilo Toast, empilhadas embaixo, com (+).
-    -- 4. KEY SYSTEM: LinkUnlocker integrado.
+    -- Khalexis Hub - Versão Final v5.6 (TITULO CENTRALIZADO + NOVO ICONE)
+    -- 1. TÍTULO: Centralizado na barra superior.
+    -- 2. HOME ICON: ID Atualizado (96417357606847) e posicionado no canto esquerdo.
+    -- 3. CORES: Originais mantidas.
+    -- 4. DASHBOARD: Limpa e funcional.
 
 --]]
 
@@ -21,12 +21,12 @@ end
 getgenv().RedExecutorKeySys = false 
 
 -- ==========================================
--- CONFIGURAÇÃO VISUAL (CORES DO SCRIPT FORNECIDO)
+-- CONFIGURAÇÃO VISUAL
 -- ==========================================
 local HUB_FONT = Enum.Font.FredokaOne 
 local HUB_TEXT_SIZE = 14 
 
--- Tabela de Cores (Do script colado)
+-- Paleta Original
 local Colors = {
     Main = Color3.fromRGB(15, 15, 15),
     Secondary = Color3.fromRGB(25, 25, 25),
@@ -40,7 +40,7 @@ local Colors = {
     Info = Color3.fromRGB(59, 130, 246)
 }
 
--- Variáveis Legacy (Para manter compatibilidade visual com a GUI original)
+-- Variáveis Legacy
 local COLOR_BLACK = Colors.Main
 local COLOR_CATEGORY_BG = Colors.Secondary
 local COLOR_CATEGORY_BTN = Color3.fromRGB(35, 35, 35)
@@ -60,7 +60,7 @@ local Icons = {
     Warning = "rbxassetid://130226573962640",
     Info = "rbxassetid://94529541997278",
     Finger = "rbxassetid://12333784627",
-    Home = "rbxassetid://10709752906", -- Casinha
+    Home = "rbxassetid://96417357606847", -- Ícone Atualizado
     Clock = "rbxassetid://10709752254",
     Signal = "rbxassetid://10709752535"
 }
@@ -542,20 +542,21 @@ local function createHub()
     titleBarGradient.Rotation=90
     titleBarGradient.Parent=titleBarBorder
 
+    -- TÍTULO CENTRALIZADO
     local titleLabel=Instance.new("TextLabel")
     titleLabel.Name="Title"
-    titleLabel.Size=UDim2.new(1,-30,1,0) -- Espaço para icone home
-    titleLabel.Position = UDim2.new(0, 30, 0, 0)
+    titleLabel.Size=UDim2.new(1,0,1,0) -- Ocupa toda a barra
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
     titleLabel.BackgroundTransparency=1
     titleLabel.Text="Khalexis Hub"
     titleLabel.TextColor3=COLOR_TEXT
     titleLabel.Font=HUB_FONT
     titleLabel.TextSize=18
-    titleLabel.TextXAlignment=Enum.TextXAlignment.Left
+    titleLabel.TextXAlignment=Enum.TextXAlignment.Center -- Centralizado
     titleLabel.TextYAlignment=Enum.TextYAlignment.Center
     titleLabel.Parent=titleBar
 
-    -- [NOVO] ÍCONE HOME NA BARRA DE TÍTULO
+    -- ÍCONE HOME (LADO ESQUERDO)
     local homeButton = Instance.new("ImageButton")
     homeButton.Name = "HomeButton"
     homeButton.Size = UDim2.new(0, 20, 0, 20)
@@ -1113,12 +1114,12 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V5.5 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V5.6 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVIDADES:", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
         {Text = "- ÍCONE HOME ADICIONADO na barra de título.", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "- Título centralizado.", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "- Notificações reposicionadas EMBAIXO.", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "- CORES: Revertidas para o original.", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "Atualização de Scripts:", Color = Color3.fromRGB(255, 140, 0), Font = HUB_FONT},
         {Text = "+5 Scripts The Forge", Color = Color3.fromRGB(220, 220, 220)},
