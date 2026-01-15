@@ -1592,7 +1592,7 @@ local function CreateKeyUI()
     end)
 
     local function openGetKey()
-        local link = "https://linkunlocker.com/key-1-s0Vzy?share=true"
+        local link = "https://linkunlocker.com/key-parte-unica-VLUyP"
         
         if setclipboard then
             setclipboard(link)
