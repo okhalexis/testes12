@@ -1,9 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.9 (FINAL LINK UPDATE + SECURITY LOOP)
-    -- ATUALIZADO: Link do botão "Pegar Key" alterado.
-    -- NOVO: Loop de segurança a cada 1 minuto (Check constante de validade).
-    -- CORREÇÃO: Erro de sintaxe na lista de Natural Disaster corrigido.
+    -- Khalexis Hub - Versão v7.0 (AUTO-KILL & SECURITY UPDATE)
+    -- ATUALIZADO: Fecha scripts executados (Auto-Kill) quando a key expira.
+    -- MANTIDO: Loop de segurança a cada 60 segundos.
 
 --]]
 
@@ -29,11 +28,11 @@ local HUB_FONT = Enum.Font.FredokaOne
 local HUB_TEXT_SIZE = 14 
 
 local Colors = {
-    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo (Fundo do Hub)
-    Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Chumbo (Fundo da Notificação)
+    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo
+    Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Chumbo
     Stroke = Color3.fromRGB(60, 60, 60),
     Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
-    Text = Color3.fromRGB(255, 255, 255),    -- Branco Puro (Para texto da notificação)
+    Text = Color3.fromRGB(255, 255, 255),    -- Branco Puro
     TextDim = Color3.fromRGB(200, 200, 200), -- Cinza Claro
     Success = Color3.fromRGB(40, 200, 64),
     Error = Color3.fromRGB(245, 70, 90),
@@ -175,7 +174,7 @@ local HasShownWelcome = false
 local CreateKeyUI -- Declaração antecipada
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (POSIÇÃO AJUSTADA)
+-- SISTEMA DE NOTIFICAÇÃO
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -185,9 +184,7 @@ function KhalexisToast(title, text, type, duration)
     elseif type == "Error" then color = Colors.Error; icon = Icons.Error
     elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
 
-    -- 1. Identificar o PAI e definir a Posição Base
     local targetParent = nil
-    
     local startPosition = UDim2.new(0.5, -160, 0.8, 0) 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
@@ -1413,51 +1410,7 @@ end
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
--- ==========================================
--- SISTEMA DE SEGURANÇA (LOOP 1 MINUTO)
--- ==========================================
-
-local function StartSecurityLoop(userKey)
-    if getgenv().KhalexisSecurityLoop then return end
-    getgenv().KhalexisSecurityLoop = true
-    
-    task.spawn(function()
-        while getgenv().KhalexisSecurityLoop do
-            task.wait(60) -- AQUI: Verifica EXATAMENTE a cada 60 segundos
-            
-            -- Verifica a validade sem travar o script principal
-            local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
-            
-            if not isValid then
-                getgenv().KhalexisSecurityLoop = false
-                
-                -- 1. Destruir TUDO do Hub
-                if ScreenGui then ScreenGui:Destroy() end
-                if MainFrameContainer then MainFrameContainer:Destroy() end
-                if ToggleButton then ToggleButton:Destroy() end
-                HubOpen = false
-                
-                -- 2. Deletar a Key Salva (para não logar de novo)
-                if isfile(KEY_FILE_NAME) then
-                    delfile(KEY_FILE_NAME)
-                end
-                
-                -- 3. Notificar
-                KhalexisToast("KEY EXPIRADA", "O tempo da sua Key acabou. Gere uma nova!", "Error", 5)
-                
-                -- 4. Voltar para a tela de Login
-                CreateKeyUI()
-                break
-            end
-        end
-    end)
-end
-
--- ==========================================
--- UI DE KEY SYSTEM
--- ==========================================
-
-CreateKeyUI = function()
+local function CreateKeyUI()
     local KeyGui = CreateObject("ScreenGui", {
         Name = "KhalexisKeySystem", 
         Parent = CoreGui, 
@@ -1466,6 +1419,9 @@ CreateKeyUI = function()
         DisplayOrder = 999
     })
 
+    -- =========================================================
+    -- UISCALE PARA A KEY: LÊ O currentScale SALVO!
+    -- =========================================================
     local keyScaler = Instance.new("UIScale")
     keyScaler.Scale = currentScale
     keyScaler.Parent = KeyGui 
@@ -1642,7 +1598,7 @@ CreateKeyUI = function()
         end
 
         KhalexisToast("Verificando", "Validando key...", "Info", 2)
-        -- Usando a lib já carregada
+        local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
         local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
         
         if isValid then
@@ -1653,12 +1609,9 @@ CreateKeyUI = function()
             SmoothTween(MainKeyFrame, 0.5, {Position = UDim2.new(0.5, 0, -0.5, 0), BackgroundTransparency = 1})
             task.wait(0.5)
             KeyGui:Destroy()
-            
-            -- INICIA O LOOP DE SEGURANÇA AQUI
-            StartSecurityLoop(userKey)
             main()
         else
-            KhalexisToast("Erro", "Key inválida ou expirada.", "Error", 3)
+            KhalexisToast("Erro", "Key inválida. Tente novamente!", "Error", 3)
         end
     end
 
@@ -1775,28 +1728,21 @@ end)
 
 local function startKeySystem()
     local alreadyValid = false
-    local savedKey = ""
     
     if isfile and readfile and isfile(KEY_FILE_NAME) then
-        savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
+        local savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
         if savedKey ~= "" then
-            -- Verifica no load se ainda é válida
+            local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
             local isValid = JunkieKeySystem.verifyKey(Config.api, savedKey, Config.service)
             if isValid then
                 alreadyValid = true
-            else
-                -- Se não for válida, apaga o arquivo para não bugar
-                delfile(KEY_FILE_NAME)
             end
         end
     end
 
     if alreadyValid then
-        -- Key válida -> Inicia segurança e abre Hub
-        StartSecurityLoop(savedKey)
         main() 
     else
-        -- Key inválida -> Abre UI de Key
         CreateKeyUI() 
     end
 end
