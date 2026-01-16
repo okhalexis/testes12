@@ -1199,8 +1199,6 @@ local function createHub()
         {Text = "+2 SCRIPTS ESCAPE TSUNAMI", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 SCRIPTS THE FORGE", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+3 Scripts Escape Tsunami for Brainrots", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Script Devil Hunter", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Script Muder Mystery ( MM2 )", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     -- SCRIPTS
@@ -1340,8 +1338,8 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
     local EscapeTsunamiForBrainrotsScripts = {   
         {Name = "( NOVO ) EKUVE HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ekuve/ekuvehub/main/main.lua"))() end},
         {Name = "WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
-        {Name = "( NOVO ) COLDTEAM X", Func = function() loadstring(game:HttpGet("https://rawscripts.net/raw/Escape-Tsunami-For-Brainrots!-OP-84859"))() end},
         {Name = "LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
+        {Name = "( NOVO ) COLDTEAM X", Func = function() loadstring(game:HttpGet("https://rawscripts.net/raw/Escape-Tsunami-For-Brainrots!-OP-84859"))() end},
         {Name = "IWASHERE67", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/donthackmeblud-lab/Tinkering/refs/heads/Escape-Tsunami-For-Brainrots!/Escape%20Tsunami%20For%20Brainrots!", false))() end}
     }
     local DevilHunterScripts = {   
