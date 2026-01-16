@@ -1,8 +1,9 @@
 --[[
 
-    -- Khalexis Hub - Versão v7.0 (AUTO-KILL & SECURITY UPDATE)
-    -- ATUALIZADO: Fecha scripts executados (Auto-Kill) quando a key expira.
-    -- MANTIDO: Loop de segurança a cada 60 segundos.
+    -- Khalexis Hub - Versão v7.0 (WHITE SCREEN BLOCKER UPDATE)
+    -- ATUALIZADO: Fundo branco bloqueando a visão do jogo enquanto não tiver Key.
+    -- NOVO: Se a key expirar, o Hub fecha e a tela branca volta.
+    -- CORREÇÃO: Removido qualquer sistema agressivo de crash, agora volta para o menu de Key.
 
 --]]
 
@@ -28,11 +29,11 @@ local HUB_FONT = Enum.Font.FredokaOne
 local HUB_TEXT_SIZE = 14 
 
 local Colors = {
-    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo
+    Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo (Fundo do Hub)
     Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Chumbo
     Stroke = Color3.fromRGB(60, 60, 60),
     Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
-    Text = Color3.fromRGB(255, 255, 255),    -- Branco Puro
+    Text = Color3.fromRGB(255, 255, 255),    -- Branco
     TextDim = Color3.fromRGB(200, 200, 200), -- Cinza Claro
     Success = Color3.fromRGB(40, 200, 64),
     Error = Color3.fromRGB(245, 70, 90),
@@ -188,6 +189,7 @@ function KhalexisToast(title, text, type, duration)
     local startPosition = UDim2.new(0.5, -160, 0.8, 0) 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
+    -- Ajuste para aparecer sobre o Frame de Key se ele existir
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         targetParent = keyGui.MainFrame
         startPosition = UDim2.new(0.5, -160, 1, -35)
@@ -1410,7 +1412,53 @@ end
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
-local function CreateKeyUI()
+-- ==========================================
+-- SISTEMA DE SEGURANÇA (LOOP 1 MINUTO)
+-- ==========================================
+
+local function StartSecurityLoop(userKey)
+    if getgenv().KhalexisSecurityLoop then return end
+    getgenv().KhalexisSecurityLoop = true
+    
+    task.spawn(function()
+        while getgenv().KhalexisSecurityLoop do
+            task.wait(60) -- AQUI: Verifica EXATAMENTE a cada 60 segundos
+            
+            -- Verifica a validade sem travar o script principal
+            local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
+            
+            if not isValid then
+                getgenv().KhalexisSecurityLoop = false
+                
+                -- 1. Fechar o Hub
+                if MainFrameContainer and MainFrameContainer.Parent then 
+                    MainFrameContainer:Destroy() 
+                end
+                if ToggleButton then ToggleButton.Visible = false end
+                if ScreenGui:FindFirstChild("LoadingFrame") then ScreenGui.LoadingFrame:Destroy() end
+                HubOpen = false
+                
+                -- 2. Deletar a Key Salva (para não logar de novo)
+                if isfile(KEY_FILE_NAME) then
+                    delfile(KEY_FILE_NAME)
+                end
+                
+                -- 3. Notificar
+                KhalexisToast("KEY EXPIRADA", "O tempo da sua Key acabou. Gere uma nova!", "Error", 5)
+                
+                -- 4. Voltar para a tela de Login (com o bloqueio branco)
+                CreateKeyUI()
+                break
+            end
+        end
+    end)
+end
+
+-- ==========================================
+-- UI DE KEY SYSTEM
+-- ==========================================
+
+CreateKeyUI = function()
     local KeyGui = CreateObject("ScreenGui", {
         Name = "KhalexisKeySystem", 
         Parent = CoreGui, 
@@ -1419,9 +1467,19 @@ local function CreateKeyUI()
         DisplayOrder = 999
     })
 
-    -- =========================================================
-    -- UISCALE PARA A KEY: LÊ O currentScale SALVO!
-    -- =========================================================
+    -- ==============================================================
+    -- NOVO: WHITE SCREEN BLOCKER (FUNDO BRANCO BLOQUEADOR)
+    -- ==============================================================
+    local BlockerFrame = Instance.new("Frame")
+    BlockerFrame.Name = "WhiteScreenBlocker"
+    BlockerFrame.Size = UDim2.new(1, 0, 1, 0)
+    BlockerFrame.Position = UDim2.new(0, 0, 0, 0)
+    BlockerFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- BRANCO
+    BlockerFrame.ZIndex = 0 -- Fica atrás do Login, mas na frente do Jogo
+    BlockerFrame.Active = true -- Impede cliques no jogo
+    BlockerFrame.Parent = KeyGui
+    -- ==============================================================
+
     local keyScaler = Instance.new("UIScale")
     keyScaler.Scale = currentScale
     keyScaler.Parent = KeyGui 
@@ -1435,6 +1493,7 @@ local function CreateKeyUI()
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         Size = UDim2.new(0, 350, 0, 270),
+        ZIndex = 5, -- Garante que fica em cima do fundo branco
         ClipsDescendants = false 
     })
     
@@ -1598,20 +1657,30 @@ local function CreateKeyUI()
         end
 
         KhalexisToast("Verificando", "Validando key...", "Info", 2)
-        local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+        -- Usando a lib já carregada
         local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
         
         if isValid then
             if writefile then
                 pcall(function() writefile(KEY_FILE_NAME, userKey) end)
             end
+            
             KhalexisToast("Sucesso", "Key válida! Carregando Hub...", "Success", 3)
+            
+            -- Animação de saída do bloqueador branco
+            if BlockerFrame then
+                SmoothTween(BlockerFrame, 1, {BackgroundTransparency = 1})
+            end
+            
             SmoothTween(MainKeyFrame, 0.5, {Position = UDim2.new(0.5, 0, -0.5, 0), BackgroundTransparency = 1})
             task.wait(0.5)
             KeyGui:Destroy()
+            
+            -- INICIA O LOOP DE SEGURANÇA AQUI
+            StartSecurityLoop(userKey)
             main()
         else
-            KhalexisToast("Erro", "Key inválida. Tente novamente!", "Error", 3)
+            KhalexisToast("Erro", "Key inválida ou expirada.", "Error", 3)
         end
     end
 
@@ -1728,21 +1797,28 @@ end)
 
 local function startKeySystem()
     local alreadyValid = false
+    local savedKey = ""
     
     if isfile and readfile and isfile(KEY_FILE_NAME) then
-        local savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
+        savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
         if savedKey ~= "" then
-            local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+            -- Verifica no load se ainda é válida
             local isValid = JunkieKeySystem.verifyKey(Config.api, savedKey, Config.service)
             if isValid then
                 alreadyValid = true
+            else
+                -- Se não for válida, apaga o arquivo para não bugar
+                delfile(KEY_FILE_NAME)
             end
         end
     end
 
     if alreadyValid then
+        -- Key válida -> Inicia segurança e abre Hub
+        StartSecurityLoop(savedKey)
         main() 
     else
+        -- Key inválida -> Abre UI de Key (COM BLOQUEIO BRANCO)
         CreateKeyUI() 
     end
 end
