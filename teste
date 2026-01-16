@@ -1,8 +1,8 @@
 --[[
 
-    -- Khalexis Hub - Versão v6.9 (FINAL LINK UPDATE)
+    -- Khalexis Hub - Versão v6.9 (FINAL LINK UPDATE + SECURITY LOOP)
     -- ATUALIZADO: Link do botão "Pegar Key" alterado.
-    -- MANTIDO: Notificações "Meio a Meio" (Metade dentro/fora) para mobile.
+    -- NOVO: Loop de segurança a cada 1 minuto (Check constante de validade).
 
 --]]
 
@@ -18,6 +18,8 @@ end
 
 -- Resetar verificação de execução única
 getgenv().RedExecutorKeySys = false 
+-- Controle do Loop de Segurança
+getgenv().KhalexisSecurityLoop = false
 
 -- ==========================================
 -- CONFIGURAÇÃO VISUAL
@@ -169,6 +171,7 @@ local LoadingScreen, StopLoadingAnim
 local HubOpen = false
 local ToggleButton 
 local HasShownWelcome = false
+local CreateKeyUI -- Declaração antecipada
 
 -- ==========================================
 -- SISTEMA DE NOTIFICAÇÃO (POSIÇÃO AJUSTADA)
@@ -184,50 +187,31 @@ function KhalexisToast(title, text, type, duration)
     -- 1. Identificar o PAI e definir a Posição Base
     local targetParent = nil
     
-    -- Configuração padrão: Centralizado na tela (para quando não houver janela)
-    -- Ajustado levemente para cima para garantir visibilidade no mobile
     local startPosition = UDim2.new(0.5, -160, 0.8, 0) 
-
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
     if keyGui and keyGui:FindFirstChild("MainFrame") then
-        -- Caso 1: Sistema de Key está aberto
         targetParent = keyGui.MainFrame
-        
-        -- AJUSTE MOBILE SOLICITADO:
-        -- Scale Y = 1 (Fundo da janela)
-        -- Offset Y = -35 (Sobe 35 pixels). 
-        -- Como a notificação tem 65px de altura, ela fica "Metade Dentro / Metade Fora".
         startPosition = UDim2.new(0.5, -160, 1, -35)
-
     elseif MainFrameContainer and MainFrameContainer.Parent then
-        -- Caso 2: Hub Principal está aberto
         targetParent = MainFrameContainer
-        
-        -- MESMA LÓGICA: Metade dentro do hub
         startPosition = UDim2.new(0.5, -160, 1, -35)
-
     else
-        -- Caso 3: Nenhum menu aberto (apenas tela)
         targetParent = ScreenGui
         startPosition = UDim2.new(0.5, -160, 0.85, 0)
     end
 
     if not targetParent then return end
 
-    -- 2. Limpeza
     local existingToast = targetParent:FindFirstChild("KhalexisActiveToast")
     if existingToast then
         existingToast:Destroy()
     end
 
-    -- 3. Criar a nova Notificação
     local Toast = Instance.new("Frame")
     Toast.Name = "KhalexisActiveToast"
     Toast.Size = UDim2.new(0, 320, 0, 65) 
     Toast.Position = startPosition 
-
-    -- CORES E CAMADAS (ZINDEX)
     Toast.BackgroundColor3 = Colors.Secondary 
     Toast.BackgroundTransparency = 0.05 
     Toast.Parent = targetParent
@@ -262,7 +246,6 @@ function KhalexisToast(title, text, type, duration)
     IconImg.Parent = IconFrame
     IconImg.ZIndex = 2002 
 
-    -- TEXTOS NA FRENTE
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -65, 0, 22)
     TitleLabel.Position = UDim2.new(0, 60, 0, 6)
@@ -289,7 +272,6 @@ function KhalexisToast(title, text, type, duration)
     DescLabel.Parent = Toast
     DescLabel.ZIndex = 2002 
 
-    -- Animação
     Toast.Size = UDim2.new(0, 300, 0, 60)
     Toast.BackgroundTransparency = 1
     TitleLabel.TextTransparency = 1
@@ -344,6 +326,9 @@ Config = {
     provider = "Khalexis Hub - Key"
 }
 
+-- Carregar a lib do Junkie apenas UMA vez para otimizar
+local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+
 local KeySystemData = {
     Name = "Khalexis Hub",
     Colors = {
@@ -390,8 +375,6 @@ local function closeHubWithAnimation(container)
     
     local frameToDestroy = MainFrameContainer
     MainFrameContainer = nil 
-    
-    -- REMOVIDO: Notificação de minimizado
     
     local uiScaler = frameToDestroy:FindFirstChildOfClass("UIScale")
     if uiScaler then
@@ -1427,7 +1410,51 @@ end
 if getgenv().RedExecutorKeySys then return end
 getgenv().RedExecutorKeySys = true
 
-local function CreateKeyUI()
+-- ==========================================
+-- SISTEMA DE SEGURANÇA (LOOP 1 MINUTO)
+-- ==========================================
+
+local function StartSecurityLoop(userKey)
+    if getgenv().KhalexisSecurityLoop then return end
+    getgenv().KhalexisSecurityLoop = true
+    
+    task.spawn(function()
+        while getgenv().KhalexisSecurityLoop do
+            task.wait(60) -- AQUI: Verifica EXATAMENTE a cada 60 segundos
+            
+            -- Verifica a validade sem travar o script principal
+            local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
+            
+            if not isValid then
+                getgenv().KhalexisSecurityLoop = false
+                
+                -- 1. Destruir TUDO do Hub
+                if ScreenGui then ScreenGui:Destroy() end
+                if MainFrameContainer then MainFrameContainer:Destroy() end
+                if ToggleButton then ToggleButton:Destroy() end
+                HubOpen = false
+                
+                -- 2. Deletar a Key Salva (para não logar de novo)
+                if isfile(KEY_FILE_NAME) then
+                    delfile(KEY_FILE_NAME)
+                end
+                
+                -- 3. Notificar
+                KhalexisToast("KEY EXPIRADA", "O tempo da sua Key acabou. Gere uma nova!", "Error", 5)
+                
+                -- 4. Voltar para a tela de Login
+                CreateKeyUI()
+                break
+            end
+        end
+    end)
+end
+
+-- ==========================================
+-- UI DE KEY SYSTEM
+-- ==========================================
+
+CreateKeyUI = function()
     local KeyGui = CreateObject("ScreenGui", {
         Name = "KhalexisKeySystem", 
         Parent = CoreGui, 
@@ -1436,9 +1463,6 @@ local function CreateKeyUI()
         DisplayOrder = 999
     })
 
-    -- =========================================================
-    -- UISCALE PARA A KEY: LÊ O currentScale SALVO!
-    -- =========================================================
     local keyScaler = Instance.new("UIScale")
     keyScaler.Scale = currentScale
     keyScaler.Parent = KeyGui 
@@ -1615,7 +1639,7 @@ local function CreateKeyUI()
         end
 
         KhalexisToast("Verificando", "Validando key...", "Info", 2)
-        local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+        -- Usando a lib já carregada
         local isValid = JunkieKeySystem.verifyKey(Config.api, userKey, Config.service)
         
         if isValid then
@@ -1626,9 +1650,12 @@ local function CreateKeyUI()
             SmoothTween(MainKeyFrame, 0.5, {Position = UDim2.new(0.5, 0, -0.5, 0), BackgroundTransparency = 1})
             task.wait(0.5)
             KeyGui:Destroy()
+            
+            -- INICIA O LOOP DE SEGURANÇA AQUI
+            StartSecurityLoop(userKey)
             main()
         else
-            KhalexisToast("Erro", "Key inválida. Tente novamente!", "Error", 3)
+            KhalexisToast("Erro", "Key inválida ou expirada.", "Error", 3)
         end
     end
 
@@ -1745,21 +1772,28 @@ end)
 
 local function startKeySystem()
     local alreadyValid = false
+    local savedKey = ""
     
     if isfile and readfile and isfile(KEY_FILE_NAME) then
-        local savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
+        savedKey = readfile(KEY_FILE_NAME):gsub("%s+", "")
         if savedKey ~= "" then
-            local JunkieKeySystem = loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
+            -- Verifica no load se ainda é válida
             local isValid = JunkieKeySystem.verifyKey(Config.api, savedKey, Config.service)
             if isValid then
                 alreadyValid = true
+            else
+                -- Se não for válida, apaga o arquivo para não bugar
+                delfile(KEY_FILE_NAME)
             end
         end
     end
 
     if alreadyValid then
+        -- Key válida -> Inicia segurança e abre Hub
+        StartSecurityLoop(savedKey)
         main() 
     else
+        -- Key inválida -> Abre UI de Key
         CreateKeyUI() 
     end
 end
