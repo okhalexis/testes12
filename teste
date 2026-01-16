@@ -3,6 +3,7 @@
     -- Khalexis Hub - Versão v6.9 (FINAL LINK UPDATE + SECURITY LOOP)
     -- ATUALIZADO: Link do botão "Pegar Key" alterado.
     -- NOVO: Loop de segurança a cada 1 minuto (Check constante de validade).
+    -- CORREÇÃO: Erro de sintaxe na lista de Natural Disaster corrigido.
 
 --]]
 
@@ -1220,8 +1221,9 @@ local function createHub()
     local buildAPlaneScripts = {{Name = "Arbix Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Z1ntrax/bigmac/refs/heads/main/bap/bapobfuscated.lua"))() end}}
     local inkGameScripts = {{Name = "Revive Hub", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Have3165/Reviv3-Hub/refs/heads/main/InkGame'))() end}}
     local naturalDisasterScripts = {
-        {Name = "( NOVO ) AUTOFARM NDS", Func = function() loadstring(game:HttpGet("https://diego250x.neocities.org/scripthub/NDSAutofarm.txt"))() end}
+        {Name = "( NOVO ) AUTOFARM NDS", Func = function() loadstring(game:HttpGet("https://diego250x.neocities.org/scripthub/NDSAutofarm.txt"))() end},
         {Name = "BaconJJScript", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/MAnXu0qv"))() end}
+    }
     local forsakenScripts = {{Name = "SNT HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Snowt69/SNT-HUB/refs/heads/main/Forsaken"))() end}}
     local pegueOPeixeScripts = {
         {Name = "UB HUB ( key )", Func = function() loadstring(game:HttpGet("https://gitlab.com/r_soft/main/-/raw/main/LoadUB.lua"))() end},
