@@ -4,6 +4,7 @@
     -- ATUALIZADO: Fundo branco bloqueando a visão do jogo enquanto não tiver Key.
     -- NOVO: Se a key expirar, o Hub fecha e a tela branca volta.
     -- CORREÇÃO: Removido qualquer sistema agressivo de crash, agora volta para o menu de Key.
+    -- LINK KEY ATUALIZADO
 
 --]]
 
@@ -1639,7 +1640,8 @@ CreateKeyUI = function()
     end)
 
     local function openGetKey()
-        local link = "https://linkunlocker.com/key-parte-unica-9i3Mi?share=true"
+        -- ATUALIZADO AQUI
+        local link = "https://linkunlocker.com/key-parte-unica-UhrCg?share=true"
         
         if setclipboard then
             setclipboard(link)
