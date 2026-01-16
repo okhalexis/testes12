@@ -1191,14 +1191,13 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.1 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.2 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVOS SCRIPTS", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
         {Text = "+4 SCRIPTS BLOX FRUITS", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 SCRIPTS ESCAPE TSUNAMI", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "+2 SCRIPTS THE FORGE", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+3 Scripts Escape Tsunami for Brainrots", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     -- SCRIPTS
@@ -1598,7 +1597,7 @@ local function CreateKeyUI()
     end)
 
     local function openGetKey()
-        local link = "https://linkunlocker.com/key-parte-unica-VLUyP"
+        local link = "https://linkunlocker.com/key-parte-unica-9i3Mi?share=true"
         
         if setclipboard then
             setclipboard(link)
