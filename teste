@@ -1175,12 +1175,11 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.3 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.4 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVOS SCRIPTS", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "+1 BrookHaven", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Natural Disaster", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+2 Escape Tsunami", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     -- SCRIPTS
@@ -1217,11 +1216,11 @@ local function createHub()
     local kingLegacyScripts = {{Name = "Zee Hub", Func = function() loadstring(game:HttpGet('https://zuwz.me/Ls-Zee-Hub-KL'))() end}}
     local rivalsScripts = {{Name = "Rise", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowBey01/SHWX-Team-Rise-Scripts/refs/heads/main/Games/Rise%20(Rivals).lua", true))() end}}
     local doorsScripts = {{Name = "Velocity X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/DasVelocity/VelocityX/refs/heads/main/VelocityX.lua"))() end}}
-    local brookhavenScripts = {{Name = "( NOVO ) Sander XY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kigredns/testUIDK/refs/heads/main/panel.lua"))() end}}
+    local brookhavenScripts = {{Name = "Sander XY", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kigredns/testUIDK/refs/heads/main/panel.lua"))() end}}
     local buildAPlaneScripts = {{Name = "Arbix Hub", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Z1ntrax/bigmac/refs/heads/main/bap/bapobfuscated.lua"))() end}}
     local inkGameScripts = {{Name = "Revive Hub", Func = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Have3165/Reviv3-Hub/refs/heads/main/InkGame'))() end}}
     local naturalDisasterScripts = {
-        {Name = "( NOVO ) AUTOFARM NDS", Func = function() loadstring(game:HttpGet("https://diego250x.neocities.org/scripthub/NDSAutofarm.txt"))() end},
+        {Name = "AUTOFARM NDS", Func = function() loadstring(game:HttpGet("https://diego250x.neocities.org/scripthub/NDSAutofarm.txt"))() end},
         {Name = "BaconJJScript", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/MAnXu0qv"))() end}
     }
     local forsakenScripts = {{Name = "SNT HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Snowt69/SNT-HUB/refs/heads/main/Forsaken"))() end}}
@@ -1324,6 +1323,8 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "EKUVE HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ekuve/ekuvehub/main/main.lua"))() end},
         {Name = "WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
         {Name = "LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
+        {Name = "( NOVO ) SIMPLE SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/dawnpetal/loader/main/src/loader.lua"))() end},
+        {Name = "( NOVO ) KDML SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/EscapeTsunamiForBrainrotsV4"))() end},
         {Name = "COLDTEAM X", Func = function() loadstring(game:HttpGet("https://rawscripts.net/raw/Escape-Tsunami-For-Brainrots!-OP-84859"))() end},
         {Name = "IWASHERE67", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/donthackmeblud-lab/Tinkering/refs/heads/Escape-Tsunami-For-Brainrots!/Escape%20Tsunami%20For%20Brainrots!", false))() end}
     }
