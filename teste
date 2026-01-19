@@ -1642,7 +1642,7 @@ CreateKeyUI = function()
 
     local function openGetKey()
         -- ATUALIZADO AQUI
-        local link = "https://rekonise.com/key-parte-unica-wmd29"
+        local link = "https://rekonise.com/key-hcoms"
         
         if setclipboard then
             setclipboard(link)
