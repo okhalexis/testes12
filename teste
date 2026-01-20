@@ -1184,6 +1184,7 @@ local function createHub()
 
     -- SCRIPTS
     local stealScripts = {
+        {Name = "LEMON HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/c4281c3937ebd537cb9e860182e41141.lua"))() end},
         {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, 
         {Name = "DELFISCRIPT", Func = function() loadstring(game:HttpGet('https://pastefy.app/AHeQea76/raw'))() end}, 
         {Name = "SCRIPT", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/66wu1dv5"))() end}, 
@@ -1323,8 +1324,10 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "EKUVE HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ekuve/ekuvehub/main/main.lua"))() end},
         {Name = "WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
         {Name = "LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
-        {Name = "( NOVO ) SIMPLE SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/dawnpetal/loader/main/src/loader.lua"))() end},
-        {Name = "( NOVO ) KDML SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/EscapeTsunamiForBrainrotsV4"))() end},
+        {Name = "REDYN HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ogMmD38B/raw"))() end},
+        {Name = "BLESSED HUB X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/mynamewendel-ctrl/Blessed-Hub-X-/refs/heads/main/Escape%20Tsunami%20For%20Brainrots.lua"))() end},
+        {Name = "SIMPLE SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/dawnpetal/loader/main/src/loader.lua"))() end},
+        {Name = "KDML SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/EscapeTsunamiForBrainrotsV4"))() end},
         {Name = "COLDTEAM X", Func = function() loadstring(game:HttpGet("https://rawscripts.net/raw/Escape-Tsunami-For-Brainrots!-OP-84859"))() end},
         {Name = "IWASHERE67", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/donthackmeblud-lab/Tinkering/refs/heads/Escape-Tsunami-For-Brainrots!/Escape%20Tsunami%20For%20Brainrots!", false))() end}
     }
