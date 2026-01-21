@@ -1325,7 +1325,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "EKUVE HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ekuve/ekuvehub/main/main.lua"))() end},
         {Name = "WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
         {Name = "LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
-        {Name = "REDYN HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ogMmD38B/raw"))() end},
+        {Name = "KENGER HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/iw929wiwiw/EscapesTsunami/refs/heads/main/Kenger%20Hub"))() end},
         {Name = "BLESSED HUB X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/mynamewendel-ctrl/Blessed-Hub-X-/refs/heads/main/Escape%20Tsunami%20For%20Brainrots.lua"))() end},
         {Name = "SIMPLE SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/dawnpetal/loader/main/src/loader.lua"))() end},
         {Name = "KDML SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/EscapeTsunamiForBrainrotsV4"))() end},
