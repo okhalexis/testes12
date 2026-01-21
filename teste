@@ -1179,8 +1179,7 @@ local function createHub()
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVOS SCRIPTS", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
-        {Text = "+2 Escape Tsunami", Color = Color3.fromRGB(220, 220, 220)},
-        {Text = "+1 Steal Brainrot", Color = Color3.fromRGB(220, 220, 220)},
+        {Text = "+1 Escape Tsunami", Color = Color3.fromRGB(220, 220, 220)},
     }
 
     -- SCRIPTS
