@@ -1,14 +1,13 @@
 --[[
 
-    -- Khalexis Hub - Versão v8.5 (UNIVERSAL SCROLL FIX)
+    -- Khalexis Hub - Versão v8.6 (FINAL VISUAL POLISH)
     -- STATUS: COMPLETO
     -- UI KEY: 350px (Compacta) e Centralizada (0.49).
     -- POSIÇÃO HUB: 0.40.
+    -- VISUAL UPDATE:
+       - WhiteScreen Blocker alterado para #e6e6e6.
+       - Borda Laranja (Accent) aplicada ao LoadingScreen e ao MainFrame do Hub.
     -- SCROLL SYSTEM: MUDANÇA PARA AUTOMATIC SIZE.
-       - Removemos o cálculo manual que quebrava em escalas diferentes.
-       - Usamos AutomaticCanvasSize e AutomaticSize (Y).
-       - Funciona perfeitamente em 0.5x, 0.75x, 1.0x, 1.5x etc.
-       - PaddingBottom configurado para garantir o espacinho final sem cortes.
     -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
 
 --]]
@@ -39,7 +38,7 @@ local Colors = {
     Main = Color3.fromRGB(15, 15, 15),       -- Preto Profundo (Fundo do Hub)
     Secondary = Color3.fromRGB(45, 45, 45),  -- Cinza Chumbo
     Stroke = Color3.fromRGB(60, 60, 60),
-    Accent = Color3.fromRGB(255, 140, 0),    -- Laranja
+    Accent = Color3.fromRGB(255, 140, 0),    -- Laranja (COR DA BORDA)
     Text = Color3.fromRGB(255, 255, 255),    -- Branco
     TextDim = Color3.fromRGB(200, 200, 200), -- Cinza Claro
     Success = Color3.fromRGB(40, 200, 64),
@@ -449,7 +448,8 @@ local function showLoadingScreen()
 
     local border = Instance.new("UIStroke")
     border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    border.Color = Color3.fromRGB(60, 60, 60)
+    -- [VISUAL UPDATE] Borda Laranja
+    border.Color = Colors.Accent
     border.Thickness = 2
     border.Parent = frame
 
@@ -528,15 +528,12 @@ local function createHub()
     hubBorder.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
     hubBorder.Thickness=2
     hubBorder.LineJoinMode=Enum.LineJoinMode.Round
+    -- [VISUAL UPDATE] Borda Laranja Sólida (sem gradiente)
+    hubBorder.Color = Colors.Accent
     hubBorder.Parent=frame
 
-    local hubGradient=Instance.new("UIGradient")
-    hubGradient.Color=ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(100,100,100)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(60,60,60))
-    })
-    hubGradient.Rotation=45
-    hubGradient.Parent=hubBorder
+    -- Removed gradient to match "bordinha laranja" request completely
+    -- local hubGradient=Instance.new("UIGradient") ...
 
     local draggingHub = false
     local dragInputHub, dragStartHub, startPosHub
@@ -1539,13 +1536,14 @@ CreateKeyUI = function()
     })
 
     -- ==============================================================
-    -- NOVO: WHITE SCREEN BLOCKER (FUNDO BRANCO BLOQUEADOR)
+    -- NOVO: WHITE SCREEN BLOCKER (FUNDO CINZA CLARO BLOQUEADOR)
     -- ==============================================================
     local BlockerFrame = Instance.new("Frame")
     BlockerFrame.Name = "WhiteScreenBlocker"
     BlockerFrame.Size = UDim2.new(1, 0, 1, 0)
     BlockerFrame.Position = UDim2.new(0, 0, 0, 0)
-    BlockerFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- BRANCO
+    -- [VISUAL UPDATE] Cor #e6e6e6
+    BlockerFrame.BackgroundColor3 = Color3.fromHex("e6e6e6") 
     BlockerFrame.ZIndex = 0 -- Fica atrás do Login, mas na frente do Jogo
     BlockerFrame.Active = true -- Impede cliques no jogo
     BlockerFrame.Parent = KeyGui
