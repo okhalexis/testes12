@@ -1,10 +1,14 @@
 --[[
 
-    -- Khalexis Hub - Versão v8.1 (SCROLL FIX & POSIÇÃO)
+    -- Khalexis Hub - Versão v8.2 (SMART SCROLL SYSTEM REBUILD)
     -- STATUS: COMPLETO
     -- UI KEY: 350px (Compacta) e Centralizada (0.49).
-    -- POSIÇÃO HUB: Ajustada para 0.40 (Um pouquinho mais para cima).
-    -- SCROLL: Ajustado para parar EXATAMENTE no último item (sem espaço vazio excessivo).
+    -- POSIÇÃO HUB: Mantida em 0.40 (Levemente acima do centro).
+    -- SCROLL SYSTEM: RECONSTRUÍDO DO ZERO.
+       - Cálculo preciso baseado em AbsoluteContentSize.
+       - Sem gaps/espaços vazios.
+       - Sem cortes no último item.
+       - Adaptável a qualquer UIScale.
     -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
 
 --]]
@@ -693,6 +697,9 @@ local function createHub()
     favGradient.Rotation = 90
     favGradient.Parent = favBorder
 
+    -- ==============================================================
+    -- SCROLLING FRAME - CATEGORIAS (SMART SCROLL SYSTEM)
+    -- ==============================================================
     local categoryFrame = Instance.new("ScrollingFrame")
     categoryFrame.Name = "CategoryFrame"
     categoryFrame.Size = UDim2.new(0, 120, 0, 190) 
@@ -701,7 +708,8 @@ local function createHub()
     categoryFrame.BorderSizePixel = 0
     categoryFrame.ScrollBarThickness = 4
     categoryFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100) 
-    categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    categoryFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Será controlado automaticamente
+    categoryFrame.AutomaticCanvasSize = Enum.AutomaticSize.None -- Desligado para controle manual preciso
     categoryFrame.Parent = frame
     applyRoundedCorners(categoryFrame, 12)
 
@@ -721,11 +729,17 @@ local function createHub()
 
     local categoryContainer = Instance.new("Frame")
     categoryContainer.Name = "CategoryContainer"
-    categoryContainer.Size = UDim2.new(1, -10, 0, 0)
-    categoryContainer.Position = UDim2.new(0, 5, 0, 5)
+    categoryContainer.Size = UDim2.new(1, -10, 0, 0) -- Altura será ajustada
+    categoryContainer.Position = UDim2.new(0, 5, 0, 0)
     categoryContainer.BackgroundTransparency = 1
     categoryContainer.Parent = categoryFrame
     categoryContainer.ClipsDescendants = false
+
+    -- Padding Interno para evitar cortes
+    local categoryPadding = Instance.new("UIPadding")
+    categoryPadding.PaddingTop = UDim.new(0, 5) -- Respiro superior
+    categoryPadding.PaddingBottom = UDim.new(0, 5) -- Respiro inferior (Evita corte no final)
+    categoryPadding.Parent = categoryContainer
 
     local layoutCategory = Instance.new("UIListLayout")
     layoutCategory.Padding = UDim.new(0, 8)
@@ -734,11 +748,13 @@ local function createHub()
     layoutCategory.HorizontalAlignment = Enum.HorizontalAlignment.Center
     layoutCategory.Parent = categoryContainer
 
+    -- LÓGICA DE SCROLL AVANÇADA - CATEGORIAS
     layoutCategory:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         local contentHeight = layoutCategory.AbsoluteContentSize.Y
+        -- Ajusta o CanvasSize exatamente para o tamanho do conteúdo + padding
+        categoryFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 15)
+        -- Ajusta o Container interno
         categoryContainer.Size = UDim2.new(1, -10, 0, contentHeight)
-        -- CanvasSize exato com margem de 10px no final
-        categoryFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
     end)
 
     searchBox:GetPropertyChangedSignal("Text"):Connect(function() 
@@ -751,6 +767,9 @@ local function createHub()
         end 
     end)
 
+    -- ==============================================================
+    -- SCROLLING FRAME - SCRIPTS (SMART SCROLL SYSTEM)
+    -- ==============================================================
     local scriptFrame=Instance.new("ScrollingFrame")
     scriptFrame.Name="ScriptFrame"
     scriptFrame.Size=UDim2.new(1,-135,0,250)
@@ -759,6 +778,8 @@ local function createHub()
     scriptFrame.BorderSizePixel=0
     scriptFrame.ScrollBarThickness=4
     scriptFrame.ScrollBarImageColor3=Color3.fromRGB(100, 100, 100)
+    scriptFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Controlado manualmente
+    scriptFrame.AutomaticCanvasSize = Enum.AutomaticSize.None
     scriptFrame.Parent=frame
     applyRoundedCorners(scriptFrame,16)
 
@@ -779,10 +800,16 @@ local function createHub()
     local scriptContainer=Instance.new("Frame")
     scriptContainer.Name="ScriptContainer"
     scriptContainer.Size=UDim2.new(1,-20,0,0)
-    scriptContainer.Position=UDim2.new(0,10,0,10)
+    scriptContainer.Position=UDim2.new(0,10,0,0)
     scriptContainer.BackgroundTransparency=1
     scriptContainer.Parent=scriptFrame
     scriptContainer.ClipsDescendants=false
+
+    -- Padding Interno para scripts
+    local scriptPadding = Instance.new("UIPadding")
+    scriptPadding.PaddingTop = UDim.new(0, 10) 
+    scriptPadding.PaddingBottom = UDim.new(0, 10) -- Garante visibilidade do último script
+    scriptPadding.Parent = scriptContainer
 
     local layoutScript=Instance.new("UIListLayout")
     layoutScript.Padding=UDim.new(0,6)
@@ -791,11 +818,13 @@ local function createHub()
     layoutScript.HorizontalAlignment=Enum.HorizontalAlignment.Center
     layoutScript.Parent=scriptContainer
 
+    -- LÓGICA DE SCROLL AVANÇADA - SCRIPTS
     layoutScript:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         local contentHeight = layoutScript.AbsoluteContentSize.Y
-        scriptContainer.Size=UDim2.new(1,-20,0, contentHeight)
-        -- CanvasSize exato com margem de 10px no final
-        scriptFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
+        -- Ajusta o CanvasSize para conteúdo exato + 20px de respiro no final
+        scriptFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 20)
+        -- Ajusta container
+        scriptContainer.Size = UDim2.new(1, -20, 0, contentHeight)
     end)
 
     local footerBackground=Instance.new("Frame")
