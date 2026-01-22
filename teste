@@ -1764,7 +1764,8 @@ CreateKeyUI = function()
 
     -- AÇÕES DOS BOTÕES COM NOTIFICAÇÃO E COPY
     GetKeyButton.MouseButton1Click:Connect(function()
-        local link = "https://rekonise.com/key-parte-unica-v81ky"
+        -- [[ LINK DE PEGAR KEY AQUI ]] --
+        local link = "https://rekonise.com/key-parte-unica-ic6zf" 
         SafeOpenLink(link, "Link Key")
     end)
 
