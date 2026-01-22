@@ -6,6 +6,7 @@
     -- UI KEY: Botões colados nas descrições para economizar espaço.
     -- TEXTO: Descrição Premium alterada para "Compre a Key Premium , para não passar por encurtadores:".
     -- MANTIDO: Escala 0.75x e Notificações no Topo.
+    -- UPDATE: White Screen em tela cheia (IgnoreGuiInset) e Janela de Key mais acima.
 
 --]]
 
@@ -172,6 +173,8 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 ScreenGui.DisplayOrder = 100 
+-- Importante para o Hub principal também cobrir bordas se necessário, mas opcional aqui
+-- ScreenGui.IgnoreGuiInset = true 
 
 local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
@@ -1510,7 +1513,8 @@ CreateKeyUI = function()
         Parent = CoreGui, 
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        DisplayOrder = 999
+        DisplayOrder = 999,
+        IgnoreGuiInset = true -- IMPORTANTE: Isso faz o GUI cobrir a TopBar
     })
 
     -- ==============================================================
@@ -1536,8 +1540,8 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Background,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 2,
-        -- CENTRALIZAÇÃO EXATA
-        Position = UDim2.new(0.5, 0, 0.5, 0),
+        -- CENTRALIZAÇÃO AJUSTADA (MAIS ALTO)
+        Position = UDim2.new(0.5, 0, 0.42, 0), -- Alterado de 0.5 para 0.42
         AnchorPoint = Vector2.new(0.5, 0.5),
         Size = UDim2.new(0, 350, 0, 375), -- REDUZIDO DE 400 PARA 375
         ZIndex = 5, 
@@ -1807,12 +1811,12 @@ CreateKeyUI = function()
         end
     end)
 
-    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.42, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
     SmoothTween(MainKeyFrame, 0.5, {
         Size = UDim2.new(0, 350, 0, 375), 
-        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Position = UDim2.new(0.5, 0, 0.42, 0),
         BackgroundTransparency = 0
     })
 end
@@ -1876,7 +1880,6 @@ ToggleButton.InputBegan:Connect(function(input)
     end
 end)
 
--- *** ERRO DE SINTAXE CORRIGIDO ABAIXO (Parênteses adicionado) ***
 UserInputService.InputChanged:Connect(function(input)
     if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStartToggle
