@@ -1,11 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão v7.8 (FINAL ADJUSTMENT)
+    -- Khalexis Hub - Versão v7.9 (FINAL POLISH)
     -- STATUS: COMPLETO
-    -- UI KEY: Altura mantida em 350px (Quadrada/Compacta).
-    -- POSIÇÃO: Ajustada para 0.49 (Centralizada, levemente ajustada visualmente).
-    -- WHITESCREEN: Cobre a tela inteira (IgnoreGuiInset).
-    -- MANTIDO: Escala 0.75x, Notificações no Topo, Compact UI.
+    -- UI KEY: 350px (Compacta) e Centralizada (0.49).
+    -- NOTIFICAÇÕES: Ajustadas para descerem um pouco mais do topo (0.20).
+    -- ESPAÇAMENTO: Descrições da Key System coladas nos botões.
+    -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
 
 --]]
 
@@ -181,7 +181,7 @@ local HasShownWelcome = false
 local CreateKeyUI -- Declaração antecipada
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (TOAST) - NO TOPO
+-- SISTEMA DE NOTIFICAÇÃO (TOAST) - AJUSTADO
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -192,19 +192,21 @@ function KhalexisToast(title, text, type, duration)
     elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
 
     local targetParent = nil
-    -- Posição no TOPO (0.15)
-    local startPosition = UDim2.new(0.5, 0, 0.15, 0) 
+    
+    -- AJUSTE DE POSIÇÃO: 0.20 (Mais para baixo que o 0.15 original)
+    local startPosition = UDim2.new(0.5, 0, 0.20, 0) 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         targetParent = keyGui.MainFrame
-        startPosition = UDim2.new(0.5, 0, 0.05, 0)
+        -- Ajuste dentro da Key System também
+        startPosition = UDim2.new(0.5, 0, 0.10, 0)
     elseif MainFrameContainer and MainFrameContainer.Parent then
         targetParent = MainFrameContainer
         startPosition = UDim2.new(0.5, 0, -0.2, 0)
     else
         targetParent = ScreenGui
-        startPosition = UDim2.new(0.5, 0, 0.1, 0)
+        startPosition = UDim2.new(0.5, 0, 0.20, 0) -- Posição padrão ajustada
     end
 
     if not targetParent then return end
@@ -1538,9 +1540,9 @@ CreateKeyUI = function()
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 2,
         -- CENTRALIZAÇÃO AJUSTADA (0.49 = PRATICAMENTE CENTRO, LEVEMENTE ACIMA)
-        Position = UDim2.new(0.5, 0, 0.49, 0), -- Alterado para 0.49
+        Position = UDim2.new(0.5, 0, 0.49, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 350), -- REDUZIDO PARA 350x350 (Quadrado mais compacto)
+        Size = UDim2.new(0, 350, 0, 350), -- 350x350 (Quadrado compacto)
         ZIndex = 5, 
         ClipsDescendants = false 
     })
@@ -1651,13 +1653,13 @@ CreateKeyUI = function()
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = GetKeyButton})
 
-    -- DESCRIÇÃO DISCORD (POSIÇÃO AJUSTADA)
+    -- DESCRIÇÃO DISCORD (POSIÇÃO COLADA NO BOTÃO)
     local DiscordDesc = CreateObject("TextLabel", {
         Name = "DiscordDesc",
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = "Entre na nossa comunidade oficial:",
-        Position = UDim2.new(0.5, 0, 0.56, 0), 
+        Position = UDim2.new(0.5, 0, 0.58, 0), -- Ajustado para baixo
         Size = UDim2.new(0, 250, 0, 15),
         Font = HUB_FONT,
         TextColor3 = Color3.fromRGB(120, 120, 120), 
@@ -1671,7 +1673,7 @@ CreateKeyUI = function()
         Name = "DiscordButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.Discord,
-        Position = UDim2.new(0.5, 0, 0.61, 0),
+        Position = UDim2.new(0.5, 0, 0.62, 0), -- Ajustado para cima
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Entrar no Discord",
         Font = HUB_FONT,
@@ -1682,13 +1684,13 @@ CreateKeyUI = function()
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = DiscordButton})
 
-    -- DESCRIÇÃO PREMIUM (POSIÇÃO AJUSTADA)
+    -- DESCRIÇÃO PREMIUM (POSIÇÃO COLADA NO BOTÃO)
     local PremiumDesc = CreateObject("TextLabel", {
         Name = "PremiumDesc",
         Parent = MainKeyFrame,
         BackgroundTransparency = 1,
         Text = "Compre a Key Premium , para não passar por encurtadores:",
-        Position = UDim2.new(0.5, 0, 0.74, 0), 
+        Position = UDim2.new(0.5, 0, 0.76, 0), -- Ajustado para baixo
         Size = UDim2.new(0, 250, 0, 15),
         Font = HUB_FONT,
         TextColor3 = Color3.fromRGB(120, 120, 120), 
@@ -1702,7 +1704,7 @@ CreateKeyUI = function()
         Name = "PremiumButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = Colors.Gold, -- Dourado
-        Position = UDim2.new(0.5, 0, 0.79, 0), -- Colado na descrição
+        Position = UDim2.new(0.5, 0, 0.80, 0), -- Ajustado para cima
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Comprar Premium",
         Font = HUB_FONT,
