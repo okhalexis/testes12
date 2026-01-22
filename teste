@@ -1,12 +1,12 @@
 --[[
 
-    -- Khalexis Hub - Versão v7.4 (FULL FIXED & CENTERED)
-    -- STATUS: COMPLETO (Sem cortes)
-    -- CORREÇÃO: Erro de sintaxe (parêntese faltando) no Toggle Button corrigido.
-    -- NOVO: Botão Premium (Dourado) adicionado abaixo do Discord.
-    -- NOVO: Sistema de Links (Copia para clipboard + Notificação).
-    -- LAYOUT: Hub e Key System perfeitamente centralizados (AnchorPoint 0.5).
-    -- ESCALA: 0.85x (Otimizado para Mobile).
+    -- Khalexis Hub - Versão v7.5 (MOBILE PERFECTION UPDATE)
+    -- STATUS: COMPLETO (Todas as categorias incluídas)
+    -- ESCALA: Reduzida para 0.75x (Padrão menor para celular).
+    -- UI: Notificações movidas para o TOPO da tela (melhor leitura no mobile).
+    -- KEY SYSTEM: Adicionadas descrições acima dos botões Discord/Premium.
+    -- KEY SYSTEM: Janela ajustada para acomodar os novos textos.
+    -- FIX: Centralização e sintaxe 100% funcionais.
 
 --]]
 
@@ -89,8 +89,8 @@ local SETTINGS_FILE_NAME = "KhalexisHub_Settings.json"
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
 
--- [[ TAMANHO PADRÃO: 0.85 ( -15% ) ]] --
-local currentScale = 0.85 
+-- [[ TAMANHO PADRÃO ALTERADO PARA 0.75 (MENOR AINDA) ]] --
+local currentScale = 0.75 
 
 -- Carregar Configurações
 if isfile(SETTINGS_FILE_NAME) then
@@ -182,7 +182,7 @@ local HasShownWelcome = false
 local CreateKeyUI -- Declaração antecipada
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO
+-- SISTEMA DE NOTIFICAÇÃO (TOAST) - MOVIDO PARA CIMA
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -193,21 +193,22 @@ function KhalexisToast(title, text, type, duration)
     elseif type == "Warning" then color = Colors.Warning; icon = Icons.Warning end
 
     local targetParent = nil
-    local startPosition = UDim2.new(0.5, -160, 0.8, 0) 
+    -- Posição alterada para o TOPO (0.15 = 15% da tela) para não atrapalhar no mobile
+    local startPosition = UDim2.new(0.5, 0, 0.15, 0) 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         targetParent = keyGui.MainFrame
-        -- Notificação dentro da Key UI
-        startPosition = UDim2.new(0.5, -160, 1, -35)
+        -- Se estiver na Key, poe um pouco mais pra cima dentro do frame
+        startPosition = UDim2.new(0.5, 0, 0.05, 0)
     elseif MainFrameContainer and MainFrameContainer.Parent then
         targetParent = MainFrameContainer
-        -- Notificação dentro do Hub
-        startPosition = UDim2.new(0.5, -160, 1, -35)
+        -- Se estiver no Hub, poe no topo do hub
+        startPosition = UDim2.new(0.5, 0, -0.2, 0)
     else
         targetParent = ScreenGui
-        -- Notificação na tela (Loading)
-        startPosition = UDim2.new(0.5, -160, 0.85, 0)
+        -- Se estiver solto na tela
+        startPosition = UDim2.new(0.5, 0, 0.1, 0)
     end
 
     if not targetParent then return end
@@ -221,6 +222,8 @@ function KhalexisToast(title, text, type, duration)
     Toast.Name = "KhalexisActiveToast"
     Toast.Size = UDim2.new(0, 320, 0, 65) 
     Toast.Position = startPosition 
+    -- Anchor Point no meio superior
+    Toast.AnchorPoint = Vector2.new(0.5, 0)
     Toast.BackgroundColor3 = Colors.Secondary 
     Toast.BackgroundTransparency = 0.05 
     Toast.Parent = targetParent
@@ -1541,7 +1544,7 @@ CreateKeyUI = function()
         -- CENTRALIZAÇÃO EXATA
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 360), -- AUMENTADO PARA CABER NOVO BOTÃO
+        Size = UDim2.new(0, 350, 0, 400), -- AUMENTADO PARA CABER DESCRIÇÕES
         ZIndex = 5, 
         ClipsDescendants = false 
     })
@@ -1595,7 +1598,7 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.InputField,
         Text = "",
         PlaceholderText = "Cole sua key aqui...",
-        Position = UDim2.new(0.5, 0, 0.35, 0), 
+        Position = UDim2.new(0.5, 0, 0.30, 0), 
         Size = UDim2.new(0, 280, 0, 35),
         Font = HUB_FONT,
         TextSize = 14,
@@ -1624,7 +1627,7 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Button,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 1,
-        Position = UDim2.new(0.3, 0, 0.55, 0),
+        Position = UDim2.new(0.3, 0, 0.45, 0),
         Size = UDim2.new(0, 110, 0, 32),
         Text = "Verificar Key",
         Font = HUB_FONT,
@@ -1641,7 +1644,7 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Button,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 1,
-        Position = UDim2.new(0.7, 0, 0.55, 0),
+        Position = UDim2.new(0.7, 0, 0.45, 0),
         Size = UDim2.new(0, 110, 0, 32),
         Text = "Pegar Key",
         Font = HUB_FONT,
@@ -1652,11 +1655,26 @@ CreateKeyUI = function()
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = GetKeyButton})
 
+    -- DESCRIÇÃO DISCORD
+    local DiscordDesc = CreateObject("TextLabel", {
+        Name = "DiscordDesc",
+        Parent = MainKeyFrame,
+        BackgroundTransparency = 1,
+        Text = "Entre na nossa comunidade oficial:",
+        Position = UDim2.new(0.5, 0, 0.56, 0), 
+        Size = UDim2.new(0, 250, 0, 15),
+        Font = HUB_FONT,
+        TextColor3 = Color3.fromRGB(120, 120, 120), 
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        AnchorPoint = Vector2.new(0.5, 0.5)
+    })
+
     local DiscordButton = CreateObject("TextButton", {
         Name = "DiscordButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.Discord,
-        Position = UDim2.new(0.5, 0, 0.70, 0),
+        Position = UDim2.new(0.5, 0, 0.62, 0),
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Entrar no Discord",
         Font = HUB_FONT,
@@ -1667,14 +1685,27 @@ CreateKeyUI = function()
     })
     CreateObject("UICorner", {CornerRadius = UDim.new(0, 6), Parent = DiscordButton})
 
-    -- ==============================================================
+    -- DESCRIÇÃO PREMIUM
+    local PremiumDesc = CreateObject("TextLabel", {
+        Name = "PremiumDesc",
+        Parent = MainKeyFrame,
+        BackgroundTransparency = 1,
+        Text = "Apoie o projeto e tenha benefícios:",
+        Position = UDim2.new(0.5, 0, 0.76, 0), 
+        Size = UDim2.new(0, 250, 0, 15),
+        Font = HUB_FONT,
+        TextColor3 = Color3.fromRGB(120, 120, 120), 
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        AnchorPoint = Vector2.new(0.5, 0.5)
+    })
+
     -- BOTÃO COMPRAR PREMIUM (NOVO)
-    -- ==============================================================
     local PremiumButton = CreateObject("TextButton", {
         Name = "PremiumButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = Colors.Gold, -- Dourado
-        Position = UDim2.new(0.5, 0, 0.85, 0), -- Abaixo do Discord
+        Position = UDim2.new(0.5, 0, 0.82, 0), -- Abaixo do Discord
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Comprar Premium",
         Font = HUB_FONT,
@@ -1784,7 +1815,7 @@ CreateKeyUI = function()
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
     SmoothTween(MainKeyFrame, 0.5, {
-        Size = UDim2.new(0, 350, 0, 360), 
+        Size = UDim2.new(0, 350, 0, 400), 
         Position = UDim2.new(0.5, 0, 0.5, 0),
         BackgroundTransparency = 0
     })
