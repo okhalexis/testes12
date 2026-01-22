@@ -5,7 +5,7 @@
     -- UI KEY: 350px (Compacta) e Centralizada (0.49).
     -- POSIÇÃO HUB: 0.40.
     -- VISUAL UPDATE:
-       - WhiteScreen Blocker alterado para #e6e6e6.
+       - WhiteScreen Blocker alterado para #666666.
        - Borda Laranja (Accent) aplicada ao LoadingScreen e ao MainFrame do Hub.
     -- SCROLL SYSTEM: MUDANÇA PARA AUTOMATIC SIZE.
     -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
@@ -1542,8 +1542,8 @@ CreateKeyUI = function()
     BlockerFrame.Name = "WhiteScreenBlocker"
     BlockerFrame.Size = UDim2.new(1, 0, 1, 0)
     BlockerFrame.Position = UDim2.new(0, 0, 0, 0)
-    -- [VISUAL UPDATE] Cor #e6e6e6
-    BlockerFrame.BackgroundColor3 = Color3.fromHex("e6e6e6") 
+    -- [VISUAL UPDATE] Cor #666666
+    BlockerFrame.BackgroundColor3 = Color3.fromHex("666666") 
     BlockerFrame.ZIndex = 0 -- Fica atrás do Login, mas na frente do Jogo
     BlockerFrame.Active = true -- Impede cliques no jogo
     BlockerFrame.Parent = KeyGui
