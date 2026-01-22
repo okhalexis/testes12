@@ -1,10 +1,10 @@
 --[[
 
-    -- Khalexis Hub - Versão v8.0 (FINAL POLISH - POSIÇÃO AJUSTADA)
+    -- Khalexis Hub - Versão v8.1 (SCROLL FIX & POSIÇÃO)
     -- STATUS: COMPLETO
     -- UI KEY: 350px (Compacta) e Centralizada (0.49).
-    -- NOTIFICAÇÕES: Agora aparecem LOGO ABAIXO do título quando o Hub está aberto.
-    -- POSIÇÃO HUB: Ajustada para cima (0.45) para não ficar muito baixa.
+    -- POSIÇÃO HUB: Ajustada para 0.40 (Um pouquinho mais para cima).
+    -- SCROLL: Ajustado para parar EXATAMENTE no último item (sem espaço vazio excessivo).
     -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
 
 --]]
@@ -181,7 +181,7 @@ local HasShownWelcome = false
 local CreateKeyUI -- Declaração antecipada
 
 -- ==========================================
--- SISTEMA DE NOTIFICAÇÃO (TOAST) - AJUSTADO
+-- SISTEMA DE NOTIFICAÇÃO (TOAST)
 -- ==========================================
 
 function KhalexisToast(title, text, type, duration)
@@ -203,8 +203,7 @@ function KhalexisToast(title, text, type, duration)
         startPosition = UDim2.new(0.5, 0, 0.15, 0)
     elseif MainFrameContainer and MainFrameContainer.Parent then
         targetParent = MainFrameContainer
-        -- [[ MUDANÇA AQUI: ABAIXO DO TÍTULO DO HUB ]]
-        -- O Título tem 40px de altura. Colocamos em Y=55 para ficar logo abaixo.
+        -- NO HUB: Abaixo do título (40px header + 15px padding)
         startPosition = UDim2.new(0.5, 0, 0, 55)
     else
         targetParent = ScreenGui
@@ -432,8 +431,8 @@ local function showLoadingScreen()
     frame.Size = UDim2.new(0, 300, 0, 120)
     -- CENTRALIZAÇÃO EXATA
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    -- LEVE AJUSTE PARA CIMA (0.45)
-    frame.Position = UDim2.new(0.5, 0, 0.45, 0)
+    -- LEVE AJUSTE PARA CIMA (0.40)
+    frame.Position = UDim2.new(0.5, 0, 0.40, 0)
     frame.BackgroundColor3 = Colors.Main
     frame.BorderSizePixel = 0
     frame.Parent = ScreenGui
@@ -500,9 +499,9 @@ local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
     animationContainer.Size = UDim2.new(0, 450, 0, 340)
-    -- AJUSTE DE POSIÇÃO: 0.45 (Um pouco mais para cima que o centro 0.5)
+    -- AJUSTE DE POSIÇÃO: 0.40 (Um pouquinho mais para cima)
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
-    animationContainer.Position = UDim2.new(0.5, 0, 0.45, 0)
+    animationContainer.Position = UDim2.new(0.5, 0, 0.40, 0)
     animationContainer.BackgroundTransparency = 1
     animationContainer.Parent = ScreenGui
     animationContainer.ClipsDescendants = false 
@@ -736,10 +735,10 @@ local function createHub()
     layoutCategory.Parent = categoryContainer
 
     layoutCategory:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        categoryContainer.Size = UDim2.new(1, -10, 0, layoutCategory.AbsoluteContentSize.Y)
-        local requiredHeight = layoutCategory.AbsoluteContentSize.Y + 10
-        local extraSpace = 100
-        categoryFrame.CanvasSize = UDim2.new(0, 0, 0, math.max(requiredHeight + extraSpace, 200))
+        local contentHeight = layoutCategory.AbsoluteContentSize.Y
+        categoryContainer.Size = UDim2.new(1, -10, 0, contentHeight)
+        -- CanvasSize exato com margem de 10px no final
+        categoryFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
     end)
 
     searchBox:GetPropertyChangedSignal("Text"):Connect(function() 
@@ -793,9 +792,10 @@ local function createHub()
     layoutScript.Parent=scriptContainer
 
     layoutScript:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        scriptContainer.Size=UDim2.new(1,-20,0,layoutScript.AbsoluteContentSize.Y)
-        local requiredHeight = layoutScript.AbsoluteContentSize.Y + 50 
-        scriptFrame.CanvasSize = UDim2.new(0, 0, 0, requiredHeight)
+        local contentHeight = layoutScript.AbsoluteContentSize.Y
+        scriptContainer.Size=UDim2.new(1,-20,0, contentHeight)
+        -- CanvasSize exato com margem de 10px no final
+        scriptFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
     end)
 
     local footerBackground=Instance.new("Frame")
