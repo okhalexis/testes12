@@ -1,21 +1,24 @@
 --[[
 
-    -- Khalexis Hub - Versão v7.2 (PREMIUM BUTTON UPDATE)
-    -- ATUALIZADO: Adicionado botão "Comprar Premium".
-    -- ATUALIZADO: Sistema de notificação ao clicar em links.
-    -- ATUALIZADO: Ajuste de layout da Key System para comportar novo botão.
-    -- MANTIDO: Escala 0.85x (Mobile Optimized).
+    -- Khalexis Hub - Versão v7.4 (FULL FIXED & CENTERED)
+    -- STATUS: COMPLETO (Sem cortes)
+    -- CORREÇÃO: Erro de sintaxe (parêntese faltando) no Toggle Button corrigido.
+    -- NOVO: Botão Premium (Dourado) adicionado abaixo do Discord.
+    -- NOVO: Sistema de Links (Copia para clipboard + Notificação).
+    -- LAYOUT: Hub e Key System perfeitamente centralizados (AnchorPoint 0.5).
+    -- ESCALA: 0.85x (Otimizado para Mobile).
 
 --]]
 
 -- ==========================================
 -- LIMPEZA DE GUI ANTIGA
 -- ==========================================
-if game.CoreGui:FindFirstChild("KhalexisHub") then
-    game.CoreGui:FindFirstChild("KhalexisHub"):Destroy()
+local CoreGui = game:GetService("CoreGui")
+if CoreGui:FindFirstChild("KhalexisHub") then
+    CoreGui:FindFirstChild("KhalexisHub"):Destroy()
 end
-if game.CoreGui:FindFirstChild("KhalexisKeySystem") then
-    game.CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
+if CoreGui:FindFirstChild("KhalexisKeySystem") then
+    CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
 
 -- Resetar verificação de execução única
@@ -39,7 +42,8 @@ local Colors = {
     Success = Color3.fromRGB(40, 200, 64),
     Error = Color3.fromRGB(245, 70, 90),
     Warning = Color3.fromRGB(254, 188, 46),
-    Info = Color3.fromRGB(59, 130, 246)
+    Info = Color3.fromRGB(59, 130, 246),
+    Gold = Color3.fromRGB(255, 215, 0)       -- Dourado (Premium)
 }
 
 local Icons = {
@@ -74,7 +78,6 @@ local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
 
 -- ==========================================
 -- SISTEMA DE SALVAMENTO (CONFIG & FAVORITOS)
@@ -86,7 +89,7 @@ local SETTINGS_FILE_NAME = "KhalexisHub_Settings.json"
 local FavoritesList = {} 
 local AllScriptsGlobal = {}
 
--- [[ ESCALA PADRÃO MANTIDA EM 0.85 ]] --
+-- [[ TAMANHO PADRÃO: 0.85 ( -15% ) ]] --
 local currentScale = 0.85 
 
 -- Carregar Configurações
@@ -169,7 +172,7 @@ ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
-ScreenGui.DisplayOrder = 100 -- Garante prioridade sobre outras GUIs
+ScreenGui.DisplayOrder = 100 
 
 local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
@@ -193,15 +196,17 @@ function KhalexisToast(title, text, type, duration)
     local startPosition = UDim2.new(0.5, -160, 0.8, 0) 
     local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
 
-    -- Ajuste para aparecer sobre o Frame de Key se ele existir
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         targetParent = keyGui.MainFrame
+        -- Notificação dentro da Key UI
         startPosition = UDim2.new(0.5, -160, 1, -35)
     elseif MainFrameContainer and MainFrameContainer.Parent then
         targetParent = MainFrameContainer
+        -- Notificação dentro do Hub
         startPosition = UDim2.new(0.5, -160, 1, -35)
     else
         targetParent = ScreenGui
+        -- Notificação na tela (Loading)
         startPosition = UDim2.new(0.5, -160, 0.85, 0)
     end
 
@@ -219,7 +224,7 @@ function KhalexisToast(title, text, type, duration)
     Toast.BackgroundColor3 = Colors.Secondary 
     Toast.BackgroundTransparency = 0.05 
     Toast.Parent = targetParent
-    Toast.ZIndex = 3000 -- ZIndex muito alto para garantir visibilidade
+    Toast.ZIndex = 3000 
     applyRoundedCorners(Toast, 10)
     
     local ToastStroke = ApplyStroke(Toast, color, 1.5, 0.5)
@@ -330,7 +335,7 @@ Config = {
     provider = "Khalexis Hub - Key"
 }
 
--- [[ Carregamento Seguro (pcall) ]] --
+-- Carregamento Seguro (pcall)
 local successKeyLib, JunkieKeySystem = pcall(function()
     return loadstring(game:HttpGet("https://junkie-development.de/sdk/JunkieKeySystem.lua"))()
 end)
@@ -383,18 +388,15 @@ local function SmoothTween(obj, time, properties)
 end
 
 -- ==========================================
--- HELPER: SISTEMA DE LINK INTELIGENTE
+-- HELPER: SISTEMA DE LINKS
 -- ==========================================
-local function SafeOpenLink(url, actionName)
+local function SafeOpenLink(url, label)
     if setclipboard then
         setclipboard(url)
-        KhalexisToast(actionName, "Link copiado para a área de transferência! Cole no navegador.", "Success", 4)
+        KhalexisToast(label, "Link copiado para a área de transferência!", "Success", 3)
     else
-        KhalexisToast(actionName, "Não foi possível copiar o link.", "Error", 3)
+        KhalexisToast("Erro", "Seu executor não suporta copiar links.", "Error", 3)
     end
-    
-    -- Tentativa genérica (alguns executores mobile suportam isso)
-    -- Mas como a maioria bloqueia, focamos na notificação de 'Copiado'.
 end
 
 -- ==========================================
@@ -426,13 +428,15 @@ local function showLoadingScreen()
     local frame = Instance.new("Frame")
     frame.Name = "LoadingFrame"
     frame.Size = UDim2.new(0, 300, 0, 120)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -60)
+    -- CENTRALIZAÇÃO EXATA
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
     frame.BackgroundColor3 = Colors.Main
     frame.BorderSizePixel = 0
     frame.Parent = ScreenGui
     applyRoundedCorners(frame, 16)
 
-    -- Aplicar escala ao loading screen também
+    -- Aplicar escala
     local scaler = Instance.new("UIScale")
     scaler.Scale = currentScale
     scaler.Parent = frame
@@ -493,6 +497,7 @@ local function createHub()
     local animationContainer = Instance.new("Frame")
     animationContainer.Name = "AnimationContainer"
     animationContainer.Size = UDim2.new(0, 450, 0, 340)
+    -- CENTRALIZAÇÃO EXATA
     animationContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     animationContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
     animationContainer.BackgroundTransparency = 1
@@ -1218,7 +1223,9 @@ local function createHub()
         {Text = "+1 Escape Tsunami", Color = Color3.fromRGB(220, 220, 220)},
     }
 
-    -- SCRIPTS
+    -- ==========================================
+    -- LISTA COMPLETA DE SCRIPTS (V7.1)
+    -- ==========================================
     local stealScripts = {
         {Name = "LEMON HUB", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/c4281c3937ebd537cb9e860182e41141.lua"))() end},
         {Name = "STELLAR", Func = function() loadstring(game:HttpGet("https://pastebin.com/raw/8xPiNRhB"))() end}, 
@@ -1531,9 +1538,10 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Background,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 2,
+        -- CENTRALIZAÇÃO EXATA
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 320), -- AUMENTADO PARA CABER NOVO BOTÃO
+        Size = UDim2.new(0, 350, 0, 360), -- AUMENTADO PARA CABER NOVO BOTÃO
         ZIndex = 5, 
         ClipsDescendants = false 
     })
@@ -1616,7 +1624,7 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Button,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 1,
-        Position = UDim2.new(0.3, 0, 0.58, 0),
+        Position = UDim2.new(0.3, 0, 0.55, 0),
         Size = UDim2.new(0, 110, 0, 32),
         Text = "Verificar Key",
         Font = HUB_FONT,
@@ -1633,7 +1641,7 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Button,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 1,
-        Position = UDim2.new(0.7, 0, 0.58, 0),
+        Position = UDim2.new(0.7, 0, 0.55, 0),
         Size = UDim2.new(0, 110, 0, 32),
         Text = "Pegar Key",
         Font = HUB_FONT,
@@ -1648,7 +1656,7 @@ CreateKeyUI = function()
         Name = "DiscordButton",
         Parent = MainKeyFrame,
         BackgroundColor3 = KeySystemData.Colors.Discord,
-        Position = UDim2.new(0.5, 0, 0.72, 0), -- LEVEMENTE SUBIDO
+        Position = UDim2.new(0.5, 0, 0.70, 0),
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Entrar no Discord",
         Font = HUB_FONT,
@@ -1665,8 +1673,8 @@ CreateKeyUI = function()
     local PremiumButton = CreateObject("TextButton", {
         Name = "PremiumButton",
         Parent = MainKeyFrame,
-        BackgroundColor3 = Color3.fromRGB(255, 215, 0), -- Dourado
-        Position = UDim2.new(0.5, 0, 0.88, 0), -- Abaixo do Discord
+        BackgroundColor3 = Colors.Gold, -- Dourado
+        Position = UDim2.new(0.5, 0, 0.85, 0), -- Abaixo do Discord
         Size = UDim2.new(0, 220, 0, 32),
         Text = "Comprar Premium",
         Font = HUB_FONT,
@@ -1702,7 +1710,7 @@ CreateKeyUI = function()
         SmoothTween(inputStroke, 0.2, {Color = KeySystemData.Colors.InputFieldBorder, Transparency = 0.8})
     end)
 
-    -- AÇÕES DOS BOTÕES COM NOTIFICAÇÃO
+    -- AÇÕES DOS BOTÕES COM NOTIFICAÇÃO E COPY
     GetKeyButton.MouseButton1Click:Connect(function()
         local link = "https://rekonise.com/key-parte-unica-v81ky"
         SafeOpenLink(link, "Link Key")
@@ -1776,14 +1784,14 @@ CreateKeyUI = function()
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
     SmoothTween(MainKeyFrame, 0.5, {
-        Size = UDim2.new(0, 350, 0, 320), 
+        Size = UDim2.new(0, 350, 0, 360), 
         Position = UDim2.new(0.5, 0, 0.5, 0),
         BackgroundTransparency = 0
     })
 end
 
 -- ==========================================
--- TOGGLE BUTTON
+-- TOGGLE BUTTON (CORRIGIDO)
 -- ==========================================
 ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "ToggleButton"
@@ -1841,8 +1849,9 @@ ToggleButton.InputBegan:Connect(function(input)
     end
 end)
 
+-- *** ERRO DE SINTAXE CORRIGIDO ABAIXO (Parênteses adicionado) ***
 UserInputService.InputChanged:Connect(function(input)
-    if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+    if draggingToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStartToggle
         if delta.Magnitude > 3 then 
             hasMoved = true
