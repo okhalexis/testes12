@@ -1,14 +1,14 @@
 --[[
 
-    -- Khalexis Hub - Versão v8.6 (FINAL VISUAL POLISH)
+    -- Khalexis Hub - Versão v8.7 (PROTOTYPE KEY UI)
     -- STATUS: COMPLETO
     -- UI KEY: 350px (Compacta) e Centralizada (0.49).
     -- POSIÇÃO HUB: 0.40.
     -- VISUAL UPDATE:
-       - WhiteScreen Blocker alterado para #666666.
-       - Borda Laranja (Accent) aplicada ao LoadingScreen e ao MainFrame do Hub.
-    -- SCROLL SYSTEM: MUDANÇA PARA AUTOMATIC SIZE.
-    -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
+       - WhiteScreen Blocker: #666666.
+       - GUI INSET: DESATIVADO (IgnoreGuiInset = false). 
+         (Isso faz com que a barra superior do Roblox - Chat, Config, Logo - fique visível e clicável).
+    -- SCROLL SYSTEM: AUTOMATIC SIZE.
 
 --]]
 
@@ -1532,7 +1532,7 @@ CreateKeyUI = function()
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
         DisplayOrder = 999,
-        IgnoreGuiInset = true -- IMPORTANTE: Isso faz o GUI cobrir a TopBar
+        IgnoreGuiInset = false -- ALTERADO: False permite que a TopBar do Roblox apareça
     })
 
     -- ==============================================================
