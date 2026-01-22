@@ -1,11 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão v7.7 (RE-ADJUSTED UI)
+    -- Khalexis Hub - Versão v7.8 (FINAL ADJUSTMENT)
     -- STATUS: COMPLETO
-    -- UI KEY: Altura reduzida para 350px.
-    -- POSIÇÃO: Ajustada para 0.46 (Meio termo entre o centro e o topo).
+    -- UI KEY: Altura mantida em 350px (Quadrada/Compacta).
+    -- POSIÇÃO: Ajustada para 0.49 (Centralizada, levemente ajustada visualmente).
     -- WHITESCREEN: Cobre a tela inteira (IgnoreGuiInset).
-    -- MANTIDO: Escala 0.75x e Notificações no Topo.
+    -- MANTIDO: Escala 0.75x, Notificações no Topo, Compact UI.
 
 --]]
 
@@ -1537,8 +1537,8 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Background,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 2,
-        -- CENTRALIZAÇÃO AJUSTADA (0.46 = LEVEMENTE ACIMA DO CENTRO)
-        Position = UDim2.new(0.5, 0, 0.46, 0), -- Alterado para 0.46
+        -- CENTRALIZAÇÃO AJUSTADA (0.49 = PRATICAMENTE CENTRO, LEVEMENTE ACIMA)
+        Position = UDim2.new(0.5, 0, 0.49, 0), -- Alterado para 0.49
         AnchorPoint = Vector2.new(0.5, 0.5),
         Size = UDim2.new(0, 350, 0, 350), -- REDUZIDO PARA 350x350 (Quadrado mais compacto)
         ZIndex = 5, 
@@ -1808,12 +1808,12 @@ CreateKeyUI = function()
         end
     end)
 
-    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.46, 0)
+    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.49, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
     SmoothTween(MainKeyFrame, 0.5, {
         Size = UDim2.new(0, 350, 0, 350), 
-        Position = UDim2.new(0.5, 0, 0.46, 0),
+        Position = UDim2.new(0.5, 0, 0.49, 0),
         BackgroundTransparency = 0
     })
 end
