@@ -1,12 +1,11 @@
 --[[
 
-    -- Khalexis Hub - Versão v7.6 (COMPACT UI UPDATE)
-    -- STATUS: COMPLETO (Todas as categorias incluídas)
-    -- UI KEY: Altura da janela reduzida para 375px (Menos espaço ocupado).
-    -- UI KEY: Botões colados nas descrições para economizar espaço.
-    -- TEXTO: Descrição Premium alterada para "Compre a Key Premium , para não passar por encurtadores:".
+    -- Khalexis Hub - Versão v7.7 (RE-ADJUSTED UI)
+    -- STATUS: COMPLETO
+    -- UI KEY: Altura reduzida para 350px.
+    -- POSIÇÃO: Ajustada para 0.46 (Meio termo entre o centro e o topo).
+    -- WHITESCREEN: Cobre a tela inteira (IgnoreGuiInset).
     -- MANTIDO: Escala 0.75x e Notificações no Topo.
-    -- UPDATE: White Screen em tela cheia (IgnoreGuiInset) e Janela de Key mais acima.
 
 --]]
 
@@ -173,8 +172,6 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 ScreenGui.DisplayOrder = 100 
--- Importante para o Hub principal também cobrir bordas se necessário, mas opcional aqui
--- ScreenGui.IgnoreGuiInset = true 
 
 local KeyFrame, MainFrameContainer
 local LoadingScreen, StopLoadingAnim
@@ -1540,10 +1537,10 @@ CreateKeyUI = function()
         BackgroundColor3 = KeySystemData.Colors.Background,
         BorderColor3 = KeySystemData.Colors.InputFieldBorder,
         BorderSizePixel = 2,
-        -- CENTRALIZAÇÃO AJUSTADA (MAIS ALTO)
-        Position = UDim2.new(0.5, 0, 0.42, 0), -- Alterado de 0.5 para 0.42
+        -- CENTRALIZAÇÃO AJUSTADA (0.46 = LEVEMENTE ACIMA DO CENTRO)
+        Position = UDim2.new(0.5, 0, 0.46, 0), -- Alterado para 0.46
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 350, 0, 375), -- REDUZIDO DE 400 PARA 375
+        Size = UDim2.new(0, 350, 0, 350), -- REDUZIDO PARA 350x350 (Quadrado mais compacto)
         ZIndex = 5, 
         ClipsDescendants = false 
     })
@@ -1811,12 +1808,12 @@ CreateKeyUI = function()
         end
     end)
 
-    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.42, 0)
+    MainKeyFrame.Position = UDim2.new(0.5, 0, 0.46, 0)
     MainKeyFrame.Size = UDim2.new(0, 0, 0, 0)
     MainKeyFrame.BackgroundTransparency = 1
     SmoothTween(MainKeyFrame, 0.5, {
-        Size = UDim2.new(0, 350, 0, 375), 
-        Position = UDim2.new(0.5, 0, 0.42, 0),
+        Size = UDim2.new(0, 350, 0, 350), 
+        Position = UDim2.new(0.5, 0, 0.46, 0),
         BackgroundTransparency = 0
     })
 end
