@@ -1,21 +1,23 @@
--- [[
+--[[
 
-    -- Khalexis Hub - Versão v8.6 (FINAL VISUAL POLISH)
-    -- STATUS: COMPLETO
-    -- UI KEY: 350px (Compacta) e Centralizada (0.49).
-    -- POSIÇÃO HUB: 0.40.
-    -- VISUAL UPDATE:
-       - WhiteScreen Blocker REMOVIDO.
-       - Borda Laranja (Accent) aplicada ao LoadingScreen e ao MainFrame do Hub.
-    -- SCROLL SYSTEM: MUDANÇA PARA AUTOMATIC SIZE.
-    -- WHITESCREEN: Tela cheia (IgnoreGuiInset).
+    -- Khalexis Hub - Versão v8.7 (FIXED & CLEANED)
+    -- STATUS: CORRIGIDO
+    -- WHITESCREEN: REMOVIDA COMPLETAMENTE.
+    -- BUGS: Corrigido erro onde o script podia não abrir após falha.
 
 --]]
 
 -- ==========================================
--- LIMPEZA DE GUI ANTIGA
+-- LIMPEZA DE GUI ANTIGA & RESET GERAL
 -- ==========================================
 local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Garante compatibilidade com diversos executores
+local getgenv = getgenv or function() return _G end
+
+-- Limpa interfaces anteriores para evitar duplicidade
 if CoreGui:FindFirstChild("KhalexisHub") then
     CoreGui:FindFirstChild("KhalexisHub"):Destroy()
 end
@@ -23,9 +25,9 @@ if CoreGui:FindFirstChild("KhalexisKeySystem") then
     CoreGui:FindFirstChild("KhalexisKeySystem"):Destroy()
 end
 
--- Resetar verificação de execução única
+-- RESETA a verificação de execução única para permitir re-execução
 getgenv().RedExecutorKeySys = false 
--- Controle do Loop de Segurança
+-- Desliga loops de segurança antigos
 getgenv().KhalexisSecurityLoop = false
 
 -- ==========================================
@@ -75,8 +77,6 @@ local function ApplyStroke(instance, color, thickness, transparency)
 end
 
 local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
@@ -172,7 +172,7 @@ end
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KhalexisHub"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game.CoreGui
+ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
 ScreenGui.DisplayOrder = 100 
 
@@ -198,19 +198,17 @@ function KhalexisToast(title, text, type, duration)
     
     -- CONFIGURAÇÃO DE POSIÇÃO
     local startPosition = UDim2.new(0.5, 0, 0.20, 0) 
-    local keyGui = game.CoreGui:FindFirstChild("KhalexisKeySystem")
+    local keyGui = CoreGui:FindFirstChild("KhalexisKeySystem")
 
     if keyGui and keyGui:FindFirstChild("MainFrame") then
         targetParent = keyGui.MainFrame
-        -- Na tela de Key: Abaixo do titulo
         startPosition = UDim2.new(0.5, 0, 0.15, 0)
     elseif MainFrameContainer and MainFrameContainer.Parent then
         targetParent = MainFrameContainer
-        -- NO HUB: Abaixo do título (40px header + 15px padding)
         startPosition = UDim2.new(0.5, 0, 0, 55)
     else
         targetParent = ScreenGui
-        startPosition = UDim2.new(0.5, 0, 0.15, 0) -- Padrão na tela
+        startPosition = UDim2.new(0.5, 0, 0.15, 0) 
     end
 
     if not targetParent then return end
@@ -1235,7 +1233,7 @@ local function createHub()
     end
 
     updatesTextFormatted = {
-        {Text = "📣 Khalexis Hub V2.8 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
+        {Text = "📣 Khalexis Hub V2.7 📣", Color = Color3.fromRGB(255, 255, 255), Font = HUB_FONT},
         {Text = "--- UPDATES ---", Color = Color3.fromRGB(220, 220, 220), Font = HUB_FONT},
         {Text = "", Color = Color3.fromRGB(220, 220, 220)},
         {Text = "NOVOS SCRIPTS", Color = Color3.fromRGB(255, 215, 0), Font = HUB_FONT},
@@ -1539,6 +1537,8 @@ CreateKeyUI = function()
         IgnoreGuiInset = true -- IMPORTANTE: Isso faz o GUI cobrir a TopBar
     })
 
+    -- WHITESCREEN REMOVIDA (O frame de bloqueio cinza/branco não é criado)
+
     local keyScaler = Instance.new("UIScale")
     keyScaler.Scale = currentScale
     keyScaler.Parent = KeyGui 
@@ -1783,6 +1783,8 @@ CreateKeyUI = function()
             
             KhalexisToast("Sucesso", "Key válida! Carregando Hub...", "Success", 3)
             
+            -- NÃO HÁ MAIS ANIMAÇÃO DE SAÍDA DO BLOQUEADOR PORQUE ELE NÃO EXISTE
+
             SmoothTween(MainKeyFrame, 0.5, {Position = UDim2.new(0.5, 0, -0.5, 0), BackgroundTransparency = 1})
             task.wait(0.5)
             KeyGui:Destroy()
@@ -1917,7 +1919,7 @@ local function startKeySystem()
         StartSecurityLoop(savedKey)
         main() 
     else
-        -- Key inválida -> Abre UI de Key (COM BLOQUEIO BRANCO)
+        -- Key inválida -> Abre UI de Key (SEM BLOQUEIO BRANCO)
         CreateKeyUI() 
     end
 end
