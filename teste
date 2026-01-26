@@ -1382,12 +1382,14 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34824c86db1eba
         {Name = "NOTHUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/lightymysterious-oss/DAHEN-HUB/refs/heads/main/BladeBall.lua"))() end},
         {Name = "PROJECT TREVOUS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotRox1/Trevous-Hub/refs/heads/main/blade-ball.lua"))() end}
     }
-    local EscapeTsunamiForBrainrotsScripts = {   
+    local EscapeTsunamiForBrainrotsScripts = {
+        {Name = "SOLIX HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/meobeo8/a/a/a"))() end},
         {Name = "SPEED HUB X ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))() end},
         {Name = "AXON HUB ( key )", Func = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/97c3f6db55a2cf72141537a85458e5a7.lua"))() end},
         {Name = "EKUVE HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ekuve/ekuvehub/main/main.lua"))() end},
         {Name = "WARP HUB ( key )", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/1heo2fine/idk/main/script.lua"))() end},
         {Name = "LEGEND HUB ( key )", Func = function() loadstring(game:HttpGet("https://pastefy.app/ULaWpxKm/raw"))() end},
+        {Name = "MYSTRIX HUB", Func = function() loadstring(game:HttpGet("https://github.com/OxyCoder32/Crackers/raw/refs/heads/main/Mystrix%20Hub"))() end},
         {Name = "KENGER HUB", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/iw929wiwiw/EscapesTsunami/refs/heads/main/Kenger%20Hub"))() end},
         {Name = "BLESSED HUB X", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/mynamewendel-ctrl/Blessed-Hub-X-/refs/heads/main/Escape%20Tsunami%20For%20Brainrots.lua"))() end},
         {Name = "SIMPLE SCRIPTS", Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/dawnpetal/loader/main/src/loader.lua"))() end},
